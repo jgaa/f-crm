@@ -34,5 +34,6 @@ HEADERS += \
     src/version.h
 
 FORMS += \
-        ui/mainwindow.ui
+        ui/mainwindow.ui \
+        ui/contacts.ui
 
