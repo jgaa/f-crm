@@ -17,13 +17,18 @@ class Database : public QObject
 {
     Q_OBJECT
 public:
+    enum FcrmTable {
+        FCRM_VERSION = 0
+    };
+
+
     struct Error : public std::runtime_error
     {
         explicit Error(const char *what) : std::runtime_error(what) {}
         explicit Error(const QString& what) : std::runtime_error(what.toStdString()) {}
     };
 
-    Database();
+    Database(QObject *parent);
     ~Database();
 
     enum DsTable {

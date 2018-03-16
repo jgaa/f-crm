@@ -16,24 +16,94 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_6">
     <item>
-     <widget class="QListWidget" name="listWidget">
+     <widget class="QListWidget" name="appModeList">
+      <property name="minimumSize">
+       <size>
+        <width>80</width>
+        <height>0</height>
+       </size>
+      </property>
       <property name="maximumSize">
        <size>
-        <width>128</width>
+        <width>80</width>
         <height>16777215</height>
        </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <property name="showDropIndicator" stdset="0">
+       <bool>false</bool>
+      </property>
+      <property name="dragDropMode">
+       <enum>QAbstractItemView::NoDragDrop</enum>
+      </property>
+      <property name="defaultDropAction">
+       <enum>Qt::IgnoreAction</enum>
+      </property>
+      <property name="alternatingRowColors">
+       <bool>false</bool>
       </property>
       <property name="selectionMode">
        <enum>QAbstractItemView::SingleSelection</enum>
       </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
       <property name="iconSize">
        <size>
-        <width>128</width>
-        <height>128</height>
+        <width>48</width>
+        <height>48</height>
+       </size>
+      </property>
+      <property name="textElideMode">
+       <enum>Qt::ElideNone</enum>
+      </property>
+      <property name="movement">
+       <enum>QListView::Static</enum>
+      </property>
+      <property name="flow">
+       <enum>QListView::LeftToRight</enum>
+      </property>
+      <property name="resizeMode">
+       <enum>QListView::Adjust</enum>
+      </property>
+      <property name="gridSize">
+       <size>
+        <width>72</width>
+        <height>80</height>
        </size>
       </property>
       <property name="viewMode">
        <enum>QListView::IconMode</enum>
+      </property>
+      <property name="uniformItemSizes">
+       <bool>true</bool>
+      </property>
+      <property name="selectionRectVisible">
+       <bool>true</bool>
+      </property>
+      <property name="currentRow">
+       <number>-1</number>
       </property>
      </widget>
     </item>
@@ -72,7 +142,15 @@
          </widget>
         </item>
         <item>
-         <widget class="QTextBrowser" name="textBrowser_2"/>
+         <widget class="QTextBrowser" name="textBrowser">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -86,22 +164,29 @@
           <widget class="QWidget" name="verticalLayoutWidget_2">
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
-             <widget class="QLineEdit" name="contactFilter_2">
+             <widget class="QLineEdit" name="contactFilter">
               <property name="placeholderText">
                <string>Filter</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QListView" name="contactsList_2"/>
+             <widget class="QListView" name="contactsList">
+              <property name="spacing">
+               <number>2</number>
+              </property>
+              <property name="uniformItemSizes">
+               <bool>false</bool>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
-          <widget class="QTabWidget" name="tabWidget_2">
+          <widget class="QTabWidget" name="tabWidget">
            <property name="currentIndex">
             <number>0</number>
            </property>
-           <widget class="QWidget" name="panelPage_2">
+           <widget class="QWidget" name="panelPage">
             <attribute name="title">
              <string>Panel</string>
             </attribute>
@@ -109,9 +194,9 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_21">
                <item>
-                <widget class="QLabel" name="contantTypeName_3">
+                <widget class="QLabel" name="contantTypeName">
                  <property name="text">
-                  <string>Company</string>
+                  <string>Type</string>
                  </property>
                 </widget>
                </item>
@@ -129,7 +214,7 @@
                 </spacer>
                </item>
                <item>
-                <widget class="QToolButton" name="favoriteIcon_3">
+                <widget class="QToolButton" name="contactFavoriteIcon">
                  <property name="text">
                   <string>Favourite</string>
                  </property>
@@ -139,14 +224,14 @@
                 </widget>
                </item>
                <item>
-                <widget class="QToolButton" name="starsIcon_3">
+                <widget class="QToolButton" name="contactStarsIcon">
                  <property name="text">
                   <string>star</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="statusIcon_3">
+                <widget class="QLabel" name="contactStatusIcon">
                  <property name="text">
                   <string>Status</string>
                  </property>
@@ -155,7 +240,7 @@
               </layout>
              </item>
              <item>
-              <widget class="QPlainTextEdit" name="plainTextEdit_2"/>
+              <widget class="QPlainTextEdit" name="contactNotes"/>
              </item>
              <item>
               <widget class="QLabel" name="label">
@@ -165,7 +250,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QTableView" name="tableView_4"/>
+              <widget class="QTableView" name="contactUpcomingTable"/>
              </item>
              <item>
               <widget class="QLabel" name="label_2">
@@ -175,11 +260,18 @@
               </widget>
              </item>
              <item>
-              <widget class="QTextBrowser" name="textBrowser"/>
+              <widget class="QTextBrowser" name="contactSummary">
+               <property name="frameShape">
+                <enum>QFrame::NoFrame</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Plain</enum>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="contactPage_2">
+           <widget class="QWidget" name="contactPage">
             <attribute name="title">
              <string>Contact</string>
             </attribute>
@@ -194,7 +286,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_4">
+                <widget class="QLineEdit" name="contactAddress">
                  <property name="frame">
                   <bool>false</bool>
                  </property>
@@ -215,7 +307,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_15">
+                <widget class="QLineEdit" name="contactAddress2">
                  <property name="frame">
                   <bool>false</bool>
                  </property>
@@ -236,7 +328,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_16">
+                <widget class="QLineEdit" name="contactCity">
                  <property name="frame">
                   <bool>false</bool>
                  </property>
@@ -253,7 +345,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_17">
+                <widget class="QLineEdit" name="contactPostCode">
                  <property name="maximumSize">
                   <size>
                    <width>60</width>
@@ -280,7 +372,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_18">
+                <widget class="QLineEdit" name="contactCountry">
                  <property name="frame">
                   <bool>false</bool>
                  </property>
@@ -301,7 +393,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_5">
+                <widget class="QLineEdit" name="contactNexAction">
                  <property name="frame">
                   <bool>false</bool>
                  </property>
@@ -322,16 +414,16 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_20">
                <item>
-                <widget class="QListView" name="listView_3"/>
+                <widget class="QListView" name="contactChannels"/>
                </item>
               </layout>
              </item>
              <item>
-              <widget class="QTableView" name="tableView_2"/>
+              <widget class="QTableView" name="contactPeople"/>
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="intentsPage_2">
+           <widget class="QWidget" name="intentsPage">
             <attribute name="title">
              <string>Intents</string>
             </attribute>
@@ -344,7 +436,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QTableView" name="intentsView_2"/>
+              <widget class="QTableView" name="intentsView"/>
              </item>
              <item>
               <widget class="QLabel" name="label_28">
@@ -354,7 +446,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QTableView" name="activitiesView_2"/>
+              <widget class="QTableView" name="activitiesView"/>
              </item>
              <item>
               <widget class="QLabel" name="label_29">
@@ -364,7 +456,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPlainTextEdit" name="activityNotes_2">
+              <widget class="QPlainTextEdit" name="activityNotes">
                <property name="frameShape">
                 <enum>QFrame::NoFrame</enum>
                </property>
@@ -378,23 +470,23 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="logPage_2">
+           <widget class="QWidget" name="logPage">
             <attribute name="title">
              <string>Log</string>
             </attribute>
             <layout class="QHBoxLayout" name="horizontalLayout_10">
              <item>
-              <widget class="QTableWidget" name="logView_2"/>
+              <widget class="QTableWidget" name="logView"/>
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="documentsPage_2">
+           <widget class="QWidget" name="documentsPage">
             <attribute name="title">
              <string>Documents</string>
             </attribute>
             <layout class="QHBoxLayout" name="horizontalLayout_11">
              <item>
-              <widget class="QTableWidget" name="documentsView_2"/>
+              <widget class="QTableWidget" name="documentsView"/>
              </item>
             </layout>
            </widget>
@@ -416,6 +508,20 @@
      <height>19</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_Quit"/>
+   </widget>
+   <widget class="QMenu" name="menuContact">
+    <property name="title">
+     <string>Contact</string>
+    </property>
+    <addaction name="actionAdd_Contact"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menuContact"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -424,10 +530,33 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionAdd_Contact"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="action_Quit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+  </action>
+  <action name="actionAdd_Contact">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/addcontact.svg</normaloff>:/res/icons/addcontact.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Add Contact</string>
+   </property>
+   <property name="toolTip">
+    <string>Add a new contact</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

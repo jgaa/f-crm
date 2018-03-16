@@ -22,18 +22,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        src/main.cpp \
-        src/mainwindow.cpp \
+    src/main.cpp \
+    src/mainwindow.cpp \
     src/database.cpp \
-    src/logging.cpp
+    src/logging.cpp \
+    src/contactsmodel.cpp
 
 HEADERS += \
-        src/mainwindow.h \
+    src/mainwindow.h \
     src/database.h \
     src/logging.h \
-    src/version.h
+    src/version.h \
+    src/contactsmodel.h \
+    src/strategy.h \
+    src/release.h
 
 FORMS += \
-        ui/mainwindow.ui \
-        ui/contacts.ui
+        ui/mainwindow.ui
+
+RESOURCES += \
+    resources.qrc
+
 
