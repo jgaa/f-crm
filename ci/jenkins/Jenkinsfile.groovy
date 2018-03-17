@@ -10,120 +10,120 @@ pipeline {
     stages {
         stage('Build') {
            parallel {
-                stage('Docker-build inside: ubuntu-xenial') {
-                    agent {
-                        dockerfile {
-                            filename 'Dockefile.ubuntu-xenial'
-                            dir 'ci/jenkins'
-                            label 'master'
-                        }
-                    }
-
-                    environment {
-                        DIST_DIR = "${WORKSPACE}/dist"
-                        BUILD_DIR = "${WORKSPACE}/build"
-                        SRC_DIR = "${WORKSPACE}"
-                        DIST_NAME = 'ubuntu-xenial-'
-                    }
-
-                    steps {
-                        echo "Building on ubuntu-xenial-AMD64 in ${WORKSPACE}"
-                        checkout scm
-                        sh 'pwd; ls -la;'
-                        sh './scripts/package-deb.sh'
-                    }
-
-                    post {
-                        success {
-                            echo "Build of debian package suceeded!"
-                            archive "dist/*.deb"
-                        }
-                    }
-                }
-                stage('Docker-build inside: debian-stretch') {
-                    agent {
-                        dockerfile {
-                            filename 'Dockefile.debian-stretch'
-                            dir 'ci/jenkins'
-                            label 'master'
-                        }
-                    }
-
-                    environment {
-                        DIST_DIR = "${WORKSPACE}/dist"
-                        BUILD_DIR = "${WORKSPACE}/build"
-                        SRC_DIR = "${WORKSPACE}"
-                        DIST_NAME = 'debian-stretch-'
-                    }
-
-                    steps {
-                        echo "Building on debian-stretch-AMD64 in ${WORKSPACE}"
-                        checkout scm
-                        sh 'pwd; ls -la;'
-                        sh './scripts/package-deb.sh'
-                    }
-
-                    post {
-                        success {
-                            echo "Build of debian package suceeded!"
-                            archive "dist/*.deb"
-                        }
-                    }
-                }
-                stage('Docker-build inside: debian-testing') {
-                    agent {
-                        dockerfile {
-                            filename 'Dockefile.debian-testing'
-                            dir 'ci/jenkins'
-                            label 'master'
-                        }
-                    }
-
-                    environment {
-                        DIST_DIR = "${WORKSPACE}/dist"
-                        BUILD_DIR = "${WORKSPACE}/build"
-                        SRC_DIR = "${WORKSPACE}"
-                        DIST_NAME = 'debian-testing-'
-                    }
-
-                    steps {
-                        echo "Building on debian-testing-AMD64 in ${WORKSPACE}"
-                        checkout scm
-                        sh 'pwd; ls -la;'
-                        sh './scripts/package-deb.sh'
-                    }
-
-                    post {
-                        success {
-                            echo "Build of debian package suceeded!"
-                            archive "dist/*.deb"
-                        }
-                    }
-                }
-                stage('Build on macOS') {
-                    agent {label 'macos'}
-
-                    environment {
-                        DIST_DIR = "${WORKSPACE}/dist"
-                        BUILD_DIR = "${WORKSPACE}/build"
-                        SRC_DIR = "${WORKSPACE}"
-                        QTDIR="/opt/Qt/5.10.0/clang_64"
-                    }
-
-                    steps {
-                        echo "Building on macOS in ${WORKSPACE}"
-                        checkout scm
-                        sh 'pwd; ls -la;'
-                        sh './scripts/package-macos.sh'
-                    }
-
-                    post {
-                        success {
-                            echo "Build of macOS package succeeded!"
-                            archive "dist/*.dmg"
-                        }
-                    }
-                }
+//                 stage('Docker-build inside: ubuntu-xenial') {
+//                     agent {
+//                         dockerfile {
+//                             filename 'Dockefile.ubuntu-xenial'
+//                             dir 'ci/jenkins'
+//                             label 'master'
+//                         }
+//                     }
+//
+//                     environment {
+//                         DIST_DIR = "${WORKSPACE}/dist"
+//                         BUILD_DIR = "${WORKSPACE}/build"
+//                         SRC_DIR = "${WORKSPACE}"
+//                         DIST_NAME = 'ubuntu-xenial-'
+//                     }
+//
+//                     steps {
+//                         echo "Building on ubuntu-xenial-AMD64 in ${WORKSPACE}"
+//                         checkout scm
+//                         sh 'pwd; ls -la;'
+//                         sh './scripts/package-deb.sh'
+//                     }
+//
+//                     post {
+//                         success {
+//                             echo "Build of debian package suceeded!"
+//                             archive "dist/*.deb"
+//                         }
+//                     }
+//                 }
+//                 stage('Docker-build inside: debian-stretch') {
+//                     agent {
+//                         dockerfile {
+//                             filename 'Dockefile.debian-stretch'
+//                             dir 'ci/jenkins'
+//                             label 'master'
+//                         }
+//                     }
+//
+//                     environment {
+//                         DIST_DIR = "${WORKSPACE}/dist"
+//                         BUILD_DIR = "${WORKSPACE}/build"
+//                         SRC_DIR = "${WORKSPACE}"
+//                         DIST_NAME = 'debian-stretch-'
+//                     }
+//
+//                     steps {
+//                         echo "Building on debian-stretch-AMD64 in ${WORKSPACE}"
+//                         checkout scm
+//                         sh 'pwd; ls -la;'
+//                         sh './scripts/package-deb.sh'
+//                     }
+//
+//                     post {
+//                         success {
+//                             echo "Build of debian package suceeded!"
+//                             archive "dist/*.deb"
+//                         }
+//                     }
+//                 }
+//                 stage('Docker-build inside: debian-testing') {
+//                     agent {
+//                         dockerfile {
+//                             filename 'Dockefile.debian-testing'
+//                             dir 'ci/jenkins'
+//                             label 'master'
+//                         }
+//                     }
+//
+//                     environment {
+//                         DIST_DIR = "${WORKSPACE}/dist"
+//                         BUILD_DIR = "${WORKSPACE}/build"
+//                         SRC_DIR = "${WORKSPACE}"
+//                         DIST_NAME = 'debian-testing-'
+//                     }
+//
+//                     steps {
+//                         echo "Building on debian-testing-AMD64 in ${WORKSPACE}"
+//                         checkout scm
+//                         sh 'pwd; ls -la;'
+//                         sh './scripts/package-deb.sh'
+//                     }
+//
+//                     post {
+//                         success {
+//                             echo "Build of debian package suceeded!"
+//                             archive "dist/*.deb"
+//                         }
+//                     }
+//                 }
+//                 stage('Build on macOS') {
+//                     agent {label 'macos'}
+//
+//                     environment {
+//                         DIST_DIR = "${WORKSPACE}/dist"
+//                         BUILD_DIR = "${WORKSPACE}/build"
+//                         SRC_DIR = "${WORKSPACE}"
+//                         QTDIR="/opt/Qt/5.10.0/clang_64"
+//                     }
+//
+//                     steps {
+//                         echo "Building on macOS in ${WORKSPACE}"
+//                         checkout scm
+//                         sh 'pwd; ls -la;'
+//                         sh './scripts/package-macos.sh'
+//                     }
+//
+//                     post {
+//                         success {
+//                             echo "Build of macOS package succeeded!"
+//                             archive "dist/*.dmg"
+//                         }
+//                     }
+//                 }
                 stage('Build on Windows') {
                     agent {label 'windows'}
 
