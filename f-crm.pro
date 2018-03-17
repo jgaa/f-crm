@@ -5,9 +5,9 @@
 #-------------------------------------------------
 
 QT       += core gui widgets sql
-
 TARGET = f-crm
 TEMPLATE = app
+CONFIG += c++14
 
 QMAKE_TARGET_COMPANY = The Last Viking LTD
 QMAKE_TARGET_PRODUCT = f-crm
