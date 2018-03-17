@@ -7,9 +7,9 @@
 # Example:
 #     Jarles-Mac-mini:scripts jgaa$ QTDIR=/Users/jgaa/Qt/5.10.0/clang_64 ./package-macos.sh
 
-if [ -z "$WHID_VERSION" ]; then
-    WHID_VERSION="2.0.0"
-    echo "Warning: Missing WHID_VERSION variable!"
+if [ -z "$F_CRM_VERSION" ]; then
+    F_CRM_VERSION="2.0.0"
+    echo "Warning: Missing F_CRM_VERSION variable!"
 fi
 
 if [ -z ${DIST_DIR:-} ];
@@ -52,11 +52,11 @@ popd
 
 pushd $DIST_DIR
 
-mv $BUILD_DIR/whid.app $BUILD_DIR/whid-${WHID_VERSION}.app
+mv $BUILD_DIR/whid.app $BUILD_DIR/whid-${F_CRM_VERSION}.app
 
 echo "Making dmg package with $QTDIR/bin/macdeployqt"
-$QTDIR/bin/macdeployqt $BUILD_DIR/whid-${WHID_VERSION}.app -dmg -appstore-compliant -codesign="$SIGN_CERT"
+$QTDIR/bin/macdeployqt $BUILD_DIR/whid-${F_CRM_VERSION}.app -dmg -appstore-compliant -codesign="$SIGN_CERT"
 
-mv  $BUILD_DIR/whid-${WHID_VERSION}.dmg .
+mv  $BUILD_DIR/whid-${F_CRM_VERSION}.dmg .
 
 popd
