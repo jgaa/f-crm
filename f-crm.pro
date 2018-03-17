@@ -20,7 +20,7 @@ macx {
     RC_ICONS = res/icons/f_crm.ico
     VERSION = $$(F_CRM_VERSION).$$(BUILD_NUMBER)
 } unix:!macx {
-    ICON =
+    ICON = res/icons/f-crm.svg
 }
 
 linux {

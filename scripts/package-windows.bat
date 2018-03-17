@@ -31,9 +31,9 @@ nmake
 popd
 
 echo "Copying: %BUILD_DIR%\release\f_crm.exe" "%OUT_DIR%"
-copy "%BUILD_DIR%\release\f_crm.exe" "%OUT_DIR%"
+copy "%BUILD_DIR%\release\f-crm.exe" "%OUT_DIR%"
 copy "%SRC_DIR%\res\icons\f_crm.ico" "%OUT_DIR%"
 
-%QTDIR%\bin\windeployqt "%OUT_DIR%\f_crm.exe"
+%QTDIR%\bin\windeployqt "%OUT_DIR%\f-crm.exe"
 
 echo "The prepared package is in: "%OUT_DIR%"
