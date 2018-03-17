@@ -17,10 +17,10 @@ QMAKE_TARGET_COPYRIGHT = Copyright (c) 2018 by Jarle (jgaa) Aase
 macx {
     ICON = res/icons/f-crm.icns
 } win32 {
-    RC_ICONS = res/icons/f-crm.ico
+    RC_ICONS = res/icons/f_crm.ico
     VERSION = $$(F_CRM_VERSION).$$(BUILD_NUMBER)
 } unix:!macx {
-    ICON = res/icons/f-crm.svg
+    ICON =
 }
 
 linux {
@@ -76,6 +76,7 @@ DISTFILES += \
     scripts/package-macos.sh \
     scripts/package-windows.bat \
     res/icons/f-crm.icns \
-    res/icons/f-crm.ico
+    res/icons/f-crm.svg \
+    res/icons/f_crm.ico
 
 

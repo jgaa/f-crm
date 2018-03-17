@@ -17,8 +17,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::initialize()
 {
-//    QIcon appicon(":res/icons/f-crm.svg");
-//    setWindowIcon(appicon);
+    QIcon appicon(":res/icons/f-crm.svg");
+    setWindowIcon(appicon);
 
     if (settings_.value("restore-window-state", true).toBool()) {
         restoreGeometry(settings_.value("windowGeometry").toByteArray());

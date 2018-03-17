@@ -4,5 +4,6 @@
         <file>res/icons/star.svg</file>
         <file>res/icons/users.svg</file>
         <file>res/icons/addcontact.svg</file>
+        <file>res/icons/f-crm.svg</file>
     </qresource>
 </RCC>
