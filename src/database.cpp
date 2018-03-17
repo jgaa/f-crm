@@ -11,7 +11,8 @@ Database::Database(QObject *parent)
 
     QSettings settings;
 
-    const auto dbpath = QStringLiteral(":memory:");// settings.value("dbpath").toString();
+    //const auto dbpath = QStringLiteral(":memory:")
+    const auto dbpath = settings.value("dbpath").toString();
     const bool new_database = (dbpath == ":memory:") || (!QFileInfo(dbpath).isFile());
 
     if(!QSqlDatabase::isDriverAvailable(DRIVER)) {

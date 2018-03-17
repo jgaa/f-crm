@@ -27,7 +27,7 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
 public slots:
-
+    void setNameFilter(const QString& filter);
 
 private:
     QSettings& settings_;

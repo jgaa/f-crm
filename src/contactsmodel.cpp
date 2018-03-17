@@ -36,6 +36,7 @@ ContactsModel::ContactsModel(QSettings& settings, QObject *parent, QSqlDatabase 
     h_favorite_ = fieldIndex("favourite");
 
     setSort(h_name_, Qt::AscendingOrder);
+
 }
 
 
@@ -67,6 +68,22 @@ Qt::ItemFlags ContactsModel::flags(const QModelIndex &ix) const
     return QSqlTableModel::flags(ix);
 }
 
+void ContactsModel::setNameFilter(const QString &filter)
+{
+    if (filter.isEmpty()) {
+        setFilter({});
+    } else {
+        // We have to escape certain characters
+        QString escaped = filter;
+        escaped.replace("'", "''");
+        escaped.replace("_", "\\_");
+        escaped.replace("%", "\\%");
+        QString full_filter = QStringLiteral("name like '%%%1%%' ESCAPE '\\'").arg(escaped);
+        setFilter(full_filter);
+    }
+
+}
+
 QModelIndex ContactsModel::createContact()
 {
     Strategy strategy(*this, QSqlTableModel::OnManualSubmit);
@@ -79,7 +96,7 @@ QModelIndex ContactsModel::createContact()
 //             << " with tables " << this->database().tables()
 //             << ". Open status: " << this->database().isOpen();
 
-    rec.setValue(h_name_, QStringLiteral("New Contact"));
+    rec.setValue(h_name_, QStringLiteral(""));
 
 //    for(int i = 0; i < rec.count(); ++i) {
 //        qDebug() << "# " << i << " " << rec.fieldName(i)
@@ -93,7 +110,7 @@ QModelIndex ContactsModel::createContact()
         internal_edit_ = internal_edit_save;
     });
 
-    if (!insertRecord(-1, rec)) {
+    if (!insertRecord(0, rec)) {
         qWarning() << "Failed to add new contact (insertRecord): "
                    << lastError().text();
         return {};
@@ -107,5 +124,5 @@ QModelIndex ContactsModel::createContact()
 
     qDebug() << "Created new contact";
 
-    return index(rowCount() -1, 0, {}); // Assume that we insterted at end in the model
+    return index(0, h_name_, {}); // Assume that we insterted at end in the model
 }

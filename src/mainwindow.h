@@ -27,9 +27,9 @@ signals:
 
 private slots:
     void appModeSelectionChanged();
+    void onContactFilterChanged(const QString& text);
 
     void on_action_Quit_triggered();
-
     void on_actionAdd_Contact_triggered();
 
 private:

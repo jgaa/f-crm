@@ -29,8 +29,8 @@ void MainWindow::initialize()
 
     contacts_model_ = new ContactsModel(settings_, this, {});
     ui->contactsList->setModel(contacts_model_);
-    ui->contactsList->setModelColumn(contacts_model_->getNameCol());
-    //contacts_model_->select()
+    //ui->contactsList->setModelColumn(contacts_model_->getNameCol());
+    contacts_model_->select();
 
     {
         auto home = new QListWidgetItem(QIcon(":/res/icons/home.svg"), QStringLiteral("Panel"), nullptr, 0);
@@ -46,6 +46,15 @@ void MainWindow::initialize()
 
         ui->appModeList->setCurrentItem(home);
     }
+
+    ui->contactsList->horizontalHeader()->setSectionResizeMode(
+                contacts_model_->getNameCol(), QHeaderView::Stretch);
+    for(int i = 0; i < contacts_model_->columnCount(); ++i) {
+        const bool show = (i == contacts_model_->getNameCol());
+        ui->contactsList->setColumnHidden(i, !show);
+    }
+
+    connect(ui->contactFilter, &QLineEdit::textChanged, this, &MainWindow::onContactFilterChanged);
 }
 
 void MainWindow::appModeSelectionChanged()
@@ -56,6 +65,12 @@ void MainWindow::appModeSelectionChanged()
     const bool is_contact = selection == 1;
     ui->actionAdd_Contact->setEnabled(is_contact);
     ui->menuContact->setEnabled(is_contact);
+}
+
+void MainWindow::onContactFilterChanged(const QString &text)
+{
+    // We can't use filter() - it don't handle special characters.
+    contacts_model_->setNameFilter(text);
 }
 
 
@@ -74,6 +89,9 @@ void MainWindow::on_action_Quit_triggered()
 
 void MainWindow::on_actionAdd_Contact_triggered()
 {
+    if (!ui->contactFilter->text().isEmpty()) {
+        ui->contactFilter->setText("");
+    }
     const auto ix = contacts_model_->createContact();
     if (ix.isValid()) {
         ui->contactsList->setFocus();

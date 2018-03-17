@@ -171,13 +171,19 @@
              </widget>
             </item>
             <item>
-             <widget class="QListView" name="contactsList">
-              <property name="spacing">
-               <number>2</number>
+             <widget class="QTableView" name="contactsList">
+              <property name="alternatingRowColors">
+               <bool>true</bool>
               </property>
-              <property name="uniformItemSizes">
+              <property name="showGrid">
                <bool>false</bool>
               </property>
+              <property name="cornerButtonEnabled">
+               <bool>false</bool>
+              </property>
+              <attribute name="verticalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
              </widget>
             </item>
            </layout>
