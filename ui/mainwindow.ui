@@ -172,6 +172,9 @@
             </item>
             <item>
              <widget class="QTableView" name="contactsList">
+              <property name="contextMenuPolicy">
+               <enum>Qt::CustomContextMenu</enum>
+              </property>
               <property name="alternatingRowColors">
                <bool>true</bool>
               </property>
@@ -188,9 +191,9 @@
             </item>
            </layout>
           </widget>
-          <widget class="QTabWidget" name="tabWidget">
+          <widget class="QTabWidget" name="contactTab">
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="panelPage">
             <attribute name="title">
@@ -202,7 +205,10 @@
                <item>
                 <widget class="QLabel" name="contantTypeName">
                  <property name="text">
-                  <string>Type</string>
+                  <string/>
+                 </property>
+                 <property name="pixmap">
+                  <pixmap resource="../resources.qrc">:/res/icons/company.svg</pixmap>
                  </property>
                 </widget>
                </item>
@@ -224,6 +230,11 @@
                  <property name="text">
                   <string>Favourite</string>
                  </property>
+                 <property name="icon">
+                  <iconset resource="../resources.qrc">
+                   <normaloff>:/res/icons/nofavourite.svg</normaloff>
+                   <normalon>:/res/icons/favourite.svg</normalon>:/res/icons/nofavourite.svg</iconset>
+                 </property>
                  <property name="checked">
                   <bool>false</bool>
                  </property>
@@ -234,12 +245,25 @@
                  <property name="text">
                   <string>star</string>
                  </property>
+                 <property name="icon">
+                  <iconset resource="../resources.qrc">
+                   <normaloff>:/res/icons/0star.svg</normaloff>:/res/icons/0star.svg</iconset>
+                 </property>
+                 <property name="iconSize">
+                  <size>
+                   <width>86</width>
+                   <height>16</height>
+                  </size>
+                 </property>
                 </widget>
                </item>
                <item>
                 <widget class="QLabel" name="contactStatusIcon">
                  <property name="text">
-                  <string>Status</string>
+                  <string/>
+                 </property>
+                 <property name="pixmap">
+                  <pixmap resource="../resources.qrc">:/res/icons/status_watching.svg</pixmap>
                  </property>
                 </widget>
                </item>
@@ -294,7 +318,7 @@
                <item>
                 <widget class="QLineEdit" name="contactAddress">
                  <property name="frame">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="readOnly">
                   <bool>true</bool>
@@ -315,7 +339,7 @@
                <item>
                 <widget class="QLineEdit" name="contactAddress2">
                  <property name="frame">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="readOnly">
                   <bool>true</bool>
@@ -336,7 +360,7 @@
                <item>
                 <widget class="QLineEdit" name="contactCity">
                  <property name="frame">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="readOnly">
                   <bool>true</bool>
@@ -359,7 +383,7 @@
                   </size>
                  </property>
                  <property name="frame">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="readOnly">
                   <bool>true</bool>
@@ -380,7 +404,7 @@
                <item>
                 <widget class="QLineEdit" name="contactCountry">
                  <property name="frame">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="readOnly">
                   <bool>true</bool>
@@ -418,14 +442,36 @@
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_20">
-               <item>
-                <widget class="QListView" name="contactChannels"/>
-               </item>
-              </layout>
+              <widget class="QTableView" name="contactPeople"/>
              </item>
              <item>
-              <widget class="QTableView" name="contactPeople"/>
+              <layout class="QHBoxLayout" name="horizontalLayout_20">
+               <item>
+                <widget class="QTableView" name="contactChannels">
+                 <property name="contextMenuPolicy">
+                  <enum>Qt::CustomContextMenu</enum>
+                 </property>
+                 <property name="selectionBehavior">
+                  <enum>QAbstractItemView::SelectRows</enum>
+                 </property>
+                 <property name="iconSize">
+                  <size>
+                   <width>16</width>
+                   <height>16</height>
+                  </size>
+                 </property>
+                 <property name="showGrid">
+                  <bool>false</bool>
+                 </property>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>80</number>
+                 </attribute>
+                 <attribute name="verticalHeaderVisible">
+                  <bool>false</bool>
+                 </attribute>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -525,6 +571,14 @@
      <string>Contact</string>
     </property>
     <addaction name="actionAdd_Contact"/>
+    <addaction name="actionDelete_Contact"/>
+    <addaction name="separator"/>
+    <addaction name="actionAdd_Channel"/>
+    <addaction name="actionEdit_Channel"/>
+    <addaction name="actionVerify_Channel"/>
+    <addaction name="actionCopy_Channel_to_Clipboard"/>
+    <addaction name="actionOpen_Channel"/>
+    <addaction name="actionDelete_Channel"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuContact"/>
@@ -537,6 +591,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionAdd_Contact"/>
+   <addaction name="actionAdd_Channel"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_Quit">
@@ -557,6 +612,75 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionDelete_Contact">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/delete.svg</normaloff>:/res/icons/delete.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Contact</string>
+   </property>
+  </action>
+  <action name="actionAdd_Channel">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/addchannel.svg</normaloff>:/res/icons/addchannel.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Add Channel</string>
+   </property>
+   <property name="toolTip">
+    <string>Add Phone, Email, Social Handle etc. to a contact</string>
+   </property>
+  </action>
+  <action name="actionDelete_Channel">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/delete.svg</normaloff>:/res/icons/delete.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Channel</string>
+   </property>
+  </action>
+  <action name="actionEdit_Channel">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/edit.svg</normaloff>:/res/icons/edit.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Edit Channel</string>
+   </property>
+  </action>
+  <action name="actionVerify_Channel">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/check.svg</normaloff>:/res/icons/check.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Verify Channel</string>
+   </property>
+  </action>
+  <action name="actionCopy_Channel_to_Clipboard">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/clipboard.svg</normaloff>:/res/icons/clipboard.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Copy to Clipboard</string>
+   </property>
+   <property name="toolTip">
+    <string>Copy the value of the channel to the to Clipboard</string>
+   </property>
+  </action>
+  <action name="actionOpen_Channel">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/open.svg</normaloff>:/res/icons/open.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Open Channel</string>
    </property>
   </action>
  </widget>

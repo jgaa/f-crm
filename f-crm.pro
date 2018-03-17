@@ -50,7 +50,11 @@ SOURCES += \
     src/mainwindow.cpp \
     src/database.cpp \
     src/logging.cpp \
-    src/contactsmodel.cpp
+    src/contactsmodel.cpp \
+    src/channelsmodel.cpp \
+    src/channeldialog.cpp \
+    src/channel.cpp \
+    src/persondialog.cpp
 
 HEADERS += \
     src/mainwindow.h \
@@ -59,10 +63,16 @@ HEADERS += \
     src/version.h \
     src/contactsmodel.h \
     src/strategy.h \
-    src/release.h
+    src/release.h \
+    src/channelsmodel.h \
+    src/channeldialog.h \
+    src/channel.h \
+    src/persondialog.h
 
 FORMS += \
-        ui/mainwindow.ui
+        ui/mainwindow.ui \
+    ui/channeldialog.ui \
+    ui/persondialog.ui
 
 RESOURCES += \
     resources.qrc

@@ -5,5 +5,34 @@
         <file>res/icons/users.svg</file>
         <file>res/icons/addcontact.svg</file>
         <file>res/icons/f-crm.svg</file>
+        <file>res/icons/0star.svg</file>
+        <file>res/icons/1star.svg</file>
+        <file>res/icons/2star.svg</file>
+        <file>res/icons/3star.svg</file>
+        <file>res/icons/4star.svg</file>
+        <file>res/icons/5star.svg</file>
+        <file>res/icons/f_crm.ico</file>
+        <file>res/icons/f-crm.icns</file>
+        <file>res/icons/favourite.svg</file>
+        <file>res/icons/nofavourite.svg</file>
+        <file>res/icons/company.svg</file>
+        <file>res/icons/person.svg</file>
+        <file>res/icons/status_watching.svg</file>
+        <file>res/icons/delete.svg</file>
+        <file>res/icons/edit.svg</file>
+        <file>res/icons/addchannel.svg</file>
+        <file>res/icons/ch_type_other.svg</file>
+        <file>res/icons/ch_type_web.svg</file>
+        <file>res/icons/facebook.svg</file>
+        <file>res/icons/github.svg</file>
+        <file>res/icons/linkedin.svg</file>
+        <file>res/icons/mail.svg</file>
+        <file>res/icons/mobile.svg</file>
+        <file>res/icons/phone.svg</file>
+        <file>res/icons/reddit.svg</file>
+        <file>res/icons/skype.svg</file>
+        <file>res/icons/check.svg</file>
+        <file>res/icons/clipboard.svg</file>
+        <file>res/icons/open.svg</file>
     </qresource>
 </RCC>
