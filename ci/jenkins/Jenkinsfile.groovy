@@ -154,7 +154,7 @@ pipeline {
                         copy "%SRC_DIR%\\res\\icons\\f_crm.ico" "%DIST_DIR%\\f-crm"
                         cd %MSI_TARGET_DIR%
                         del f-crm.msi
-                        C:\\devel\\mkmsi\\mkmsi.py --auto-create qt --source-dir "%DIST_DIR%\\f-crm" --wix-root "C:\\Program Files (x86)\\WiX Toolset v3.11" --license C:\\devel\\mkmsi\\licenses\\GPL3.rtf --merge-module "C:\\Program Files (x86)\\Common Files\\Merge Modules\\Microsoft_VC140_CRT_x64.msm" --add-desktop-shortcut --project-version %F_CRM_VERSION% --description "CRM for Freelancers and Independent Contractors" --manufacturer "The Last Viking LTD" f-crm
+                        C:\\devel\\mkmsi\\mkmsi.py --auto-create qt --icon "f_crm.ico" --source-dir "%DIST_DIR%\\f-crm" --wix-root "C:\\Program Files (x86)\\WiX Toolset v3.11" --license C:\\devel\\mkmsi\\licenses\\GPL3.rtf --merge-module "C:\\Program Files (x86)\\Common Files\\Merge Modules\\Microsoft_VC140_CRT_x64.msm" --add-desktop-shortcut --project-version %F_CRM_VERSION% --description "CRM for Freelancers and Independent Contractors" --manufacturer "The Last Viking LTD" f-crm
                         if %errorlevel% neq 0 exit /b %errorlevel%
                         copy f-crm.msi %DIST_DIR%\\f-crm-%F_CRM_VERSION%-x64.msi
                         if %errorlevel% neq 0 exit /b %errorlevel%
