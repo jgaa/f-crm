@@ -70,6 +70,25 @@ ContactsModel::ContactsModel(QSettings& settings, QObject *parent, QSqlDatabase 
 
 QVariant ContactsModel::data(const QModelIndex &ix, int role) const
 {
+    if (ix.isValid()) {
+        if (role == Qt::DisplayRole) {
+
+        } else if (role == Qt::DecorationRole) {
+            if (ix.column() == h_name_) {
+                const auto cix = index(ix.row(), h_type_, {});
+                return GetContactTypeIcon(std::max(0, QSqlTableModel::data(cix, Qt::DisplayRole).toInt()));
+            }
+
+            if (ix.column() == h_status_) {
+                return GetContactStatusIcon(std::max(0, QSqlTableModel::data(ix, Qt::DisplayRole).toInt()));
+            }
+
+            if (ix.column() == h_type_) {
+                return GetContactTypeIcon(std::max(0, QSqlTableModel::data(ix, Qt::DisplayRole).toInt()));
+            }
+        }
+    }
+
     return QSqlTableModel::data(ix, role);
 }
 
@@ -161,10 +180,18 @@ void ContactsModel::removeContacts(const QModelIndexList &indexes)
     }
 }
 
-QModelIndex ContactsModel::createContact()
+void ContactsModel::addPerson(const QSqlRecord &rec)
 {
-    Strategy strategy(*this, QSqlTableModel::OnManualSubmit);
-    auto rec = database().record(tableName());
+    QSqlRecord my_rec{rec};
+    insertContact(my_rec);
+    select();
+}
+
+bool ContactsModel::insertContact(QSqlRecord &rec)
+{
+    const auto now = static_cast<uint>(time(nullptr));
+    rec.setValue(h_created_date_, now);
+    rec.setValue(h_last_activity_date_, now);
 
 //    qDebug() << "Using database "
 //             << database().databaseName()
@@ -173,10 +200,6 @@ QModelIndex ContactsModel::createContact()
 //             << " with tables " << this->database().tables()
 //             << ". Open status: " << this->database().isOpen();
 
-    const auto now = static_cast<uint>(time(nullptr));
-    rec.setValue(h_name_, QStringLiteral(""));
-    rec.setValue(h_created_date_, now);
-    rec.setValue(h_last_activity_date_, now);
 
 //    for(int i = 0; i < rec.count(); ++i) {
 //        qDebug() << "# " << i << " " << rec.fieldName(i)
@@ -193,16 +216,30 @@ QModelIndex ContactsModel::createContact()
     if (!insertRecord(0, rec)) {
         qWarning() << "Failed to add new contact (insertRecord): "
                    << lastError().text();
-        return {};
+        return false;
     }
 
     if (!submitAll()) {
         qWarning() << "Failed to add new contact (submitAll): "
                    << lastError().text();
-        return {};
+        return false;
     }
 
     qDebug() << "Created new contact";
+    return true;
+}
+
+QModelIndex ContactsModel::createContact(const ContactType type)
+{
+    Strategy strategy(*this, QSqlTableModel::OnManualSubmit);
+    auto rec = record();
+
+    rec.setValue(h_name_, QStringLiteral(""));
+    rec.setValue(h_type_, static_cast<int>(type));
+
+    if (!insertContact(rec)) {
+        return {};
+    }
 
     return index(0, h_name_, {}); // Assume that we insterted at end in the model
 }

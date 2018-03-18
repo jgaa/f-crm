@@ -3,7 +3,6 @@
         <file>res/icons/home.svg</file>
         <file>res/icons/star.svg</file>
         <file>res/icons/users.svg</file>
-        <file>res/icons/addcontact.svg</file>
         <file>res/icons/f-crm.svg</file>
         <file>res/icons/0star.svg</file>
         <file>res/icons/1star.svg</file>
@@ -34,5 +33,16 @@
         <file>res/icons/check.svg</file>
         <file>res/icons/clipboard.svg</file>
         <file>res/icons/open.svg</file>
+        <file>res/icons/addcompany.svg</file>
+        <file>res/icons/addperson.svg</file>
+        <file>res/icons/gender_female.svg</file>
+        <file>res/icons/gender_male.svg</file>
+        <file>res/icons/gender_unknown.svg</file>
+        <file>res/icons/status_banned.svg</file>
+        <file>res/icons/status_candidate.svg</file>
+        <file>res/icons/status_customer.svg</file>
+        <file>res/icons/status_lost.svg</file>
+        <file>res/icons/status_prospect.svg</file>
+        <file>res/icons/status_shut_down.svg</file>
     </qresource>
 </RCC>

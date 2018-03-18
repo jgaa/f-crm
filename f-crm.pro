@@ -54,7 +54,8 @@ SOURCES += \
     src/channelsmodel.cpp \
     src/channeldialog.cpp \
     src/channel.cpp \
-    src/persondialog.cpp
+    src/persondialog.cpp \
+    src/contact.cpp
 
 HEADERS += \
     src/mainwindow.h \
@@ -67,7 +68,8 @@ HEADERS += \
     src/channelsmodel.h \
     src/channeldialog.h \
     src/channel.h \
-    src/persondialog.h
+    src/persondialog.h \
+    src/contact.h
 
 FORMS += \
         ui/mainwindow.ui \

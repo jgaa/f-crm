@@ -8,6 +8,7 @@
 #include <QSqlDatabase>
 
 #include "database.h"
+#include "contact.h"
 
 // Create read-only properties like 'name_col' for the database columns
 #define DEF_COLUMN(name) Q_PROPERTY(int name ## _col MEMBER h_ ## name ## _)
@@ -40,7 +41,7 @@ public:
     DEF_COLUMN(postcode)
     DEF_COLUMN(country)
 
-    QModelIndex createContact();
+    QModelIndex createContact(const ContactType type);
 
 public:
     QVariant data(const QModelIndex &index, int role) const override;
@@ -54,8 +55,11 @@ public slots:
     // If used, this instance is for contacts belonging to a company (parent contact)
     void setParent(int contact);
     void removeContacts(const QModelIndexList& indexes);
+    void addPerson(const QSqlRecord& rec);
 
 private:
+    bool insertContact(QSqlRecord& rec);
+
     QSettings& settings_;
 
     int h_id_ = {};

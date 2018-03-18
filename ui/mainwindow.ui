@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>999</width>
-    <height>687</height>
+    <width>1062</width>
+    <height>718</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_6">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QListWidget" name="appModeList">
       <property name="minimumSize">
@@ -172,11 +172,23 @@
             </item>
             <item>
              <widget class="QTableView" name="contactsList">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>2</verstretch>
+               </sizepolicy>
+              </property>
               <property name="contextMenuPolicy">
                <enum>Qt::CustomContextMenu</enum>
               </property>
               <property name="alternatingRowColors">
                <bool>true</bool>
+              </property>
+              <property name="selectionMode">
+               <enum>QAbstractItemView::SingleSelection</enum>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
               </property>
               <property name="showGrid">
                <bool>false</bool>
@@ -189,9 +201,36 @@
               </attribute>
              </widget>
             </item>
+            <item>
+             <widget class="QTableView" name="contactPeople">
+              <property name="contextMenuPolicy">
+               <enum>Qt::CustomContextMenu</enum>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
+              <property name="selectionMode">
+               <enum>QAbstractItemView::SingleSelection</enum>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <property name="showGrid">
+               <bool>false</bool>
+              </property>
+              <attribute name="verticalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+             </widget>
+            </item>
            </layout>
           </widget>
           <widget class="QTabWidget" name="contactTab">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="currentIndex">
             <number>1</number>
            </property>
@@ -203,12 +242,21 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_21">
                <item>
-                <widget class="QLabel" name="contantTypeName">
+                <widget class="QLabel" name="contactType">
+                 <property name="minimumSize">
+                  <size>
+                   <width>32</width>
+                   <height>32</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>32</width>
+                   <height>32</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string/>
-                 </property>
-                 <property name="pixmap">
-                  <pixmap resource="../resources.qrc">:/res/icons/company.svg</pixmap>
                  </property>
                 </widget>
                </item>
@@ -305,7 +353,52 @@
             <attribute name="title">
              <string>Contact</string>
             </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_7">
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <item>
+                <widget class="QLabel" name="personWhoIcon">
+                 <property name="font">
+                  <font>
+                   <pointsize>11</pointsize>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>icon</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="personWhoName">
+                 <property name="font">
+                  <font>
+                   <pointsize>11</pointsize>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>name</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_8">
                <item>
@@ -414,64 +507,32 @@
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_9">
-               <item>
-                <widget class="QLabel" name="label_6">
-                 <property name="text">
-                  <string>Next action:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="contactNexAction">
-                 <property name="frame">
-                  <bool>false</bool>
-                 </property>
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QToolButton" name="toolButton_2">
-                 <property name="text">
-                  <string>...</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QPlainTextEdit" name="personNotes"/>
              </item>
              <item>
-              <widget class="QTableView" name="contactPeople"/>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_20">
-               <item>
-                <widget class="QTableView" name="contactChannels">
-                 <property name="contextMenuPolicy">
-                  <enum>Qt::CustomContextMenu</enum>
-                 </property>
-                 <property name="selectionBehavior">
-                  <enum>QAbstractItemView::SelectRows</enum>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>16</width>
-                   <height>16</height>
-                  </size>
-                 </property>
-                 <property name="showGrid">
-                  <bool>false</bool>
-                 </property>
-                 <attribute name="horizontalHeaderDefaultSectionSize">
-                  <number>80</number>
-                 </attribute>
-                 <attribute name="verticalHeaderVisible">
-                  <bool>false</bool>
-                 </attribute>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QTableView" name="contactChannels">
+               <property name="contextMenuPolicy">
+                <enum>Qt::CustomContextMenu</enum>
+               </property>
+               <property name="selectionBehavior">
+                <enum>QAbstractItemView::SelectRows</enum>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>16</width>
+                 <height>16</height>
+                </size>
+               </property>
+               <property name="showGrid">
+                <bool>false</bool>
+               </property>
+               <attribute name="horizontalHeaderDefaultSectionSize">
+                <number>80</number>
+               </attribute>
+               <attribute name="verticalHeaderVisible">
+                <bool>false</bool>
+               </attribute>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -556,7 +617,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>999</width>
+     <width>1062</width>
      <height>19</height>
     </rect>
    </property>
@@ -570,8 +631,13 @@
     <property name="title">
      <string>Contact</string>
     </property>
+    <addaction name="actionAdd_Company"/>
     <addaction name="actionAdd_Contact"/>
     <addaction name="actionDelete_Contact"/>
+    <addaction name="separator"/>
+    <addaction name="actionAdd_Person"/>
+    <addaction name="actionEdit_Person"/>
+    <addaction name="actionDelete_Person"/>
     <addaction name="separator"/>
     <addaction name="actionAdd_Channel"/>
     <addaction name="actionEdit_Channel"/>
@@ -590,6 +656,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionAdd_Company"/>
    <addaction name="actionAdd_Contact"/>
    <addaction name="actionAdd_Channel"/>
   </widget>
@@ -602,10 +669,10 @@
   <action name="actionAdd_Contact">
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/res/icons/addcontact.svg</normaloff>:/res/icons/addcontact.svg</iconset>
+     <normaloff>:/res/icons/addperson.svg</normaloff>:/res/icons/addperson.svg</iconset>
    </property>
    <property name="text">
-    <string>Add Contact</string>
+    <string>Add Contact (person)</string>
    </property>
    <property name="toolTip">
     <string>Add a new contact</string>
@@ -681,6 +748,51 @@
    </property>
    <property name="text">
     <string>Open Channel</string>
+   </property>
+  </action>
+  <action name="actionAdd_Person">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/addperson.svg</normaloff>:/res/icons/addperson.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Add Person (to a company)</string>
+   </property>
+   <property name="toolTip">
+    <string>Add a new person at the Contact</string>
+   </property>
+  </action>
+  <action name="actionDelete_Person">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/delete.svg</normaloff>:/res/icons/delete.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Person</string>
+   </property>
+   <property name="toolTip">
+    <string>Delete the selected person(s)</string>
+   </property>
+  </action>
+  <action name="actionEdit_Person">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/edit.svg</normaloff>:/res/icons/edit.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Edit Person</string>
+   </property>
+   <property name="toolTip">
+    <string>Edit the current selected person</string>
+   </property>
+  </action>
+  <action name="actionAdd_Company">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/addcompany.svg</normaloff>:/res/icons/addcompany.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Add Company</string>
    </property>
   </action>
  </widget>
