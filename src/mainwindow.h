@@ -14,6 +14,7 @@
 #include "contactsmodel.h"
 #include "channelsmodel.h"
 #include "database.h"
+#include "intentsmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -68,6 +69,11 @@ private slots:
     void onPersonsClicked(const QModelIndex &index);
     void onValidatePersonsActions();
 
+    void onIntentsContextMenuRequested(const QPoint &pos);
+    void onIntentsRowActivated(const QModelIndex &index);
+    void onIntentsModelReset();
+    void onValidateIntentActions();
+
     void onContactTabChanged(int ix);
 
     void on_action_Quit_triggered();
@@ -94,6 +100,12 @@ private slots:
     void on_actionEdit_Person_triggered();
 
     void on_actionDelete_Person_triggered();
+
+    void on_actionAdd_Intent_triggered();
+
+    void on_actionEdit_Intent_triggered();
+
+    void on_actionDelete_Intent_triggered();
 
 private:
     QString getChannelValue() const;
@@ -126,6 +138,7 @@ protected:
     ContactsModel *contacts_model_ = {};
     ContactsModel *persons_model_ = {}; // contact (persons) at a contact (company)
     ChannelsModel *channels_model_ = {};
+    IntentsModel *intents_model_ = {};
     std::unique_ptr<QDataWidgetMapper> contacts_mapper_;
     std::unique_ptr<QDataWidgetMapper> persons_mapper_;
     int last_person_clicked {-1};

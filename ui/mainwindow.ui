@@ -228,11 +228,11 @@
           <widget class="QTabWidget" name="contactTab">
            <property name="font">
             <font>
-             <pointsize>12</pointsize>
+             <pointsize>9</pointsize>
             </font>
            </property>
            <property name="currentIndex">
-            <number>1</number>
+            <number>2</number>
            </property>
            <widget class="QWidget" name="panelPage">
             <attribute name="title">
@@ -549,7 +549,26 @@
               </widget>
              </item>
              <item>
-              <widget class="QTableView" name="intentsView"/>
+              <widget class="QTableView" name="intentsView">
+               <property name="contextMenuPolicy">
+                <enum>Qt::CustomContextMenu</enum>
+               </property>
+               <property name="alternatingRowColors">
+                <bool>true</bool>
+               </property>
+               <property name="selectionMode">
+                <enum>QAbstractItemView::SingleSelection</enum>
+               </property>
+               <property name="selectionBehavior">
+                <enum>QAbstractItemView::SelectRows</enum>
+               </property>
+               <property name="showGrid">
+                <bool>false</bool>
+               </property>
+               <attribute name="verticalHeaderVisible">
+                <bool>false</bool>
+               </attribute>
+              </widget>
              </item>
              <item>
               <widget class="QLabel" name="label_28">
@@ -559,7 +578,26 @@
               </widget>
              </item>
              <item>
-              <widget class="QTableView" name="activitiesView"/>
+              <widget class="QTableView" name="activitiesView">
+               <property name="contextMenuPolicy">
+                <enum>Qt::CustomContextMenu</enum>
+               </property>
+               <property name="alternatingRowColors">
+                <bool>true</bool>
+               </property>
+               <property name="selectionMode">
+                <enum>QAbstractItemView::SingleSelection</enum>
+               </property>
+               <property name="selectionBehavior">
+                <enum>QAbstractItemView::SelectRows</enum>
+               </property>
+               <property name="showGrid">
+                <bool>false</bool>
+               </property>
+               <attribute name="verticalHeaderVisible">
+                <bool>false</bool>
+               </attribute>
+              </widget>
              </item>
              <item>
               <widget class="QLabel" name="label_29">
@@ -646,8 +684,17 @@
     <addaction name="actionOpen_Channel"/>
     <addaction name="actionDelete_Channel"/>
    </widget>
+   <widget class="QMenu" name="menuIntente">
+    <property name="title">
+     <string>Intents</string>
+    </property>
+    <addaction name="actionAdd_Intent"/>
+    <addaction name="actionEdit_Intent"/>
+    <addaction name="actionDelete_Intent"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menuContact"/>
+   <addaction name="menuIntente"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -659,6 +706,7 @@
    <addaction name="actionAdd_Company"/>
    <addaction name="actionAdd_Contact"/>
    <addaction name="actionAdd_Channel"/>
+   <addaction name="actionAdd_Intent"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_Quit">
@@ -793,6 +841,33 @@
    </property>
    <property name="text">
     <string>Add Company</string>
+   </property>
+  </action>
+  <action name="actionAdd_Intent">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/add_intent.svg</normaloff>:/res/icons/add_intent.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Add Intent</string>
+   </property>
+  </action>
+  <action name="actionEdit_Intent">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/edit.svg</normaloff>:/res/icons/edit.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Edit Intent</string>
+   </property>
+  </action>
+  <action name="actionDelete_Intent">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/delete.svg</normaloff>:/res/icons/delete.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Intent</string>
    </property>
   </action>
  </widget>

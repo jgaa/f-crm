@@ -44,5 +44,12 @@
         <file>res/icons/status_lost.svg</file>
         <file>res/icons/status_prospect.svg</file>
         <file>res/icons/status_shut_down.svg</file>
+        <file>res/icons/intent_type_manual.svg</file>
+        <file>res/icons/state_defined.svg</file>
+        <file>res/icons/state_failed.svg</file>
+        <file>res/icons/state_progress.svg</file>
+        <file>res/icons/state_succeeded.svg</file>
+        <file>res/icons/state_terminated.svg</file>
+        <file>res/icons/add_intent.svg</file>
     </qresource>
 </RCC>

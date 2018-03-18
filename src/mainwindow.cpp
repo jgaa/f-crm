@@ -1,7 +1,9 @@
 #include "channeldialog.h"
 #include "mainwindow.h"
 #include "persondialog.h"
+#include "intentdialog.h"
 #include "ui_mainwindow.h"
+#include "intent.h"
 
 #include <QSettings>
 #include <QDebug>
@@ -39,6 +41,7 @@ void MainWindow::initialize()
     persons_model_ = new ContactsModel(settings_, this, {});
     persons_model_->setParent(-1);
     channels_model_ = new ChannelsModel(settings_, this, {});
+    intents_model_ = new IntentsModel(settings_, this, {});
     ui->contactsList->setModel(contacts_model_);
     contacts_model_->select();
 
@@ -86,7 +89,17 @@ void MainWindow::initialize()
         ui->contactPeople->setColumnHidden(i, !show);
     }
 
+    ui->intentsView->setModel(intents_model_);
+    ui->intentsView->horizontalHeader()->setSectionResizeMode(
+                intents_model_->property("abstract_col").toInt(), QHeaderView::Stretch);
+    for(int i = 0; i < intents_model_->columnCount(); ++i) {
+        const bool show = (i == intents_model_->property("abstract_col").toInt())
+                || (i == intents_model_->property("state_col").toInt());
+        ui->intentsView->setColumnHidden(i, !show);
+    }
+
     ui->contactTab->setCurrentIndex(0);
+
 
     connect(ui->contactFilter, &QLineEdit::textChanged, this, &MainWindow::onContactFilterChanged);
     connect(ui->contactsList, &QTableView::activated, this, &MainWindow::onContactsListRowActivated);
@@ -109,12 +122,17 @@ void MainWindow::initialize()
             this, &MainWindow::onPersonsListRowActivated);
     connect(ui->contactPeople, &QTableView::customContextMenuRequested,
             this, &MainWindow::onPersonsContextMenuRequested);
-
     connect(ui->contactPeople, &QTableView::clicked,
             this, &MainWindow::onPersonsClicked);
-
     connect(persons_model_, &ChannelsModel::modelReset,
             this, &MainWindow::onPersonsModelReset);
+
+    connect(ui->intentsView->selectionModel(), &QItemSelectionModel::currentRowChanged,
+            this, &MainWindow::onIntentsRowActivated);
+    connect(ui->intentsView, &QTableView::customContextMenuRequested,
+            this, &MainWindow::onIntentsContextMenuRequested);
+    connect(intents_model_, &ChannelsModel::modelReset,
+            this, &MainWindow::onIntentsModelReset);
 
     connect(ui->contactTab, &QTabWidget::currentChanged, this, &MainWindow::onContactTabChanged);
 
@@ -217,6 +235,8 @@ void MainWindow::onSyncronizeContactsBindings()
 
         onSyncronizePersonBindings();
 
+        intents_model_->setContact(contact_id);
+
     } else {
         if (contacts_mapper_) {
             contacts_mapper_->setCurrentIndex(-1);
@@ -238,6 +258,8 @@ void MainWindow::onSyncronizeContactsBindings()
 
         ui->personWhoIcon->setPixmap({});
         ui->personWhoName->setText({});
+
+        intents_model_->setContact(-1);
     }
 
     ui->contactNotes->setReadOnly(read_only);
@@ -343,6 +365,7 @@ void MainWindow::onContactContextMenuRequested(const QPoint &pos)
 {
     QMenu *menu = new QMenu;
 
+    menu->addAction(ui->actionAdd_Company);
     menu->addAction(ui->actionAdd_Contact);
     menu->addAction(ui->actionDelete_Contact);
 
@@ -431,6 +454,8 @@ void MainWindow::onPersonsContextMenuRequested(const QPoint &pos)
 void MainWindow::onPersonsListRowActivated(const QModelIndex &index)
 {
     Q_UNUSED(index);
+
+    onSyncronizePersonBindings();
     onValidatePersonsActions();
 
     qDebug() << "onPersonsListRowActivated() " << index.row();
@@ -451,12 +476,12 @@ void MainWindow::onPersonsClicked(const QModelIndex &index)
     // Toggle selection
     if (last_person_clicked == index.row()) {
         ui->contactPeople->setCurrentIndex({});
+        onSyncronizePersonBindings();
         last_person_clicked = -1;
     } else {
         last_person_clicked = index.row();
     }
 
-    onSyncronizePersonBindings();
 }
 
 void MainWindow::onValidatePersonsActions()
@@ -476,12 +501,54 @@ void MainWindow::onValidatePersonsActions()
     ui->actionDelete_Person->setEnabled(enable_modifications);
 }
 
+void MainWindow::onIntentsContextMenuRequested(const QPoint &pos)
+{
+    QMenu *menu = new QMenu;
+
+    menu->addAction(ui->actionAdd_Intent);
+    menu->addAction(ui->actionEdit_Intent);
+    menu->addAction(ui->actionDelete_Intent);
+
+    menu->exec(ui->intentsView->mapToGlobal(pos));
+}
+
+void MainWindow::onIntentsRowActivated(const QModelIndex &index)
+{
+    Q_UNUSED(index);
+    onValidateIntentActions();
+}
+
+void MainWindow::onIntentsModelReset()
+{
+    onValidateIntentActions();
+}
+
+void MainWindow::onValidateIntentActions()
+{
+    const auto current = ui->contactsList->currentIndex();
+    const bool enable = current.isValid()
+            && app_mode_ == AppMode::CONTACTS
+            && ui->contactTab->currentIndex() == static_cast<int>(PersonTab::INTENTS);
+
+    ui->actionAdd_Intent->setEnabled(enable);
+    bool enable_modifications = false;
+
+    if (enable) {
+        const auto current_intent = ui->intentsView->currentIndex();
+        enable_modifications = current_intent.isValid();
+    }
+
+    ui->actionEdit_Intent->setEnabled(enable_modifications);
+    ui->actionDelete_Intent->setEnabled(enable_modifications);
+}
+
 void MainWindow::onContactTabChanged(int ix)
 {
     Q_UNUSED(ix);
     onValidateChannelActions();
     onValidatePersonsActions();
     onValidateContactActions();
+    onValidateIntentActions();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -665,6 +732,7 @@ void MainWindow::createContact(ContactType type)
     if (ix.isValid()) {
         ui->contactsList->setFocus();
         ui->contactsList->setCurrentIndex(ix);
+        onSyncronizeContactsBindings();
         ui->contactsList->edit(ix);
     }
 }
@@ -723,4 +791,52 @@ void MainWindow::on_actionDelete_Person_triggered()
 
     ui->contactPeople->setCurrentIndex({});
     persons_model_->removeContacts(selected);
+}
+
+void MainWindow::on_actionAdd_Intent_triggered()
+{
+    const auto current = ui->contactsList->currentIndex();
+
+    if (!current.isValid()) {
+        return;
+    }
+
+    const auto contact_id = contacts_model_->getContactId(current);
+
+    auto rec = intents_model_->record();
+    rec.setValue("contact", contact_id);
+    rec.setValue("type", static_cast<int>(IntentType::MANUAL));
+
+    auto dlg = new IntentDialog(this);
+    dlg->setRecord(rec);
+    dlg->setAttribute( Qt::WA_DeleteOnClose );
+    connect(dlg, &IntentDialog::addIntent,
+            intents_model_, &IntentsModel::addIntent);
+    dlg->exec();
+    intents_model_->select();
+}
+
+void MainWindow::on_actionEdit_Intent_triggered()
+{
+    auto current = ui->intentsView->selectionModel()->currentIndex();
+    if (!current.isValid()) {
+        return;
+    }
+
+    auto dlg = new IntentDialog(this);
+    dlg->setModel(intents_model_, current);
+    dlg->setAttribute( Qt::WA_DeleteOnClose );
+    dlg->exec();
+}
+
+void MainWindow::on_actionDelete_Intent_triggered()
+{
+    auto selected = ui->intentsView->selectionModel()->selection().indexes();
+
+    if (selected.isEmpty()) {
+        return;
+    }
+
+    ui->intentsView->setCurrentIndex({});
+    intents_model_->removeIntents(selected);
 }
