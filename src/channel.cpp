@@ -45,3 +45,44 @@ ChannelType ToChannelType(const int type)
 
     return types.at(static_cast<size_t>(type));
 }
+
+QString GetChannelTypeName(const ChannelType type)
+{
+    return GetChannelTypeName(static_cast<int>(type));
+}
+
+QString GetChannelTypeName(const int type)
+{
+    static const array<QString, 10> names {{
+            "Other",
+            "Web",
+            "Email",
+            "Phone",
+            "Mobile",
+            "Skype",
+            "Linkedin",
+            "Reddit",
+            "Facebook",
+            "Github",
+    }};
+
+    return names.at(static_cast<size_t>(type));
+}
+
+const std::array<ChannelType, 10> &GetChannelTypeEnums()
+{
+    static const std::array<ChannelType, 10> enums {{
+        ChannelType::OTHER,
+        ChannelType::WEB,
+        ChannelType::EMAIL,
+        ChannelType::PHONE,
+        ChannelType::MOBILE,
+        ChannelType::SKYPE,
+        ChannelType::LINKEDIN,
+        ChannelType::REDDIT,
+        ChannelType::FACEBOOK,
+        ChannelType::GITHUB
+    }};
+
+    return enums;
+}

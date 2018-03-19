@@ -15,6 +15,7 @@
 #include "channelsmodel.h"
 #include "database.h"
 #include "intentsmodel.h"
+#include "actionsmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -74,6 +75,12 @@ private slots:
     void onIntentsModelReset();
     void onValidateIntentActions();
 
+    void onActionsContextMenuRequested(const QPoint &pos);
+    void onActionsRowActivated(const QModelIndex &index);
+    void onActionsDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &);
+    void onActionsModelReset();
+    void onValidateActionActions();
+
     void onContactTabChanged(int ix);
 
     void on_action_Quit_triggered();
@@ -107,11 +114,25 @@ private slots:
 
     void on_actionDelete_Intent_triggered();
 
+    void on_actionAdd_Action_triggered();
+
+    void on_actionEdit_Action_triggered();
+
+    void on_actionDelete_Action_triggered();
+
+    void on_actionAction_Done_triggered();
+
+    void on_actionExecute_Action_triggered();
+
+    void on_actionMove_Action_Up_triggered();
+
+    void on_actionMove_Action_Down_triggered();
+
 private:
     QString getChannelValue() const;
     ChannelType getChannelType() const;
     void createContact(ContactType type);
-
+    void openChannel(const ChannelType type, const QString& value);
 
     // Get the current person (either a company/contact - upper list) or a
     // person in a company (lower list), depending on the current context.
@@ -139,6 +160,7 @@ protected:
     ContactsModel *persons_model_ = {}; // contact (persons) at a contact (company)
     ChannelsModel *channels_model_ = {};
     IntentsModel *intents_model_ = {};
+    ActionsModel *actions_model_ = {};
     std::unique_ptr<QDataWidgetMapper> contacts_mapper_;
     std::unique_ptr<QDataWidgetMapper> persons_mapper_;
     int last_person_clicked {-1};

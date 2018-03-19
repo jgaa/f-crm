@@ -26,7 +26,8 @@ IntentsModel::IntentsModel(QSettings &settings, QObject *parent, QSqlDatabase db
     h_abstract_ = fieldIndex("abstract");
     h_notes_ = fieldIndex("notes");
 
-    Q_ASSERT(h_contact_ > 0
+    Q_ASSERT(h_id_ >= 0
+            && h_contact_ > 0
             && h_type_ > 0
             && h_state_ > 0
             && h_abstract_ > 0
@@ -41,6 +42,15 @@ void IntentsModel::setContact(int id)
 {
     setFilter(QStringLiteral("contact = %1").arg(id));
     select();
+}
+
+int IntentsModel::getIntentId(const QModelIndex &ix)
+{
+    if (!ix.isValid()) {
+        return 0;
+    }
+
+    return data(index(ix.row(), h_id_, {}), Qt::DisplayRole).toInt();
 }
 
 void IntentsModel::removeIntents(const QModelIndexList &indexes)

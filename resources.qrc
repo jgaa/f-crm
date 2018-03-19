@@ -51,5 +51,19 @@
         <file>res/icons/state_succeeded.svg</file>
         <file>res/icons/state_terminated.svg</file>
         <file>res/icons/add_intent.svg</file>
+        <file>res/icons/action_blocked.svg</file>
+        <file>res/icons/action_cancelled.svg</file>
+        <file>res/icons/action_done.svg</file>
+        <file>res/icons/action_failed.svg</file>
+        <file>res/icons/action_on_hold.svg</file>
+        <file>res/icons/action_ready.svg</file>
+        <file>res/icons/action_type_channel.svg</file>
+        <file>res/icons/action_type_meeting.svg</file>
+        <file>res/icons/action_type_task.svg</file>
+        <file>res/icons/action_waiting.svg</file>
+        <file>res/icons/add_action.svg</file>
+        <file>res/icons/execute_action.svg</file>
+        <file>res/icons/move_down.svg</file>
+        <file>res/icons/move_up.svg</file>
     </qresource>
 </RCC>

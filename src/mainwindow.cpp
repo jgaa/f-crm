@@ -4,12 +4,16 @@
 #include "intentdialog.h"
 #include "ui_mainwindow.h"
 #include "intent.h"
+#include "action.h"
+#include "actiondialog.h"
+#include "actionexecutedialog.h"
 
 #include <QSettings>
 #include <QDebug>
 #include <QSqlRecord>
 #include <QClipboard>
 #include <QDesktopServices>
+#include <QMessageBox>
 
 using namespace std;
 
@@ -42,6 +46,7 @@ void MainWindow::initialize()
     persons_model_->setParent(-1);
     channels_model_ = new ChannelsModel(settings_, this, {});
     intents_model_ = new IntentsModel(settings_, this, {});
+    actions_model_ = new ActionsModel(settings_, this, {});
     ui->contactsList->setModel(contacts_model_);
     contacts_model_->select();
 
@@ -98,6 +103,16 @@ void MainWindow::initialize()
         ui->intentsView->setColumnHidden(i, !show);
     }
 
+    ui->actionsView->setModel(actions_model_);
+    ui->actionsView->horizontalHeader()->setSectionResizeMode(
+                actions_model_->property("name_col").toInt(), QHeaderView::Stretch);
+    for(int i = 0; i < actions_model_->columnCount(); ++i) {
+        const bool show = (i == actions_model_->property("name_col").toInt())
+                || (i == actions_model_->property("state_col").toInt())
+                || (i == actions_model_->property("person_col").toInt());
+        ui->actionsView->setColumnHidden(i, !show);
+    }
+
     ui->contactTab->setCurrentIndex(0);
 
 
@@ -133,6 +148,15 @@ void MainWindow::initialize()
             this, &MainWindow::onIntentsContextMenuRequested);
     connect(intents_model_, &ChannelsModel::modelReset,
             this, &MainWindow::onIntentsModelReset);
+
+    connect(ui->actionsView->selectionModel(), &QItemSelectionModel::currentRowChanged,
+            this, &MainWindow::onActionsRowActivated);
+    connect(ui->actionsView, &QTableView::customContextMenuRequested,
+            this, &MainWindow::onActionsContextMenuRequested);
+    connect(actions_model_, &ChannelsModel::modelReset,
+            this, &MainWindow::onActionsModelReset);
+    connect(actions_model_, &ChannelsModel::dataChanged,
+            this, &MainWindow::onActionsDataChanged);
 
     connect(ui->contactTab, &QTabWidget::currentChanged, this, &MainWindow::onContactTabChanged);
 
@@ -236,6 +260,7 @@ void MainWindow::onSyncronizeContactsBindings()
         onSyncronizePersonBindings();
 
         intents_model_->setContact(contact_id);
+        actions_model_->setContact(contact_id);
 
     } else {
         if (contacts_mapper_) {
@@ -259,6 +284,7 @@ void MainWindow::onSyncronizeContactsBindings()
         ui->personWhoIcon->setPixmap({});
         ui->personWhoName->setText({});
 
+        actions_model_->setContact(-1);
         intents_model_->setContact(-1);
     }
 
@@ -268,7 +294,6 @@ void MainWindow::onSyncronizeContactsBindings()
     ui->contactCity->setReadOnly(read_only);
     ui->contactPostCode->setReadOnly(read_only);
     ui->contactCountry->setReadOnly(read_only);
-
 
     last_person_clicked = -1;
 
@@ -516,11 +541,19 @@ void MainWindow::onIntentsRowActivated(const QModelIndex &index)
 {
     Q_UNUSED(index);
     onValidateIntentActions();
+
+    actions_model_->setIntent(intents_model_->getIntentId(ui->intentsView->currentIndex()));
+
+    onValidateActionActions();
 }
 
 void MainWindow::onIntentsModelReset()
 {
     onValidateIntentActions();
+
+    actions_model_->setIntent(-1);
+
+    onValidateActionActions();
 }
 
 void MainWindow::onValidateIntentActions()
@@ -542,6 +575,76 @@ void MainWindow::onValidateIntentActions()
     ui->actionDelete_Intent->setEnabled(enable_modifications);
 }
 
+void MainWindow::onActionsContextMenuRequested(const QPoint &pos)
+{
+    QMenu *menu = new QMenu;
+
+    menu->addAction(ui->actionAdd_Action);
+    menu->addAction(ui->actionEdit_Action);
+    menu->addAction(ui->actionDelete_Action);
+    menu->addSeparator();
+    menu->addAction(ui->actionMove_Action_Up);
+    menu->addAction(ui->actionMove_Action_Down);
+    menu->addAction(ui->actionAction_Done);
+    menu->addSeparator();
+    menu->addAction(ui->actionExecute_Action);
+    menu->addAction(ui->actionAction_Done);
+
+    menu->exec(ui->actionsView->mapToGlobal(pos));
+}
+
+void MainWindow::onActionsRowActivated(const QModelIndex &index)
+{
+    Q_UNUSED(index)
+    onValidateActionActions();
+}
+
+void MainWindow::onActionsDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)
+{
+    onValidateActionActions();
+}
+
+void MainWindow::onActionsModelReset()
+{
+    onValidateActionActions();
+}
+
+void MainWindow::onValidateActionActions()
+{
+    const auto current = ui->contactsList->currentIndex();
+    const bool enable = current.isValid()
+            && app_mode_ == AppMode::CONTACTS
+            && ui->contactTab->currentIndex() == static_cast<int>(PersonTab::INTENTS)
+            && ui->intentsView->currentIndex().isValid();
+
+    ui->actionAdd_Action->setEnabled(enable);
+    bool enable_modifications = false;
+    bool enable_completion = false;
+
+    if (enable) {
+        const auto current_action = ui->actionsView->currentIndex();
+        enable_modifications = current_action.isValid();
+
+        if (enable_modifications) {
+
+            const auto aix = actions_model_->index(current_action.row(),
+                                                   actions_model_->property("state_col").toInt(), {});
+            const auto state = actions_model_->data(aix, Qt::DisplayRole).toInt();
+            enable_completion = state < static_cast<int>(ActionState::DONE);
+        }
+    }
+
+    ui->actionEdit_Action->setEnabled(enable_modifications);
+    ui->actionDelete_Action->setEnabled(enable_modifications);
+    ui->actionMove_Action_Up->setEnabled(enable_modifications);
+    ui->actionMove_Action_Down->setEnabled(enable_modifications);
+
+    // Is the action open?
+    ui->actionExecute_Action->setEnabled(enable_completion);
+    ui->actionAction_Done->setEnabled(enable_completion);
+
+}
+
 void MainWindow::onContactTabChanged(int ix)
 {
     Q_UNUSED(ix);
@@ -549,6 +652,7 @@ void MainWindow::onContactTabChanged(int ix)
     onValidatePersonsActions();
     onValidateContactActions();
     onValidateIntentActions();
+    onValidateActionActions();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -642,24 +746,28 @@ void MainWindow::on_actionCopy_Channel_to_Clipboard_triggered()
 
 void MainWindow::on_actionOpen_Channel_triggered()
 {
-    auto value = getChannelValue();
-    if (!value.isEmpty()) {
+    openChannel(getChannelType(), getChannelValue());
+}
 
-        switch(getChannelType()) {
-        case ChannelType::EMAIL:
-            QDesktopServices::openUrl({QStringLiteral("mailto:%1").arg(value)});
-        break;
-        case ChannelType::SKYPE:
-            QDesktopServices::openUrl({QStringLiteral("skype:%1").arg(value)});
-        break;
-        case ChannelType::PHONE:
-        case ChannelType::MOBILE:
-            ; // Do nothing
-        break;
-        default:
-            if (value.startsWith("http://") || value.startsWith("https://")) {
-                QDesktopServices::openUrl({value});
-            }
+void MainWindow::openChannel(const ChannelType type, const QString& value) {
+    if (value.isEmpty()) {
+        return;
+    }
+
+    switch(type) {
+    case ChannelType::EMAIL:
+        QDesktopServices::openUrl({QStringLiteral("mailto:%1").arg(value)});
+    break;
+    case ChannelType::SKYPE:
+        QDesktopServices::openUrl({QStringLiteral("skype:%1").arg(value)});
+    break;
+    case ChannelType::PHONE:
+    case ChannelType::MOBILE:
+        ; // Do nothing
+    break;
+    default:
+        if (value.startsWith("http://") || value.startsWith("https://")) {
+            QDesktopServices::openUrl({value});
         }
     }
 }
@@ -839,4 +947,151 @@ void MainWindow::on_actionDelete_Intent_triggered()
 
     ui->intentsView->setCurrentIndex({});
     intents_model_->removeIntents(selected);
+}
+
+
+
+void MainWindow::on_actionAdd_Action_triggered()
+{
+    const auto current = ui->intentsView->currentIndex();
+
+    if (!current.isValid()) {
+        return;
+    }
+
+    auto rec = actions_model_->getRecord();
+
+    auto dlg = new ActionDialog(this);
+    dlg->setRecord(rec);
+    dlg->setAttribute( Qt::WA_DeleteOnClose );
+    connect(dlg, &ActionDialog::addAction,
+            actions_model_, &ActionsModel::addAction);
+    dlg->exec();
+    actions_model_->select();
+}
+
+void MainWindow::on_actionEdit_Action_triggered()
+{
+    auto current = ui->actionsView->selectionModel()->currentIndex();
+    if (!current.isValid()) {
+        return;
+    }
+
+    auto dlg = new ActionDialog(this);
+    dlg->setModel(actions_model_, current);
+    dlg->setAttribute( Qt::WA_DeleteOnClose );
+    if (dlg->exec() == QDialog::Accepted) {
+        actions_model_->openNextActions();
+    }
+}
+
+void MainWindow::on_actionDelete_Action_triggered()
+{
+    auto selected = ui->actionsView->selectionModel()->selection().indexes();
+
+    if (selected.isEmpty()) {
+        return;
+    }
+
+    ui->actionsView->setCurrentIndex({});
+    actions_model_->removeActions(selected);
+}
+
+void MainWindow::on_actionAction_Done_triggered()
+{
+    auto current = ui->actionsView->selectionModel()->currentIndex();
+    if (!current.isValid()) {
+        return;
+    }
+
+    actions_model_->setCompleted(current);
+}
+
+void MainWindow::on_actionExecute_Action_triggered()
+{
+    auto selected = ui->actionsView->currentIndex();
+
+    if (!selected.isValid()) {
+        return;
+    }
+
+    // Find contact.
+    int person = actions_model_->data(
+                actions_model_->index(selected.row(), actions_model_->property("person_col").toInt(), {}),
+                Qt::DisplayRole).toInt();
+
+    if (!person) {
+        person = actions_model_->data(
+                    actions_model_->index(selected.row(), actions_model_->property("contact_col").toInt(), {}),
+                    Qt::DisplayRole).toInt();
+    }
+
+    if (!person) {
+        qWarning() << "Cannot find contact or person for action!";
+        return;
+    }
+
+    const auto type = actions_model_->data(
+                actions_model_->index(selected.row(), actions_model_->property("type_col").toInt(), {}),
+                Qt::DisplayRole).toInt();
+
+    if (type != static_cast<int>(ActionType::CHANNEL)) {
+        QMessageBox::warning(this,
+                             "Cannot Execute",
+                             "Can only exceute actions that are of type Channel");
+
+        return;
+    }
+
+    const auto channel_type = actions_model_->data(
+                actions_model_->index(selected.row(), actions_model_->property("channel_type_col").toInt(), {}),
+                Qt::DisplayRole).toInt();
+
+    // See if the requested contact-person have any such channels
+
+    QSqlQuery query(QStringLiteral(
+        "select value from channel where contact = %1 and type = %2 order by value")
+                    .arg(person)
+                    .arg(channel_type));
+
+    QList<QString> values;
+    while(query.next()) {
+        values.push_back(query.value(0).toString());
+    }
+
+    if (values.isEmpty()) {
+        QMessageBox::warning(this,
+                             "Cannot Execute",
+                             QStringLiteral(
+                                 "The relevant contact does not have any %1 defined.")
+                             .arg(GetChannelTypeName(channel_type)));
+
+        return;
+    }
+
+
+    auto dlg = new ActionExecuteDialog(values, channel_type, this);
+    dlg->setAttribute( Qt::WA_DeleteOnClose );
+    if (dlg->exec() == QDialog::Accepted) {
+        openChannel(ToChannelType(channel_type), dlg->value);
+
+        if (QMessageBox::question(this,
+                                  "Action",
+                                  "Do you want to mark this action as done?")
+                == QMessageBox::Yes) {
+            actions_model_->setCompleted(selected);
+        }
+    }
+}
+
+void MainWindow::on_actionMove_Action_Up_triggered()
+{
+    auto current = ui->actionsView->selectionModel()->currentIndex();
+    actions_model_->moveUp(current);
+}
+
+void MainWindow::on_actionMove_Action_Down_triggered()
+{
+    auto current = ui->actionsView->selectionModel()->currentIndex();
+    actions_model_->moveDown(current);
 }

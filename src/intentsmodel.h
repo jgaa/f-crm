@@ -27,6 +27,7 @@ public:
     DEF_COLUMN(notes)
 
     void setContact(int id);
+    int getIntentId(const QModelIndex& ix);
 
 public slots:
     void removeIntents(const QModelIndexList& indexes);

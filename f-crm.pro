@@ -58,7 +58,13 @@ SOURCES += \
     src/contact.cpp \
     src/intent.cpp \
     src/intentsmodel.cpp \
-    src/intentdialog.cpp
+    src/intentdialog.cpp \
+    src/action.cpp \
+    src/actiondialog.cpp \
+    src/actionsmodel.cpp \
+    src/utility.cpp \
+    src/actionexecutedialog.cpp \
+    src/logmodel.cpp
 
 HEADERS += \
     src/mainwindow.h \
@@ -75,13 +81,21 @@ HEADERS += \
     src/contact.h \
     src/intent.h \
     src/intentsmodel.h \
-    src/intentdialog.h
+    src/intentdialog.h \
+    src/action.h \
+    src/actiondialog.h \
+    src/actionsmodel.h \
+    src/utility.h \
+    src/actionexecutedialog.h \
+    src/logmodel.h
 
 FORMS += \
         ui/mainwindow.ui \
     ui/channeldialog.ui \
     ui/persondialog.ui \
-    ui/intentdialog.ui
+    ui/intentdialog.ui \
+    ui/actiondialog.ui \
+    ui/actionexecutedialog.ui
 
 RESOURCES += \
     resources.qrc

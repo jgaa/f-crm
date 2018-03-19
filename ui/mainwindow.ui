@@ -550,6 +550,12 @@
              </item>
              <item>
               <widget class="QTableView" name="intentsView">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="contextMenuPolicy">
                 <enum>Qt::CustomContextMenu</enum>
                </property>
@@ -573,14 +579,23 @@
              <item>
               <widget class="QLabel" name="label_28">
                <property name="text">
-                <string>Activities</string>
+                <string>Actions</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QTableView" name="activitiesView">
+              <widget class="QTableView" name="actionsView">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="contextMenuPolicy">
                 <enum>Qt::CustomContextMenu</enum>
+               </property>
+               <property name="dragDropMode">
+                <enum>QAbstractItemView::InternalMove</enum>
                </property>
                <property name="alternatingRowColors">
                 <bool>true</bool>
@@ -597,26 +612,6 @@
                <attribute name="verticalHeaderVisible">
                 <bool>false</bool>
                </attribute>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_29">
-               <property name="text">
-                <string>Notes</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPlainTextEdit" name="activityNotes">
-               <property name="frameShape">
-                <enum>QFrame::NoFrame</enum>
-               </property>
-               <property name="frameShadow">
-                <enum>QFrame::Plain</enum>
-               </property>
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
               </widget>
              </item>
             </layout>
@@ -691,6 +686,15 @@
     <addaction name="actionAdd_Intent"/>
     <addaction name="actionEdit_Intent"/>
     <addaction name="actionDelete_Intent"/>
+    <addaction name="separator"/>
+    <addaction name="actionAdd_Action"/>
+    <addaction name="actionEdit_Action"/>
+    <addaction name="actionDelete_Action"/>
+    <addaction name="separator"/>
+    <addaction name="actionExecute_Action"/>
+    <addaction name="actionAction_Done"/>
+    <addaction name="actionMove_Action_Up"/>
+    <addaction name="actionMove_Action_Down"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuContact"/>
@@ -868,6 +872,69 @@
    </property>
    <property name="text">
     <string>Delete Intent</string>
+   </property>
+  </action>
+  <action name="actionAdd_Action">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/add_action.svg</normaloff>:/res/icons/add_action.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Add Action</string>
+   </property>
+  </action>
+  <action name="actionEdit_Action">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/edit.svg</normaloff>:/res/icons/edit.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Edit Action</string>
+   </property>
+  </action>
+  <action name="actionDelete_Action">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/delete.svg</normaloff>:/res/icons/delete.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Action</string>
+   </property>
+  </action>
+  <action name="actionExecute_Action">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/execute_action.svg</normaloff>:/res/icons/execute_action.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Execute Action</string>
+   </property>
+  </action>
+  <action name="actionAction_Done">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/action_done.svg</normaloff>:/res/icons/action_done.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Set Action as Done</string>
+   </property>
+  </action>
+  <action name="actionMove_Action_Up">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/move_up.svg</normaloff>:/res/icons/move_up.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Move Action Up</string>
+   </property>
+  </action>
+  <action name="actionMove_Action_Down">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/move_down.svg</normaloff>:/res/icons/move_down.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Move Action Down</string>
    </property>
   </action>
  </widget>

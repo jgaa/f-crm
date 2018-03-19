@@ -11,7 +11,6 @@ Database::Database(QObject *parent)
 
     QSettings settings;
 
-    //const auto dbpath = QStringLiteral(":memory:")
     const auto dbpath = settings.value("dbpath").toString();
     const bool new_database = (dbpath == ":memory:") || (!QFileInfo(dbpath).isFile());
 
@@ -65,8 +64,9 @@ void Database::createDatabase()
         exec(R"(CREATE TABLE "contact" ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `contact` INTEGER, `created_date` INTEGER, `last_activity_date` INTEGER, `name` TEXT NOT NULL, `first_name` TEXT, `middle_name` TEXT, `last_name` TEXT, `gender` INTEGER DEFAULT 0, `type` INTEGER DEFAULT 0, `status` INTEGER DEFAULT 0, `notes` TEXT, `stars` INTEGER, `favourite` INTEGER DEFAULT 0, `address1` TEXT, `address2` TEXT, `city` TEXT, `postcode` TEXT, `country` TEXT, FOREIGN KEY(`contact`) REFERENCES `contact`(`id`) ))");
         exec(R"(CREATE TABLE "channel" ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `contact` INTEGER NOT NULL, `type` INTEGER NOT NULL DEFAULT 0, `value` TEXT, `verified` INTEGER NOT NULL DEFAULT 0, FOREIGN KEY(`contact`) REFERENCES `contact`(`id`) ))");
         exec(R"(CREATE TABLE `intent` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `contact` INTEGER NOT NULL, `type` INTEGER NOT NULL DEFAULT 0, `state` INTEGER NOT NULL DEFAULT 0, `abstract` TEXT, `notes` TEXT, FOREIGN KEY(`contact`) REFERENCES contact(id) ))");
-        exec(R"(CREATE TABLE `activity` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `contact` INTEGER NOT NULL, `state` INTEGER NOT NULL DEFAULT 0, `name` TEXT NOT NULL, `created_date` INTEGER NOT NULL, `start_date` INTEGER NOT NULL, `due_date` INTEGER NOT NULL, `desired_outcome` TEXT, FOREIGN KEY(`contact`) REFERENCES contact(id) ))");
+        exec(R"(CREATE TABLE "action" ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `sequence` INTEGER NOT NULL, `contact` INTEGER NOT NULL, `intent` INTEGER, `person` INTEGER, `state` INTEGER NOT NULL DEFAULT 0, `type` INTEGER, `channel_type` INTEGER, `name` TEXT, `created_date` INTEGER NOT NULL, `start_date` INTEGER, `due_date` INTEGER, `desired_outcome` TEXT, `notes` TEXT, FOREIGN KEY(`contact`) REFERENCES `contact`(`id`), FOREIGN KEY(`intent`) REFERENCES `intent`(`id`), FOREIGN KEY(`person`) REFERENCES `contact`(`id`) ))");
         exec(R"(CREATE TABLE `document` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `contact` INTEGER NOT NULL, `intent` INTEGER, `activity` INTEGER, `type` INTEGER NOT NULL DEFAULT 0, `name` TEXT NOT NULL, `notes` INTEGER, `added_date` INTEGER NOT NULL, `file_date` INTEGER, `location` TEXT, `content` BLOB, FOREIGN KEY(`contact`) REFERENCES contact(id), FOREIGN KEY(`intent`) REFERENCES intent(id), FOREIGN KEY(`activity`) REFERENCES activity(id) ))");
+        exec(R"(CREATE TABLE "log" ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `type` INTEGER NOT NULL, `date` INTEGER NOT NULL, `contact` INTEGER, `person` INTEGER, `intent` INTEGER, `channel` INTEGER, `activity` INTEGER, `document` INTEGER, `text` TEXT NOT NULL, FOREIGN KEY(`contact`) REFERENCES `contact`(`id`), FOREIGN KEY(`person`) REFERENCES `contact`(`id`), FOREIGN KEY(`intent`) REFERENCES `intent`(`id`), FOREIGN KEY(`channel`) REFERENCES `channel`(`id`), FOREIGN KEY(`activity`) REFERENCES `activity`(`id`), FOREIGN KEY(`document`) REFERENCES document(id) ))");
 
         QSqlQuery query(db_);
         query.prepare("INSERT INTO f_crm (version) VALUES (:version)");
