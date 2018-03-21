@@ -104,12 +104,48 @@ void LogModel::addContactLog(const int contact,
     addLog(rec);
 }
 
+void LogModel::addLog(const LogModel::Type type, const QString &text,
+                      const int contact, const int person,
+                      const int intent, const int activity,
+                      const int document)
+{
+    auto rec = record();
+    rec.setValue(h_type_, static_cast<int>(type));
+    rec.setValue(h_text_, text);
+
+    if (contact > 0)
+        rec.setValue(h_contact_, contact);
+
+    if (person > 0)
+        rec.setValue(h_person_, person);
+
+    if (intent > 0)
+        rec.setValue(h_intent_, intent);
+
+    if (activity > 0)
+        rec.setValue(h_activity_, activity);
+
+    if (document > 0)
+        rec.setValue(h_document_, document);
+
+    addLog(rec);
+}
+
 const QIcon &LogModel::getLogIcon(int type) const
 {
-    static const array<QIcon, 4> icons {{
+    static const array<QIcon, 13> icons {{
         QIcon(":/res/icons/log_general.svg"),
         QIcon(":/res/icons/addcompany.svg"),
-        QIcon(":/res/icons/addperson.svg"),
+        QIcon(":/res/icons/addcompany.svg"),
+        QIcon(":/res/icons/add_document.svg"),
+        QIcon(":/res/icons/edit_document.svg"),
+        QIcon(":/res/icons/delete_document.svg"),
+        QIcon(":/res/icons/add_intent.svg"),
+        QIcon(":/res/icons/edit_intent.svg"),
+        QIcon(":/res/icons/delete_intent.svg"),
+        QIcon(":/res/icons/add_action.svg"),
+        QIcon(":/res/icons/edit_action.svg"),
+        QIcon(":/res/icons/delete_action.svg"),
         QIcon(":/res/icons/delete.svg"),
     }};
 

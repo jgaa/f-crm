@@ -14,6 +14,7 @@
 #include "src/utility.h"
 #include "src/action.h"
 #include "src/strategy.h"
+#include "src/logmodel.h"
 
 using namespace std;
 
@@ -85,10 +86,21 @@ void ActionsModel::removeActions(const QModelIndexList &indexes)
     }
 
     for(const int row : rows) {
+
+        const auto rec = record(row);
+
         if (!removeRow(row, {})) {
             qWarning() << "Failed to remove row " << row << ": "
                        << lastError().text();
         }
+
+        LogModel::instance().addLog(LogModel::Type::DELETE_ACTION,
+                                    QStringLiteral("Deleted action: %1")
+                                    .arg(rec.value("name").toString()),
+                                    rec.value("contact").toInt(),
+                                    rec.value("person").toInt(),
+                                    0,
+                                    rec.value("id").toInt());
     }
 
     if (!submitAll()) {
@@ -127,6 +139,13 @@ void ActionsModel::addAction(const QSqlRecord &origRec)
     }
 
     qDebug() << "Created new intent";
+
+    LogModel::instance().addLog(LogModel::Type::ADD_ACTION,
+                                QStringLiteral("Added action: %1").arg(origRec.value("name").toString()),
+                                origRec.value("contact").toInt(),
+                                origRec.value("person").toInt(),
+                                0,
+                                query().lastInsertId().toInt());
 }
 
 void ActionsModel::setCompleted(const QModelIndex& ix)
@@ -202,30 +221,6 @@ QVariant ActionsModel::data(const QModelIndex &ix, int role) const
                 return when.date();
             }
 
-        } else if (role == Qt::DecorationRole) {
-            if (ix.column() == h_name_) {
-                const auto cix = index(ix.row(), h_type_, {});
-                const int type = QSqlTableModel::data(cix, Qt::DisplayRole).toInt();
-                if (type == static_cast<int>(ActionType::CHANNEL)) {
-                    const auto cix = index(ix.row(), h_channel_type_, {});
-                    const int ctype = QSqlTableModel::data(cix, Qt::DisplayRole).toInt();
-                    return GetChannelStatusIcon(ctype);
-                }
-
-                return GetActionTypeIcon(std::max(0, type));
-            }
-
-            if (ix.column() == h_state_) {
-                return GetActionStateIcon(std::max(0, QSqlTableModel::data(ix, Qt::DisplayRole).toInt()));
-            }
-
-            if (ix.column() == h_type_) {
-                return GetActionTypeIcon(std::max(0, QSqlTableModel::data(ix, Qt::DisplayRole).toInt()));
-            }
-
-            if (ix.column() == h_channel_type_) {
-                return GetChannelStatusIcon(std::max(0, QSqlTableModel::data(ix, Qt::DisplayRole).toInt()));
-            }
         }
     }
 
@@ -237,7 +232,7 @@ QVariant ActionsModel::headerData(int section, Qt::Orientation orientation, int 
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
         auto name = QSqlTableModel::headerData(section, orientation, role).toString();
         name[0] = name[0].toUpper();
-        return name;
+        return name.replace('_', ' ');
     }
     return QSqlTableModel::headerData(section, orientation, role);
 }

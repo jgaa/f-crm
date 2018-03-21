@@ -171,7 +171,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QTableView" name="contactsList">
+             <widget class="TableViewWithDrop" name="contactsList">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -202,7 +202,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QTableView" name="contactPeople">
+             <widget class="TableViewWithDrop" name="contactPeople">
               <property name="contextMenuPolicy">
                <enum>Qt::CustomContextMenu</enum>
               </property>
@@ -232,7 +232,7 @@
             </font>
            </property>
            <property name="currentIndex">
-            <number>3</number>
+            <number>4</number>
            </property>
            <widget class="QWidget" name="panelPage">
             <attribute name="title">
@@ -549,7 +549,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QTableView" name="intentsView">
+              <widget class="TableViewWithDrop" name="intentsView">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -584,7 +584,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QTableView" name="actionsView">
+              <widget class="TableViewWithDrop" name="actionsView">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -647,6 +647,9 @@
                <property name="showGrid">
                 <bool>false</bool>
                </property>
+               <property name="sortingEnabled">
+                <bool>false</bool>
+               </property>
                <attribute name="verticalHeaderVisible">
                 <bool>false</bool>
                </attribute>
@@ -656,7 +659,7 @@
            </widget>
            <widget class="QWidget" name="logPage">
             <attribute name="title">
-             <string>Log</string>
+             <string>Journal</string>
             </attribute>
             <layout class="QHBoxLayout" name="horizontalLayout_10">
              <item>

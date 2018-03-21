@@ -9,6 +9,7 @@
 #include "src/intentsmodel.h"
 #include "src/strategy.h"
 #include "src/intent.h"
+#include "src/logmodel.h"
 
 using namespace std;
 
@@ -63,10 +64,19 @@ void IntentsModel::removeIntents(const QModelIndexList &indexes)
     }
 
     for(const int row : rows) {
+
+        const auto rec = record(row);
+
         if (!removeRow(row, {})) {
             qWarning() << "Failed to remove row " << row << ": "
                        << lastError().text();
         }
+
+        LogModel::instance().addLog(LogModel::Type::DELETE_INTENT,
+                                    QStringLiteral("Deleted intent: %1")
+                                    .arg(rec.value("abstract").toString()),
+                                    rec.value("contact").toInt(), 0,
+                                    rec.value("id").toInt());
     }
 
     if (!submitAll()) {
@@ -98,30 +108,17 @@ void IntentsModel::addIntent(const QSqlRecord &rec)
         return;
     }
 
+    LogModel::instance().addLog(LogModel::Type::ADD_INTENT,
+                                QStringLiteral("Added intent: %1")
+                                .arg(rec.value("abstract").toString()),
+                                rec.value("contact").toInt(), 0,
+                                query().lastInsertId().toInt());
+
     qDebug() << "Created new intent";
 }
 
 QVariant IntentsModel::data(const QModelIndex &ix, int role) const
 {
-    if (ix.isValid()) {
-        if (role == Qt::DisplayRole) {
-             //Just pass the defaults
-        } else if (role == Qt::DecorationRole) {
-            if (ix.column() == h_abstract_) {
-                const auto cix = index(ix.row(), h_type_, {});
-                return GetIntentTypeIcon(std::max(0, QSqlTableModel::data(cix, Qt::DisplayRole).toInt()));
-            }
-
-            if (ix.column() == h_state_) {
-                return GetIntentStateIcon(std::max(0, QSqlTableModel::data(ix, Qt::DisplayRole).toInt()));
-            }
-
-            if (ix.column() == h_type_) {
-                return GetIntentTypeIcon(std::max(0, QSqlTableModel::data(ix, Qt::DisplayRole).toInt()));
-            }
-        }
-    }
-
     return QSqlTableModel::data(ix, role);
 }
 

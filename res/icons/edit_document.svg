@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   fill="none"
+   stroke="currentColor"
+   stroke-width="2"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   class="feather feather-file-text"
+   version="1.1"
+   id="svg12"
+   sodipodi:docname="edit_document.svg"
+   inkscape:version="0.92.1 r15371">
+  <metadata
+     id="metadata18">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs16">
+    <linearGradient
+       id="linearGradient5963"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5961" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5957"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#27850f;stop-opacity:1;"
+         offset="0"
+         id="stop5955" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1171"
+     id="namedview14"
+     showgrid="false"
+     inkscape:zoom="9.8333333"
+     inkscape:cx="-17.033898"
+     inkscape:cy="12"
+     inkscape:window-x="4480"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg12" />
+  <g
+     id="g4500"
+     transform="translate(-2.2372881,0.61016949)">
+    <path
+       id="path2"
+       d="M 14,2 H 6 A 2,2 0 0 0 4,4 v 16 a 2,2 0 0 0 2,2 h 12 a 2,2 0 0 0 2,-2 V 8 Z"
+       inkscape:connector-curvature="0" />
+    <polyline
+       id="polyline4"
+       points="14 2 14 8 20 8" />
+    <line
+       id="line6"
+       y2="13"
+       x2="8"
+       y1="13"
+       x1="16" />
+    <line
+       id="line8"
+       y2="17"
+       x2="8"
+       y1="17"
+       x1="16" />
+    <polyline
+       id="polyline10"
+       points="10 9 9 9 8 9" />
+  </g>
+  <g
+     style="fill:#ffffff;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"
+     id="g4501"
+     transform="matrix(0.69999938,0,0,0.69999938,8.1627169,-1.0898175)">
+    <polygon
+       style="fill:#ffffff;stroke:#ff6600"
+       id="polygon2"
+       points="3,16 16,3 21,8 8,21 3,21 " />
+  </g>
+</svg>

@@ -68,7 +68,13 @@ SOURCES += \
     src/document.cpp \
     src/documentsmodel.cpp \
     src/documentdialog.cpp \
-    src/tableviewwithdrop.cpp
+    src/tableviewwithdrop.cpp \
+    src/documentproxymodel.cpp \
+    src/contactproxymodel.cpp \
+    src/channelproxymodel.cpp \
+    src/intentproxymodel.cpp \
+    src/actionproxymodel.cpp \
+    src/logproxymodel.cpp
 
 HEADERS += \
     src/mainwindow.h \
@@ -95,7 +101,13 @@ HEADERS += \
     src/document.h \
     src/documentsmodel.h \
     src/documentdialog.h \
-    src/tableviewwithdrop.h
+    src/tableviewwithdrop.h \
+    src/documentproxymodel.h \
+    src/contactproxymodel.h \
+    src/channelproxymodel.h \
+    src/intentproxymodel.h \
+    src/actionproxymodel.h \
+    src/logproxymodel.h
 
 FORMS += \
         ui/mainwindow.ui \

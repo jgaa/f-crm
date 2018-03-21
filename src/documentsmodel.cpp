@@ -12,6 +12,7 @@
 #include "src/strategy.h"
 #include "src/intent.h"
 #include "document.h"
+#include "logmodel.h"
 
 using namespace std;
 
@@ -91,7 +92,7 @@ QSqlRecord DocumentsModel::getRecord(int contact,
 
     Q_ASSERT(entity == Document::Entity::PERSON ? (person > 0) : true);
     Q_ASSERT(entity == Document::Entity::INTENT ? (intent > 0) : true);
-    Q_ASSERT(entity == Document::Entity::ACTION ? (intent > 0 && action > 0) : true);
+    Q_ASSERT(entity == Document::Entity::ACTION ? (action > 0) : true);
 
     return rec;
 }
@@ -106,10 +107,20 @@ void DocumentsModel::removeDocuments(const QModelIndexList &indexes)
     }
 
     for(const int row : rows) {
+        const auto rec = record(row);
         if (!removeRow(row, {})) {
             qWarning() << "Failed to remove row " << row << ": "
                        << lastError().text();
         }
+
+        LogModel::instance().addLog(LogModel::Type::DELETED_DOCUMENT,
+                                    QStringLiteral("Deleted document: %1")
+                                    .arg(rec.value("name").toString()),
+                                    rec.value("contact").toInt(),
+                                    rec.value("person").toInt(),
+                                    rec.value("intent").toInt(),
+                                    rec.value("action").toInt(),
+                                    rec.value("id").toInt());
     }
 
     if (!submitAll()) {
@@ -137,6 +148,14 @@ void DocumentsModel::addDocument(const QSqlRecord &origRec)
     }
 
     qDebug() << "Created new document";
+
+    LogModel::instance().addLog(LogModel::Type::ADD_DOCUMENT,
+                                QStringLiteral("Added document: %1").arg(origRec.value("name").toString()),
+                                origRec.value("contact").toInt(),
+                                origRec.value("person").toInt(),
+                                origRec.value("intent").toInt(),
+                                origRec.value("action").toInt(),
+                                query().lastInsertId().toInt());
 }
 
 void DocumentsModel::updateDocument(const int row, const QSqlRecord &rec)
@@ -154,6 +173,15 @@ void DocumentsModel::updateDocument(const int row, const QSqlRecord &rec)
                    << lastError().text();
         return;
     }
+
+    LogModel::instance().addLog(LogModel::Type::UPDATED_DOCUMENT,
+                                QStringLiteral("Updated document: %1")
+                                .arg(rec.value("name").toString()),
+                                rec.value("contact").toInt(),
+                                rec.value("person").toInt(),
+                                rec.value("intent").toInt(),
+                                rec.value("action").toInt(),
+                                rec.value("id").toInt());
 }
 
 

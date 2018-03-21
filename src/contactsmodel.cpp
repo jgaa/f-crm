@@ -71,25 +71,6 @@ ContactsModel::ContactsModel(QSettings& settings, QObject *parent, QSqlDatabase 
 
 QVariant ContactsModel::data(const QModelIndex &ix, int role) const
 {
-    if (ix.isValid()) {
-        if (role == Qt::DisplayRole) {
-
-        } else if (role == Qt::DecorationRole) {
-            if (ix.column() == h_name_) {
-                const auto cix = index(ix.row(), h_type_, {});
-                return GetContactTypeIcon(std::max(0, QSqlTableModel::data(cix, Qt::DisplayRole).toInt()));
-            }
-
-            if (ix.column() == h_status_) {
-                return GetContactStatusIcon(std::max(0, QSqlTableModel::data(ix, Qt::DisplayRole).toInt()));
-            }
-
-            if (ix.column() == h_type_) {
-                return GetContactTypeIcon(std::max(0, QSqlTableModel::data(ix, Qt::DisplayRole).toInt()));
-            }
-        }
-    }
-
     return QSqlTableModel::data(ix, role);
 }
 
@@ -237,10 +218,11 @@ bool ContactsModel::insertContact(QSqlRecord &rec)
         return false;
     }
 
-    LogModel::instance().addContactLog(
-                parent_,
+    LogModel::instance().addLog(
                 LogModel::Type::ADD_PERSON,
-                QStringLiteral("Added person %1").arg(rec.value(h_name_).toString()));
+                QStringLiteral("Added person %1").arg(rec.value(h_name_).toString()),
+                parent_,
+                query().lastInsertId().toInt());
 
     qDebug() << "Created new contact";
     return true;
@@ -262,10 +244,11 @@ QModelIndex ContactsModel::createContact(const ContactType type)
             ? LogModel::Type::ADD_COMPANY
             : LogModel::Type::ADD_PERSON;
 
-    LogModel::instance().addContactLog(
-                data(index(0, h_id_, {}), Qt::DisplayRole).toInt(),
+    LogModel::instance().addLog(
                 log_type,
-                QStringLiteral("Created contact %1").arg(rec.value(h_name_).toString()));
+                QStringLiteral("Created contact %1")
+                .arg(rec.value(h_name_).toString()),
+                query().lastInsertId().toInt());
 
     return index(0, h_name_, {}); // Assume that we insterted at end in the model
 }

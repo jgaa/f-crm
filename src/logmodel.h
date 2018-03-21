@@ -21,6 +21,15 @@ public:
         GENERAL,
         ADD_COMPANY,
         ADD_PERSON,
+        ADD_DOCUMENT,
+        UPDATED_DOCUMENT,
+        DELETED_DOCUMENT,
+        ADD_INTENT,
+        UPDATE_INTENT,
+        DELETE_INTENT,
+        ADD_ACTION,
+        EDIT_ACTION,
+        DELETE_ACTION,
         DELETED_SOMETHING,
     };
 
@@ -47,6 +56,9 @@ public:
 public slots:
     void addLog(QSqlRecord& rec); // Will modify rec
     void addContactLog(const int contact, const Type type, const QString& text);
+    void addLog(const Type type, const QString& text,
+                const int contact, const int person = 0, const int intent = 0,
+                const int activity = 0, const int document = 0);
 
 private:
     const QIcon& getLogIcon(int type) const;

@@ -9,6 +9,7 @@
 #include "actionexecutedialog.h"
 #include "documentdialog.h"
 
+
 #include <QSettings>
 #include <QDebug>
 #include <QSqlRecord>
@@ -43,17 +44,28 @@ void MainWindow::initialize()
     db_ = std::make_unique<Database>(nullptr);
 
     log_model_ = new LogModel(settings_, this, {});
-    ui->logView->setModel(log_model_);
+    log_px_model_ = new LogProxyModel(log_model_, this);
+    ui->logView->setModel(log_px_model_);
 
     contacts_model_ = new ContactsModel(settings_, this, {});
+    contact_px_model = new ContactProxyModel(contacts_model_, this);
     persons_model_ = new ContactsModel(settings_, this, {});
     persons_model_->setParent(-1);
+    person_px_model = new ContactProxyModel(persons_model_, this);
     channels_model_ = new ChannelsModel(settings_, this, {});
+    channels_px_model_ = new ChannelProxyModel(channels_model_, this);
     intents_model_ = new IntentsModel(settings_, this, {});
+    intents_px_model_ = new IntentProxyModel(intents_model_, this);
     actions_model_ = new ActionsModel(settings_, this, {});
+    actions_px_model_ = new ActionProxyModel(actions_model_, this);
     documents_model_ = new DocumentsModel(settings_, this, {});
+    documents_px_model_ = new DocumentProxyModel(documents_model_, this);
 
-    ui->contactsList->setModel(contacts_model_);
+    ui->contactsList->setModel(contact_px_model);
+    ui->contactsList->setDocumentsModel(documents_model_);
+    ui->contactsList->setEntity(Document::Entity::CONTACT, contacts_model_, 0);
+    ui->contactsList->setDocumentDropEnabled(true);
+
     contacts_model_->select();
 
     {
@@ -80,7 +92,7 @@ void MainWindow::initialize()
         ui->contactsList->setColumnHidden(i, !show);
     }
 
-    ui->contactChannels->setModel(channels_model_);
+    ui->contactChannels->setModel(channels_px_model_);
 
     ui->contactChannels->horizontalHeader()->setSectionResizeMode(
                 channels_model_->property("value_col").toInt(), QHeaderView::Stretch);
@@ -90,7 +102,8 @@ void MainWindow::initialize()
         ui->contactChannels->setColumnHidden(i, !show);
     }
 
-    ui->contactPeople->setModel(persons_model_);
+    ui->contactPeople->setModel(person_px_model);
+    ui->contactPeople->setDocumentsModel(documents_model_);
     ui->contactPeople->horizontalHeader()->setSectionResizeMode(
                 persons_model_->property("name_col").toInt(), QHeaderView::Stretch);
     for(int i = 0; i < persons_model_->columnCount(); ++i) {
@@ -100,7 +113,9 @@ void MainWindow::initialize()
         ui->contactPeople->setColumnHidden(i, !show);
     }
 
-    ui->intentsView->setModel(intents_model_);
+    ui->intentsView->setModel(intents_px_model_);
+    ui->intentsView->setDocumentsModel(documents_model_);
+
     ui->intentsView->horizontalHeader()->setSectionResizeMode(
                 intents_model_->property("abstract_col").toInt(), QHeaderView::Stretch);
     for(int i = 0; i < intents_model_->columnCount(); ++i) {
@@ -109,12 +124,15 @@ void MainWindow::initialize()
         ui->intentsView->setColumnHidden(i, !show);
     }
 
-    ui->actionsView->setModel(actions_model_);
+    ui->actionsView->setModel(actions_px_model_);
+    ui->actionsView->setDocumentsModel(documents_model_);
     ui->actionsView->horizontalHeader()->setSectionResizeMode(
                 actions_model_->property("name_col").toInt(), QHeaderView::Stretch);
+    ui->actionsView->horizontalHeader()->moveSection(actions_model_->property("start_date_col").toInt(), 0);
     for(int i = 0; i < actions_model_->columnCount(); ++i) {
         const bool show = (i == actions_model_->property("name_col").toInt())
                 || (i == actions_model_->property("state_col").toInt())
+                || (i == actions_model_->property("start_date_col").toInt())
                 || (i == actions_model_->property("person_col").toInt());
         ui->actionsView->setColumnHidden(i, !show);
     }
@@ -127,7 +145,7 @@ void MainWindow::initialize()
         ui->logView->setColumnHidden(i, !show);
     }
 
-    ui->documentsView->setModel(documents_model_);
+    ui->documentsView->setModel(documents_px_model_);
     ui->documentsView->setDocumentsModel(documents_model_);
     ui->documentsView->horizontalHeader()->setSectionResizeMode(
                 documents_model_->property("name_col").toInt(), QHeaderView::Stretch);
@@ -285,11 +303,11 @@ void MainWindow::onSyncronizeContactsBindings()
                     Qt::DisplayRole).toInt();
 
         if (contact_type == static_cast<int>(ContactType::CORPORATION)) {
-            ui->contactPeople->setVisible(true);
+            ui->contactPeople->setEnabled(true);
             persons_model_->setParent(contact_id);
             persons_model_->select();
         } else {
-            ui->contactPeople->setVisible(false);
+            ui->contactPeople->setEnabled(false);
             persons_model_->setParent(-1);
             persons_model_->select();
         }
@@ -304,7 +322,18 @@ void MainWindow::onSyncronizeContactsBindings()
         documents_model_->setContact(contact_id);
         ui->documentsView->setContactId(contact_id);
         ui->documentsView->setEntity(Document::Entity::CONTACT, nullptr, contact_id);
+        ui->documentsView->setDocumentDropEnabled(true);
+        ui->contactPeople->setContactId(contact_id);
+        ui->contactPeople->setEntity(Document::Entity::PERSON, persons_model_, -1);
+        ui->contactPeople->setDocumentDropEnabled(true);
 
+        ui->intentsView->setContactId(contact_id);
+        ui->intentsView->setEntity(Document::Entity::INTENT, intents_model_, -1);
+        ui->intentsView->setDocumentDropEnabled(true);
+
+        ui->actionsView->setContactId(contact_id);
+        ui->actionsView->setEntity(Document::Entity::ACTION, actions_model_, -1);
+        ui->actionsView->setDocumentDropEnabled(true);
     } else {
         if (contacts_mapper_) {
             contacts_mapper_->setCurrentIndex(-1);
@@ -317,7 +346,7 @@ void MainWindow::onSyncronizeContactsBindings()
         ui->contactCountry->clear();
 
         channels_model_->setContact(-1);
-        ui->contactPeople->setVisible(false);
+        ui->contactPeople->setEnabled(false);
 
         persons_model_->setParent(-1);
         persons_model_->select();
@@ -332,6 +361,10 @@ void MainWindow::onSyncronizeContactsBindings()
         log_model_->setContact(-1);
         documents_model_->setContact(-1);
         ui->documentsView->setContactId(-1);
+        ui->documentsView->setDocumentDropEnabled(false);
+        ui->contactPeople->setDocumentDropEnabled(false);
+        ui->intentsView->setDocumentDropEnabled(false);
+        ui->actionsView->setDocumentDropEnabled(true);
     }
 
     ui->contactNotes->setReadOnly(read_only);
@@ -773,8 +806,11 @@ void MainWindow::on_actionDelete_Contact_triggered()
         return;
     }
 
-    ui->contactsList->setCurrentIndex({});
+    if (!confirmDelete("Contact")) {
+        return;
+    }
 
+    ui->contactsList->setCurrentIndex({});
     contacts_model_->removeContacts(selected);
 }
 
@@ -800,6 +836,10 @@ void MainWindow::on_actionDelete_Channel_triggered()
     auto selected = ui->contactChannels->selectionModel()->selection().indexes();
 
     if (selected.isEmpty()) {
+        return;
+    }
+
+    if (!confirmDelete("Channel")) {
         return;
     }
 
@@ -867,6 +907,16 @@ void MainWindow::openChannel(const ChannelType type, const QString& value) {
             QDesktopServices::openUrl({value});
         }
     }
+}
+
+bool MainWindow::confirmDelete(const QString &what)
+{
+    return QMessageBox::warning(this, "You are about to delete information",
+                                QStringLiteral("Do you really want to delete this %1?")
+                                .arg(what),
+                                QMessageBox::Yes,
+                                QMessageBox::No | QMessageBox::Default)
+            == QMessageBox::Yes;
 }
 
 QString MainWindow::getChannelValue() const
@@ -994,6 +1044,10 @@ void MainWindow::on_actionDelete_Person_triggered()
         return;
     }
 
+    if (!confirmDelete("Person")) {
+        return;
+    }
+
     ui->contactPeople->setCurrentIndex({});
     persons_model_->removeContacts(selected);
 }
@@ -1042,6 +1096,10 @@ void MainWindow::on_actionDelete_Intent_triggered()
         return;
     }
 
+    if (!confirmDelete("Intent")) {
+        return;
+    }
+
     ui->intentsView->setCurrentIndex({});
     intents_model_->removeIntents(selected);
 }
@@ -1087,6 +1145,10 @@ void MainWindow::on_actionDelete_Action_triggered()
     auto selected = ui->actionsView->selectionModel()->selection().indexes();
 
     if (selected.isEmpty()) {
+        return;
+    }
+
+    if (!confirmDelete("Action")) {
         return;
     }
 
@@ -1202,7 +1264,7 @@ void MainWindow::on_actionAdd_Document_triggered()
     }
 
     const auto contact_id = contacts_model_->getContactId(current);
-    auto rec = documents_model_->getRecord(contact_id, Document::Type::FILE,
+    auto rec = documents_model_->getRecord(contact_id, Document::Type::NOTE,
                                            Document::Class::NOTE,
                                            Document::Direction::INTERNAL,
                                            Document::Entity::CONTACT);
@@ -1233,6 +1295,10 @@ void MainWindow::on_actionDelete_Document_triggered()
     auto selected = ui->documentsView->selectionModel()->selection().indexes();
 
     if (selected.isEmpty()) {
+        return;
+    }
+
+    if (!confirmDelete("Document")) {
         return;
     }
 

@@ -80,5 +80,11 @@
         <file>res/icons/research.svg</file>
         <file>res/icons/document.svg</file>
         <file>res/icons/add_document.svg</file>
+        <file>res/icons/edit_document.svg</file>
+        <file>res/icons/delete_document.svg</file>
+        <file>res/icons/delete_intent.svg</file>
+        <file>res/icons/edit_intent.svg</file>
+        <file>res/icons/delete_action.svg</file>
+        <file>res/icons/edit_action.svg</file>
     </qresource>
 </RCC>

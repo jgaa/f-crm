@@ -115,28 +115,6 @@ void ChannelsModel::addChannel(const QSqlRecord &rec)
 
 QVariant ChannelsModel::data(const QModelIndex &ix, int role) const
 {
-    static const QIcon check_icon{":/res/icons/check.svg"};
-
-    if (role == Qt::DecorationRole && ix.column() == h_value_) {
-        auto nix = index(ix.row(), h_type_, {});
-        int status = QSqlTableModel::data(nix, Qt::DisplayRole).toInt();
-        return GetChannelStatusIcon(status);
-    }
-
-    if (ix.column() == h_verified_) {
-        if (role == Qt::DecorationRole) {
-            auto nix = index(ix.row(), h_verified_, {});
-            if (QSqlTableModel::data(nix, Qt::DisplayRole).toBool()) {
-                return check_icon;
-            }
-        }
-
-        if (role == Qt::DisplayRole) {
-            return {};
-        }
-    }
-
-
     return QSqlTableModel::data(ix, role);
 }
 

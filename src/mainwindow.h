@@ -18,6 +18,12 @@
 #include "actionsmodel.h"
 #include "logmodel.h"
 #include "documentsmodel.h"
+#include "documentproxymodel.h"
+#include "contactproxymodel.h"
+#include "intentproxymodel.h"
+#include "actionproxymodel.h"
+#include "logproxymodel.h"
+#include "channelproxymodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -149,6 +155,7 @@ private:
     ChannelType getChannelType() const;
     void createContact(ContactType type);
     void openChannel(const ChannelType type, const QString& value);
+    bool confirmDelete(const QString& what);
 
     // Get the current person (either a company/contact - upper list) or a
     // person in a company (lower list), depending on the current context.
@@ -172,13 +179,20 @@ protected:
     AppMode app_mode_ = AppMode::PANEL;
     QSettings settings_;
     std::unique_ptr<Database> db_ = {};
-    LogModel *log_model_;
+    LogModel *log_model_ = {};
+    LogProxyModel *log_px_model_ = {};
     ContactsModel *contacts_model_ = {};
     ContactsModel *persons_model_ = {}; // contact (persons) at a contact (company)
     ChannelsModel *channels_model_ = {};
+    ChannelProxyModel *channels_px_model_ = {};
     IntentsModel *intents_model_ = {};
+    IntentProxyModel *intents_px_model_ = {};
     ActionsModel *actions_model_ = {};
+    ActionProxyModel *actions_px_model_ = {};
     DocumentsModel *documents_model_ = {};
+    DocumentProxyModel *documents_px_model_ = {};
+    ContactProxyModel *contact_px_model = {};
+    ContactProxyModel * person_px_model = {};
     std::unique_ptr<QDataWidgetMapper> contacts_mapper_;
     std::unique_ptr<QDataWidgetMapper> persons_mapper_;
     int last_person_clicked {-1};

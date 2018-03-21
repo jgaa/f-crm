@@ -5,11 +5,12 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QDateTime>
+#include <QMessageBox>
 
 TableViewWithDrop::TableViewWithDrop(QWidget *parent)
     : QTableView(parent)
 {
-
+    setAcceptDrops(true);
 }
 
 void TableViewWithDrop::setDocumentsModel(DocumentsModel *model)
@@ -31,7 +32,7 @@ void TableViewWithDrop::setEntity(Document::Entity entity, QSqlTableModel *model
 
 bool TableViewWithDrop::canDoDrop() const
 {
-    return contact_id_ > 0;
+    return enabled_;
 }
 
 
@@ -82,14 +83,21 @@ void TableViewWithDrop::dropEvent(QDropEvent *event)
             const auto url = mime->urls().first();
             //const auto type = Document::deduceType(url);
 
-            //event->pos();
-
-            // Add to the pane, disregard what item that was under the cursor
-            addDocument(-1, url);
-
-            event->acceptProposedAction();
-
-            return;
+            // Map entity id to the row uder the cursor
+            if (entity_model_) {
+                auto droppoint =  event->pos();
+                const auto row = this->rowAt(droppoint.ry());
+                if (row >= 0) {
+                    event->acceptProposedAction();
+                    addDocument(row, url);
+                    return;
+                }
+            } else {
+                // Add to the pane, disregard what item that was under the cursor
+                event->acceptProposedAction();
+                addDocument(-1, url);
+                return;
+            }
         }
 
         event->setAccepted(false);
@@ -100,23 +108,45 @@ void TableViewWithDrop::addDocument(const int row, const QUrl& url)
 {
     int id = -1;
     if (row >= 0) {
-        // TODO: Find the id from the row
+
+        Q_ASSERT(entity_model_);
+        id = entity_model_->data(entity_model_->index(row, entity_model_->property("id_col").toInt(), {}), Qt::DisplayRole).toInt();
+        if (id <= 0) {
+            QMessageBox::warning(this, "Failed to get the ID for the entity",
+                                 "You must drop on an item in the list");
+            qWarning() << "Failed to get the ID for the entity";
+            return;
+        }
+
     } else {
         id = entity_id_;
     }
 
     if (id < 0) {
-        qWarning() << "No entiry id to drop to";
+        QMessageBox::warning(this, "No entity id to drop to",
+                             "You must drop on an item in the list");
+        qWarning() << "No entity id to drop to";
         return;
     }
 
     const auto type = Document::deduceType(url);
 
-    auto rec = document_model_->getRecord(contact_id_,
+    int contact = contact_id_, person = 0, intent = 0, action = 0;
+    if (entity_ == Document::Entity::CONTACT) {
+        contact = id;
+    } else if (entity_ == Document::Entity::PERSON) {
+        person = id;
+    } else if (entity_ == Document::Entity::INTENT) {
+        intent = id;
+    } else if (entity_ == Document::Entity::ACTION) {
+        action = id;
+    }
+
+    auto rec = document_model_->getRecord(contact,
                                            type,
                                            Document::Class::NOTE,
                                            Document::Direction::INTERNAL,
-                                           entity_);
+                                           entity_, person, intent, action);
     rec.setValue("location", url.toString());
 
     if (type == Document::Type::FILE) {
