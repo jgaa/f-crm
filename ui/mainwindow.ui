@@ -709,6 +709,7 @@
      <string>&amp;File</string>
     </property>
     <addaction name="action_Quit"/>
+    <addaction name="actionSettings"/>
    </widget>
    <widget class="QMenu" name="menuContact">
     <property name="title">
@@ -1033,6 +1034,11 @@
    </property>
    <property name="text">
     <string>Open Document</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>&amp;Settings</string>
    </property>
   </action>
  </widget>

@@ -74,7 +74,8 @@ SOURCES += \
     src/channelproxymodel.cpp \
     src/intentproxymodel.cpp \
     src/actionproxymodel.cpp \
-    src/logproxymodel.cpp
+    src/logproxymodel.cpp \
+    src/settingsdialog.cpp
 
 HEADERS += \
     src/mainwindow.h \
@@ -107,7 +108,8 @@ HEADERS += \
     src/channelproxymodel.h \
     src/intentproxymodel.h \
     src/actionproxymodel.h \
-    src/logproxymodel.h
+    src/logproxymodel.h \
+    src/settingsdialog.h
 
 FORMS += \
         ui/mainwindow.ui \
@@ -116,7 +118,8 @@ FORMS += \
     ui/intentdialog.ui \
     ui/actiondialog.ui \
     ui/actionexecutedialog.ui \
-    ui/documentdialog.ui
+    ui/documentdialog.ui \
+    ui/settingsdialog.ui
 
 RESOURCES += \
     resources.qrc

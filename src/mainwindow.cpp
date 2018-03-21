@@ -8,7 +8,7 @@
 #include "actiondialog.h"
 #include "actionexecutedialog.h"
 #include "documentdialog.h"
-
+#include "settingsdialog.h"
 
 #include <QSettings>
 #include <QDebug>
@@ -1328,4 +1328,11 @@ void MainWindow::on_actionOpen_Document_triggered()
     } else {
         Document::open(type, what);
     }
+}
+
+void MainWindow::on_actionSettings_triggered()
+{
+    auto dlg = new SettingsDialog{settings_, this};
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->exec();
 }

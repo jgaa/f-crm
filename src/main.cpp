@@ -29,11 +29,6 @@ void initSettings() {
         qDebug() << "Settings are OK at version " << version;
     }
 
-    // TODO: Remove this before betas
-    if (settings.value("mailapp", "").toString().isEmpty()) {
-        settings.setValue("mailapp", "thunderbird");
-    }
-
     if (settings.value("dbpath", "").toString().isEmpty()) {
         QString dbpath = data_path;
 #ifdef QT_DEBUG
@@ -59,7 +54,6 @@ void initSettings() {
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
 
     a.setOrganizationName("TheLastViking");
     a.setOrganizationDomain("lastviking.eu");
@@ -69,11 +63,12 @@ int main(int argc, char *argv[])
 #else
     a.setApplicationName("f-crm");
 #endif
-
     initSettings();
+
 //    Logging logger;
 //    qInstallMessageHandler(Logging::logMessageHandler);
 
+    MainWindow w;
     try {
         w.initialize();
     } catch(const std::exception& ex) {

@@ -150,6 +150,8 @@ private slots:
 
     void on_actionOpen_Document_triggered();
 
+    void on_actionSettings_triggered();
+
 private:
     QString getChannelValue() const;
     ChannelType getChannelType() const;
