@@ -7,6 +7,7 @@
 #include "action.h"
 #include "actiondialog.h"
 #include "actionexecutedialog.h"
+#include "documentdialog.h"
 
 #include <QSettings>
 #include <QDebug>
@@ -41,12 +42,17 @@ void MainWindow::initialize()
 
     db_ = std::make_unique<Database>(nullptr);
 
+    log_model_ = new LogModel(settings_, this, {});
+    ui->logView->setModel(log_model_);
+
     contacts_model_ = new ContactsModel(settings_, this, {});
     persons_model_ = new ContactsModel(settings_, this, {});
     persons_model_->setParent(-1);
     channels_model_ = new ChannelsModel(settings_, this, {});
     intents_model_ = new IntentsModel(settings_, this, {});
     actions_model_ = new ActionsModel(settings_, this, {});
+    documents_model_ = new DocumentsModel(settings_, this, {});
+
     ui->contactsList->setModel(contacts_model_);
     contacts_model_->select();
 
@@ -113,6 +119,28 @@ void MainWindow::initialize()
         ui->actionsView->setColumnHidden(i, !show);
     }
 
+    ui->logView->horizontalHeader()->setSectionResizeMode(
+                log_model_->property("text_col").toInt(), QHeaderView::Stretch);
+    for(int i = 0; i < log_model_->columnCount(); ++i) {
+        const bool show = (i == log_model_->property("text_col").toInt())
+                || (i == log_model_->property("date_col").toInt());
+        ui->logView->setColumnHidden(i, !show);
+    }
+
+    ui->documentsView->setModel(documents_model_);
+    ui->documentsView->horizontalHeader()->setSectionResizeMode(
+                documents_model_->property("name_col").toInt(), QHeaderView::Stretch);
+    for(int i = 0; i < documents_model_->columnCount(); ++i) {
+        const bool show = (i == documents_model_->property("cls_col").toInt())
+                || (i == documents_model_->property("direction_col").toInt())
+                || (i == documents_model_->property("entity_col").toInt())
+                || (i == documents_model_->property("name_col").toInt())
+                || (i == documents_model_->property("added_date_col").toInt());
+        ui->documentsView->setColumnHidden(i, !show);
+    }
+    ui->documentsView->horizontalHeader()->moveSection(documents_model_->property("added_date_col").toInt(), 0);
+
+
     ui->contactTab->setCurrentIndex(0);
 
 
@@ -139,24 +167,34 @@ void MainWindow::initialize()
             this, &MainWindow::onPersonsContextMenuRequested);
     connect(ui->contactPeople, &QTableView::clicked,
             this, &MainWindow::onPersonsClicked);
-    connect(persons_model_, &ChannelsModel::modelReset,
+    connect(persons_model_, &ContactsModel::modelReset,
             this, &MainWindow::onPersonsModelReset);
 
     connect(ui->intentsView->selectionModel(), &QItemSelectionModel::currentRowChanged,
             this, &MainWindow::onIntentsRowActivated);
     connect(ui->intentsView, &QTableView::customContextMenuRequested,
             this, &MainWindow::onIntentsContextMenuRequested);
-    connect(intents_model_, &ChannelsModel::modelReset,
+    connect(intents_model_, &IntentsModel::modelReset,
             this, &MainWindow::onIntentsModelReset);
 
     connect(ui->actionsView->selectionModel(), &QItemSelectionModel::currentRowChanged,
             this, &MainWindow::onActionsRowActivated);
     connect(ui->actionsView, &QTableView::customContextMenuRequested,
             this, &MainWindow::onActionsContextMenuRequested);
-    connect(actions_model_, &ChannelsModel::modelReset,
+    connect(actions_model_, &ActionsModel::modelReset,
             this, &MainWindow::onActionsModelReset);
-    connect(actions_model_, &ChannelsModel::dataChanged,
+    connect(actions_model_, &ActionsModel::dataChanged,
             this, &MainWindow::onActionsDataChanged);
+
+    connect(ui->documentsView->selectionModel(), &QItemSelectionModel::currentRowChanged,
+            this, &MainWindow::onDocumentsRowActivated);
+    connect(ui->documentsView, &QTableView::customContextMenuRequested,
+            this, &MainWindow::onDocumentsContextMenuRequested);
+    connect(documents_model_, &DocumentsModel::modelReset,
+            this, &MainWindow::onDocumentsModelReset);
+    connect(documents_model_, &DocumentsModel::dataChanged,
+            this, &MainWindow::onDocumentsDataChanged);
+
 
     connect(ui->contactTab, &QTabWidget::currentChanged, this, &MainWindow::onContactTabChanged);
 
@@ -186,7 +224,7 @@ void MainWindow::onContactFilterChanged(const QString &text)
 
 void MainWindow::onContactsListRowActivated(const QModelIndex &ix)
 {
-    qDebug() << "Activated: " << (ix.isValid() ? ix.row() : -1);
+    Q_UNUSED(ix);
 }
 
 
@@ -261,6 +299,8 @@ void MainWindow::onSyncronizeContactsBindings()
 
         intents_model_->setContact(contact_id);
         actions_model_->setContact(contact_id);
+        log_model_->setContact(contact_id);
+        documents_model_->setContact(contact_id);
 
     } else {
         if (contacts_mapper_) {
@@ -286,6 +326,8 @@ void MainWindow::onSyncronizeContactsBindings()
 
         actions_model_->setContact(-1);
         intents_model_->setContact(-1);
+        log_model_->setContact(-1);
+        documents_model_->setContact(-1);
     }
 
     ui->contactNotes->setReadOnly(read_only);
@@ -393,6 +435,10 @@ void MainWindow::onContactContextMenuRequested(const QPoint &pos)
     menu->addAction(ui->actionAdd_Company);
     menu->addAction(ui->actionAdd_Contact);
     menu->addAction(ui->actionDelete_Contact);
+    menu->addSeparator();
+    menu->addAction(ui->actionAdd_Person);
+    menu->addAction(ui->actionEdit_Person);
+    menu->addAction(ui->actionDelete_Person);
 
     menu->exec(ui->contactsList->mapToGlobal(pos));
 }
@@ -483,7 +529,6 @@ void MainWindow::onPersonsListRowActivated(const QModelIndex &index)
     onSyncronizePersonBindings();
     onValidatePersonsActions();
 
-    qDebug() << "onPersonsListRowActivated() " << index.row();
 }
 
 void MainWindow::onPersonsModelReset()
@@ -494,9 +539,6 @@ void MainWindow::onPersonsModelReset()
 
 void MainWindow::onPersonsClicked(const QModelIndex &index)
 {
-
-    qDebug() << "onPersonsListRowActivated() " << index.row()
-             << " selected: " <<  ui->contactPeople->currentIndex().row();
 
     // Toggle selection
     if (last_person_clicked == index.row()) {
@@ -645,6 +687,56 @@ void MainWindow::onValidateActionActions()
 
 }
 
+void MainWindow::onDocumentsContextMenuRequested(const QPoint &pos)
+{
+    Q_UNUSED(pos);
+    QMenu *menu = new QMenu;
+
+    menu->addAction(ui->actionAdd_Document);
+    menu->addAction(ui->actionEdit_Document);
+    menu->addAction(ui->actionDelete_Document);
+    menu->addSeparator();
+    menu->addAction(ui->actionOpen_Document);
+
+    menu->exec(ui->documentsView->mapToGlobal(pos));
+}
+
+void MainWindow::onDocumentsRowActivated(const QModelIndex &index)
+{
+    Q_UNUSED(index);
+    onValidateDocumentActions();
+}
+
+void MainWindow::onDocumentsDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)
+{
+    onValidateDocumentActions();
+}
+
+void MainWindow::onDocumentsModelReset()
+{
+    onValidateDocumentActions();
+}
+
+void MainWindow::onValidateDocumentActions()
+{
+    const auto current = ui->contactsList->currentIndex();
+    const bool enable = current.isValid()
+            && app_mode_ == AppMode::CONTACTS
+            && ui->contactTab->currentIndex() == static_cast<int>(PersonTab::DOCUMENTS);
+
+    ui->actionAdd_Document->setEnabled(enable);
+    bool enable_modifications = false;
+
+    if (enable) {
+        const auto current_intent = ui->documentsView->currentIndex();
+        enable_modifications = current_intent.isValid();
+    }
+
+    ui->actionEdit_Document->setEnabled(enable_modifications);
+    ui->actionDelete_Document->setEnabled(enable_modifications);
+    ui->actionOpen_Document->setEnabled(enable_modifications);
+}
+
 void MainWindow::onContactTabChanged(int ix)
 {
     Q_UNUSED(ix);
@@ -653,6 +745,7 @@ void MainWindow::onContactTabChanged(int ix)
     onValidateContactActions();
     onValidateIntentActions();
     onValidateActionActions();
+    onValidateDocumentActions();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -1094,4 +1187,75 @@ void MainWindow::on_actionMove_Action_Down_triggered()
 {
     auto current = ui->actionsView->selectionModel()->currentIndex();
     actions_model_->moveDown(current);
+}
+
+void MainWindow::on_actionAdd_Document_triggered()
+{
+    const auto current = ui->contactsList->currentIndex();
+
+    if (!current.isValid()) {
+        return;
+    }
+
+    const auto contact_id = contacts_model_->getContactId(current);
+    auto rec = documents_model_->getRecord(contact_id, Document::Type::FILE,
+                                           Document::Class::NOTE,
+                                           Document::Direction::INTERNAL,
+                                           Document::Entity::CONTACT);
+
+    auto dlg = new DocumentDialog(rec, 0, this);
+    dlg->setAttribute( Qt::WA_DeleteOnClose );
+    connect(dlg, &DocumentDialog::addDocument,
+            documents_model_, &DocumentsModel::addDocument);
+    dlg->exec();
+}
+
+void MainWindow::on_actionEdit_Document_triggered()
+{
+    auto current = ui->documentsView->selectionModel()->currentIndex();
+    if (!current.isValid()) {
+        return;
+    }
+
+    auto dlg = new DocumentDialog(documents_model_->record(current.row()), current.row(), this);
+    dlg->setAttribute( Qt::WA_DeleteOnClose );
+    connect(dlg, &DocumentDialog::updateDocument,
+            documents_model_, &DocumentsModel::updateDocument);
+    dlg->exec();
+}
+
+void MainWindow::on_actionDelete_Document_triggered()
+{
+    auto selected = ui->documentsView->selectionModel()->selection().indexes();
+
+    if (selected.isEmpty()) {
+        return;
+    }
+
+    ui->documentsView->setCurrentIndex({});
+    documents_model_->removeDocuments(selected);
+}
+
+void MainWindow::on_actionOpen_Document_triggered()
+{
+    auto current = ui->documentsView->selectionModel()->currentIndex();
+    if (!current.isValid()) {
+        return;
+    }
+
+    const auto type = Document::toType(
+                documents_model_->data(
+                    documents_model_->index(current.row(),
+                                            documents_model_->property("type_col").toInt()),
+                    Qt::DisplayRole).toInt());
+    const auto what = documents_model_->data(
+                documents_model_->index(current.row(),
+                                        documents_model_->property("location_col").toInt()),
+                Qt::DisplayRole).toString();
+
+    if (type == Document::Type::NOTE) {
+        on_actionEdit_Document_triggered();
+    } else {
+        Document::open(type, what);
+    }
 }

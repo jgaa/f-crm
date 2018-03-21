@@ -13,6 +13,7 @@
 #include "src/contactsmodel.h"
 #include "src/strategy.h"
 #include "src/release.h"
+#include "src/logmodel.h"
 
 using namespace std;
 
@@ -168,6 +169,17 @@ void ContactsModel::removeContacts(const QModelIndexList &indexes)
     }
 
     for(const int row : rows) {
+
+        const int parent = data(index(row, h_contact_, {}), Qt::DisplayRole).toInt();
+        const int id = data(index(row, h_id_, {}), Qt::DisplayRole).toInt();
+
+        LogModel::instance().addContactLog(
+                    parent ? parent : id,
+                    LogModel::Type::DELETED_SOMETHING,
+                    QStringLiteral("Deleted contact %1")
+                    .arg(data(index(row, h_name_, {}),
+                              Qt::DisplayRole).toString()));
+
         if (!removeRow(row, {})) {
             qWarning() << "Failed to remove row " << row << ": "
                        << lastError().text();
@@ -225,6 +237,11 @@ bool ContactsModel::insertContact(QSqlRecord &rec)
         return false;
     }
 
+    LogModel::instance().addContactLog(
+                parent_,
+                LogModel::Type::ADD_PERSON,
+                QStringLiteral("Added person %1").arg(rec.value(h_name_).toString()));
+
     qDebug() << "Created new contact";
     return true;
 }
@@ -240,6 +257,15 @@ QModelIndex ContactsModel::createContact(const ContactType type)
     if (!insertContact(rec)) {
         return {};
     }
+
+    const auto log_type = type == ContactType::CORPORATION
+            ? LogModel::Type::ADD_COMPANY
+            : LogModel::Type::ADD_PERSON;
+
+    LogModel::instance().addContactLog(
+                data(index(0, h_id_, {}), Qt::DisplayRole).toInt(),
+                log_type,
+                QStringLiteral("Created contact %1").arg(rec.value(h_name_).toString()));
 
     return index(0, h_name_, {}); // Assume that we insterted at end in the model
 }

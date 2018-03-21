@@ -232,7 +232,7 @@
             </font>
            </property>
            <property name="currentIndex">
-            <number>2</number>
+            <number>3</number>
            </property>
            <widget class="QWidget" name="panelPage">
             <attribute name="title">
@@ -616,23 +616,70 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="logPage">
-            <attribute name="title">
-             <string>Log</string>
-            </attribute>
-            <layout class="QHBoxLayout" name="horizontalLayout_10">
-             <item>
-              <widget class="QTableWidget" name="logView"/>
-             </item>
-            </layout>
-           </widget>
            <widget class="QWidget" name="documentsPage">
             <attribute name="title">
              <string>Documents</string>
             </attribute>
             <layout class="QHBoxLayout" name="horizontalLayout_11">
              <item>
-              <widget class="QTableWidget" name="documentsView"/>
+              <widget class="QTableView" name="documentsView">
+               <property name="contextMenuPolicy">
+                <enum>Qt::CustomContextMenu</enum>
+               </property>
+               <property name="acceptDrops">
+                <bool>true</bool>
+               </property>
+               <property name="dragDropMode">
+                <enum>QAbstractItemView::DragDrop</enum>
+               </property>
+               <property name="defaultDropAction">
+                <enum>Qt::LinkAction</enum>
+               </property>
+               <property name="alternatingRowColors">
+                <bool>true</bool>
+               </property>
+               <property name="selectionMode">
+                <enum>QAbstractItemView::SingleSelection</enum>
+               </property>
+               <property name="selectionBehavior">
+                <enum>QAbstractItemView::SelectRows</enum>
+               </property>
+               <property name="showGrid">
+                <bool>false</bool>
+               </property>
+               <attribute name="verticalHeaderVisible">
+                <bool>false</bool>
+               </attribute>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="logPage">
+            <attribute name="title">
+             <string>Log</string>
+            </attribute>
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
+              <widget class="QTableView" name="logView">
+               <property name="alternatingRowColors">
+                <bool>true</bool>
+               </property>
+               <property name="selectionMode">
+                <enum>QAbstractItemView::SingleSelection</enum>
+               </property>
+               <property name="selectionBehavior">
+                <enum>QAbstractItemView::SelectRows</enum>
+               </property>
+               <property name="showGrid">
+                <bool>false</bool>
+               </property>
+               <attribute name="horizontalHeaderDefaultSectionSize">
+                <number>150</number>
+               </attribute>
+               <attribute name="verticalHeaderVisible">
+                <bool>false</bool>
+               </attribute>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -696,9 +743,20 @@
     <addaction name="actionMove_Action_Up"/>
     <addaction name="actionMove_Action_Down"/>
    </widget>
+   <widget class="QMenu" name="menuDocuments">
+    <property name="title">
+     <string>Documents</string>
+    </property>
+    <addaction name="actionAdd_Document"/>
+    <addaction name="actionEdit_Document"/>
+    <addaction name="actionDelete_Document"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpen_Document"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menuContact"/>
    <addaction name="menuIntente"/>
+   <addaction name="menuDocuments"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -711,6 +769,7 @@
    <addaction name="actionAdd_Contact"/>
    <addaction name="actionAdd_Channel"/>
    <addaction name="actionAdd_Intent"/>
+   <addaction name="actionAdd_Document"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_Quit">
@@ -935,6 +994,42 @@
    </property>
    <property name="text">
     <string>Move Action Down</string>
+   </property>
+  </action>
+  <action name="actionAdd_Document">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/add_document.svg</normaloff>:/res/icons/add_document.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Add Document</string>
+   </property>
+  </action>
+  <action name="actionEdit_Document">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/edit.svg</normaloff>:/res/icons/edit.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Edit Document</string>
+   </property>
+  </action>
+  <action name="actionDelete_Document">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/delete.svg</normaloff>:/res/icons/delete.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Document</string>
+   </property>
+  </action>
+  <action name="actionOpen_Document">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/document.svg</normaloff>:/res/icons/document.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Open Document</string>
    </property>
   </action>
  </widget>

@@ -16,6 +16,8 @@
 #include "database.h"
 #include "intentsmodel.h"
 #include "actionsmodel.h"
+#include "logmodel.h"
+#include "documentsmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -34,8 +36,8 @@ class MainWindow : public QMainWindow
         PANEL,
         CONTACT,
         INTENTS,
-        LOG,
-        DOCUMENTS
+        DOCUMENTS,
+        LOG
     };
 
 public:
@@ -80,6 +82,12 @@ private slots:
     void onActionsDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &);
     void onActionsModelReset();
     void onValidateActionActions();
+
+    void onDocumentsContextMenuRequested(const QPoint &pos);
+    void onDocumentsRowActivated(const QModelIndex &index);
+    void onDocumentsDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &);
+    void onDocumentsModelReset();
+    void onValidateDocumentActions();
 
     void onContactTabChanged(int ix);
 
@@ -128,6 +136,14 @@ private slots:
 
     void on_actionMove_Action_Down_triggered();
 
+    void on_actionAdd_Document_triggered();
+
+    void on_actionEdit_Document_triggered();
+
+    void on_actionDelete_Document_triggered();
+
+    void on_actionOpen_Document_triggered();
+
 private:
     QString getChannelValue() const;
     ChannelType getChannelType() const;
@@ -156,11 +172,13 @@ protected:
     AppMode app_mode_ = AppMode::PANEL;
     QSettings settings_;
     std::unique_ptr<Database> db_ = {};
+    LogModel *log_model_;
     ContactsModel *contacts_model_ = {};
     ContactsModel *persons_model_ = {}; // contact (persons) at a contact (company)
     ChannelsModel *channels_model_ = {};
     IntentsModel *intents_model_ = {};
     ActionsModel *actions_model_ = {};
+    DocumentsModel *documents_model_ = {};
     std::unique_ptr<QDataWidgetMapper> contacts_mapper_;
     std::unique_ptr<QDataWidgetMapper> persons_mapper_;
     int last_person_clicked {-1};

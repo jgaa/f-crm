@@ -64,7 +64,10 @@ SOURCES += \
     src/actionsmodel.cpp \
     src/utility.cpp \
     src/actionexecutedialog.cpp \
-    src/logmodel.cpp
+    src/logmodel.cpp \
+    src/document.cpp \
+    src/documentsmodel.cpp \
+    src/documentdialog.cpp
 
 HEADERS += \
     src/mainwindow.h \
@@ -87,7 +90,10 @@ HEADERS += \
     src/actionsmodel.h \
     src/utility.h \
     src/actionexecutedialog.h \
-    src/logmodel.h
+    src/logmodel.h \
+    src/document.h \
+    src/documentsmodel.h \
+    src/documentdialog.h
 
 FORMS += \
         ui/mainwindow.ui \
@@ -95,7 +101,8 @@ FORMS += \
     ui/persondialog.ui \
     ui/intentdialog.ui \
     ui/actiondialog.ui \
-    ui/actionexecutedialog.ui
+    ui/actionexecutedialog.ui \
+    ui/documentdialog.ui
 
 RESOURCES += \
     resources.qrc

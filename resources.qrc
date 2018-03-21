@@ -65,5 +65,20 @@
         <file>res/icons/execute_action.svg</file>
         <file>res/icons/move_down.svg</file>
         <file>res/icons/move_up.svg</file>
+        <file>res/icons/log_general.svg</file>
+        <file>res/icons/activity.svg</file>
+        <file>res/icons/external-link.svg</file>
+        <file>res/icons/file.svg</file>
+        <file>res/icons/incoming.svg</file>
+        <file>res/icons/intent.svg</file>
+        <file>res/icons/internal.svg</file>
+        <file>res/icons/note.svg</file>
+        <file>res/icons/offer.svg</file>
+        <file>res/icons/outgoing.svg</file>
+        <file>res/icons/proposal.svg</file>
+        <file>res/icons/request.svg</file>
+        <file>res/icons/research.svg</file>
+        <file>res/icons/document.svg</file>
+        <file>res/icons/add_document.svg</file>
     </qresource>
 </RCC>

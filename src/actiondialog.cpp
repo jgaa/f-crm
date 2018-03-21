@@ -47,7 +47,7 @@ void ActionDialog::setRecord(const QSqlRecord &rec)
 {
     rec_ = rec;
 
-    ui->state->setCurrentIndex(ui->type->findData(rec.value("state").toInt()));
+    ui->type->setCurrentIndex(ui->type->findData(rec.value("state").toInt()));
     ui->type->setCurrentIndex(ui->type->findData(rec.value("type").toInt()));
     ui->type->setCurrentIndex(ui->channelType->findData(rec.value("channel_type").toInt()));
     if (!rec.isNull("person")) {
@@ -154,9 +154,6 @@ void ActionDialog::accept()
     }
 
     if (mapper_) {
-
-        auto type = ui->type->currentData();
-
         mapper_->submit();
     }
 
