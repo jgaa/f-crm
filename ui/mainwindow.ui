@@ -622,7 +622,7 @@
             </attribute>
             <layout class="QHBoxLayout" name="horizontalLayout_11">
              <item>
-              <widget class="QTableView" name="documentsView">
+              <widget class="TableViewWithDrop" name="documentsView">
                <property name="contextMenuPolicy">
                 <enum>Qt::CustomContextMenu</enum>
                </property>
@@ -1034,6 +1034,13 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>TableViewWithDrop</class>
+   <extends>QTableView</extends>
+   <header>src/tableviewwithdrop.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../resources.qrc"/>
  </resources>

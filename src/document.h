@@ -83,6 +83,7 @@ struct Document
     static void open(Type type, QString value);
     static void openFile(QString path);
     static void openUrl(QString url);
+    static Type deduceType(const QUrl& url);
 };
 
 #endif // DOCUMENT_H

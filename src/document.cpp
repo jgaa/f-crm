@@ -1,7 +1,10 @@
 #include "src/document.h"
 
 #include <QDesktopServices>
+#include <QProcess>
+#include <QSettings>
 #include <QUrl>
+#include <QDebug>
 
 using namespace std;
 
@@ -223,7 +226,14 @@ const Document::entity_enums_t &Document::entityEnums()
 void Document::open(Document::Type type, QString value)
 {
     if (type == Document::Type::FILE || type == Document::Type::EMAIL) {
-        Document::openFile(value);
+
+        QSettings settings;
+        const auto mailapp = settings.value("mailapp", "").toString();
+        if (value.startsWith("imap:") && !mailapp.isEmpty()) {
+            QProcess::startDetached(mailapp, {value});
+        } else {
+            Document::openFile(value);
+        }
     } else if (type == Document::Type::URL) {
         Document::openUrl(value);
     }
@@ -253,4 +263,16 @@ void Document::openUrl(QString url)
     }
 
     QDesktopServices::openUrl(QUrl(url));
+}
+
+Document::Type Document::deduceType(const QUrl &url)
+{
+    const auto scheme = url.scheme();
+    if (scheme.isEmpty())
+        return Type::NOTE;
+    if (scheme == "imap" || scheme == "mailto")
+        return Type::EMAIL;
+    if (scheme == "file")
+        return Type::FILE;
+    return Type::URL;
 }

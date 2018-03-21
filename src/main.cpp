@@ -29,6 +29,11 @@ void initSettings() {
         qDebug() << "Settings are OK at version " << version;
     }
 
+    // TODO: Remove this before betas
+    if (settings.value("mailapp", "").toString().isEmpty()) {
+        settings.setValue("mailapp", "thunderbird");
+    }
+
     if (settings.value("dbpath", "").toString().isEmpty()) {
         QString dbpath = data_path;
 #ifdef QT_DEBUG

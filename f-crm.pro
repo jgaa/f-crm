@@ -67,7 +67,8 @@ SOURCES += \
     src/logmodel.cpp \
     src/document.cpp \
     src/documentsmodel.cpp \
-    src/documentdialog.cpp
+    src/documentdialog.cpp \
+    src/tableviewwithdrop.cpp
 
 HEADERS += \
     src/mainwindow.h \
@@ -93,7 +94,8 @@ HEADERS += \
     src/logmodel.h \
     src/document.h \
     src/documentsmodel.h \
-    src/documentdialog.h
+    src/documentdialog.h \
+    src/tableviewwithdrop.h
 
 FORMS += \
         ui/mainwindow.ui \

@@ -128,6 +128,7 @@ void MainWindow::initialize()
     }
 
     ui->documentsView->setModel(documents_model_);
+    ui->documentsView->setDocumentsModel(documents_model_);
     ui->documentsView->horizontalHeader()->setSectionResizeMode(
                 documents_model_->property("name_col").toInt(), QHeaderView::Stretch);
     for(int i = 0; i < documents_model_->columnCount(); ++i) {
@@ -301,6 +302,8 @@ void MainWindow::onSyncronizeContactsBindings()
         actions_model_->setContact(contact_id);
         log_model_->setContact(contact_id);
         documents_model_->setContact(contact_id);
+        ui->documentsView->setContactId(contact_id);
+        ui->documentsView->setEntity(Document::Entity::CONTACT, nullptr, contact_id);
 
     } else {
         if (contacts_mapper_) {
@@ -328,6 +331,7 @@ void MainWindow::onSyncronizeContactsBindings()
         intents_model_->setContact(-1);
         log_model_->setContact(-1);
         documents_model_->setContact(-1);
+        ui->documentsView->setContactId(-1);
     }
 
     ui->contactNotes->setReadOnly(read_only);
