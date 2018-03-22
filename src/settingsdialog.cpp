@@ -1,5 +1,6 @@
 #include "src/settingsdialog.h"
 #include "ui_settingsdialog.h"
+#include "logging.h"
 
 #include <QFileDialog>
 
@@ -21,9 +22,15 @@ SettingsDialog::SettingsDialog(QSettings& settings, QWidget *parent) :
     ui->enableLoggingCheck->setCheckState(
                 settings_.value("log-enabled", false).toBool()
                 ? Qt::Checked : Qt::Unchecked);
+    ui->logAppendCheck->setCheckState(
+                settings.value("log-append", false).toBool()
+                ? Qt::Checked : Qt::Unchecked);
     ui->logPathEdit->setText(settings_.value("log-path", "whid.log").toString());
 
+    ui->tabCtl->setCurrentIndex(0);
+
     connect(ui->dbSelectPathBtn, SIGNAL(clicked()), this, SLOT(selectDbFile()));
+    connect(this, SIGNAL(logSettingsChanged()), Logging::instance(), SLOT(changed()));
 }
 
 SettingsDialog::~SettingsDialog()
@@ -56,6 +63,10 @@ void SettingsDialog::accept()
     }
 
     settings_.setValue("log-path", ui->logPathEdit->text());
+
+    settings_.setValue("log-append",
+                      ui->logAppendCheck->checkState() == Qt::Checked);
+
 
     if (log_changed) {
         emit logSettingsChanged();

@@ -65,8 +65,8 @@ int main(int argc, char *argv[])
 #endif
     initSettings();
 
-//    Logging logger;
-//    qInstallMessageHandler(Logging::logMessageHandler);
+    Logging logger;
+    qInstallMessageHandler(Logging::logMessageHandler);
 
     MainWindow w;
     try {

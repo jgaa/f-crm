@@ -55,6 +55,8 @@ public:
 signals:
 
 private slots:
+    void showMessage(const QString& label, const QString& text);
+
     void appModeSelectionChanged();
     void onContactFilterChanged(const QString& text);
     void onContactsListRowActivated(const QModelIndex &index);

@@ -29,6 +29,9 @@ public slots:
     // Re-open the log-file, applying the current settings
     void changed();
 
+signals:
+    void message(const QString& label, const QString& text);
+
 private:
     void open();
 

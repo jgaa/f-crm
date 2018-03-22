@@ -5,6 +5,7 @@
 #include <QTextStream>
 #include <QDateTime>
 #include <QDebug>
+#include <QMessageBox>
 
 using namespace std;
 
@@ -54,21 +55,29 @@ void Logging::onLogMessageHandler(QtMsgType type,
             << ' '
             << message_types.at(type)
             << ' '
-            << context.function
+            << (context.function ? context.function : "[no context]")
             << ' '
             << msg
             << '\n';
+
+        if (type >= QtWarningMsg && context.function != nullptr) {
+//            QMessageBox::warning(nullptr, message_types.at(type),
+//                                 msg);
+            emit message(message_types.at(type), msg);
+        }
     }
-#ifdef QT_DEBUG
-    clog << now.toStdString()
-         << ' '
-         << message_types.at(type).toStdString()
-         << ' '
-         << context.function
-         << ' '
-         << msg.toStdString()
-         << endl;
-#endif
+
+    if (cout.good()) {
+
+        cout << now.toStdString()
+             << ' '
+             << message_types.at(type).toStdString()
+             << ' '
+             << (context.function ? context.function : "[no context]")
+             << ' '
+             << msg.toStdString()
+             << endl;
+    }
 }
 
 void Logging::changed()

@@ -11,13 +11,13 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Application Settings</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTabWidget" name="logTab">
+    <widget class="QTabWidget" name="tabCtl">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -130,6 +130,13 @@
         <widget class="QCheckBox" name="enableLoggingCheck">
          <property name="text">
           <string>Enable logging</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="logAppendCheck">
+         <property name="text">
+          <string>Append log-messages to the end of the file</string>
          </property>
         </widget>
        </item>

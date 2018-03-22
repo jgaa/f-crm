@@ -9,6 +9,7 @@
 #include "actionexecutedialog.h"
 #include "documentdialog.h"
 #include "settingsdialog.h"
+#include "logging.h"
 
 #include <QSettings>
 #include <QDebug>
@@ -217,7 +218,14 @@ void MainWindow::initialize()
 
     connect(ui->contactTab, &QTabWidget::currentChanged, this, &MainWindow::onContactTabChanged);
 
+    connect(Logging::instance(), &Logging::message, this, &MainWindow::showMessage, Qt::QueuedConnection);
+
     onSyncronizeContactsBindings();
+}
+
+void MainWindow::showMessage(const QString &label, const QString &text)
+{
+    QMessageBox::warning(this, label, text);
 }
 
 void MainWindow::appModeSelectionChanged()
