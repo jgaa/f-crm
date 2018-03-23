@@ -6,7 +6,7 @@
 <br>Screenshot from Debian Linux
 
 # Why?
-I am a freelancer. I need a professional relation with my clients. This require a system where all contact-information, documents, emails, calls, - *everything* - is easily available when I need it.
+I am a freelancer. I need a professional relations with my clients. This require a system where all contact-information, documents, emails, calls, - *everything* - is easily available when I need it.
 
 # Backstory
 I spent a full day trying to find a suitable solution. I looked for an open source, or at least affordable, desktop application. Nothing. Everything is *cloud* these days. It's just that - *I don't want cloud*. Cloud services are fragile. They may go tits up. They may get acquired and terminated. They may simply *terminate your service for whatever or no reason*. **There is no cloud!** It's just someone else's computer. I like dependable applications. They're faster to work with, have a richer set of UI controls, and they work whether Internet is available or not.
