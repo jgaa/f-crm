@@ -8,23 +8,23 @@ I am a freelancer. I need a professional relation with my clients. This require 
 
 # Backstory
 
-I spent a full day trying to find a suitable solution. I looked for an open source, or at least affordable, desktop application. Nothing. Everything is *cloud* these days. It's just that - *I don't want cloud*. Cloud services are fragile. They may go tits up. They may get acquired and terminated. They may simply *terminate your service for whatever or no reason*. **There is no cloud!**, it's just someone else's computer. I like dependable applications. They're faster to work with, have a richer set of UI controls, and they work whether Internet is available or not.
+I spent a full day trying to find a suitable solution. I looked for an open source, or at least affordable, desktop application. Nothing. Everything is *cloud* these days. It's just that - *I don't want cloud*. Cloud services are fragile. They may go tits up. They may get acquired and terminated. They may simply *terminate your service for whatever or no reason*. **There is no cloud!** It's just someone else's computer. I like dependable applications. They're faster to work with, have a richer set of UI controls, and they work whether Internet is available or not.
 
-I did try [odoo](https://www.odoo.com/) CRM and Sales modules, installing the backed on my own server. Odoo is very popular, it's an impressive project - but the CRM capabilities are too limited for my use.
+I did try [odoo](https://www.odoo.com/) CRM and Sales modules, installing the backed on my own server. Odoo is very popular. It's an impressive project - but the CRM capabilities are too limited for my use.
 
 So, I decided to code a good Desktop CRM application from scratch in *one* week. One week later, Friday 23'rd 2018, I downloaded the binary .deb package from my build server, installed it on my PC, and started to use it.
 
 # Features
-The application is dead simple, with just the complexity and feature *I* need to do a brilliant job as a sales person and as a reliable freelancer.
+The application is dead simple, with just the complexity and feature a high value Freelancer needs to do a brilliant job with sales and customer relations.
 
-- **Contact management** (companies or private persons)
-- **Contact-person management** at the companies
-- **Intents** (some systems calls it pipe-lines) - some mini-projects with clear defined goals that you want to achieve (for example , sell something to, or get the attention from, a prospect)
-- **Actions** - Steps / tasks to perform to move an intent forward (for example - send a follow-up mail at a specific date)
-- **Document management**, documents and mails are linked to customers, persons, intents or actions.
+- **Contact management** (companies or private persons).
+- **Contact-person management** at the companies.
+- **Intents** (pipelines) - some mini-projects with clear defined goals that you want to achieve. For example , sell something to, or get the attention from, a prospect.
+- **Actions** - Steps / tasks to perform to move an intent forward against completion. For example - send a follow-up mail at a specific date.
+- **Document management** documents and mails are linked to customers, persons, intents or actions.
 - **Journal** - a list of all the relevant things that has happened within the relation with a contact. This is updated automatically when you add or change information.
 - **Data is stored locally** in a sqlite database.
-- **Integration with email clients** so that I can send and look at sent/received emails directly from *f-crm*. Currently Thunderbird is tested.
+- **Integration with email clients** so that we can send and look at sent/received emails directly from *f-crm*. Currently Thunderbird is tested.
 
 # Supported platforms
  - Debian Stretch
