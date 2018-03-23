@@ -2,6 +2,9 @@
 
 **Customer Relations Management** for Freelancers and Individual Contractors.
 
+![f-crm on Linux](doc/f-crm.png)
+<br>Screenshot from Debian Linux
+
 # Why?
 
 I am a freelancer. I need a professional relation with my clients. This require a system where all contact-information, documents, emails, calls, - *everything* - is easily available when I need it.
