@@ -40,4 +40,4 @@ I use QT Creator for this project. There are [scripts](scripts) for building and
 There is also a [Jenkinsfile](ci/jenkins/Jenkinsfile.groovy) and [docker-files](ci/jenkins/) to build it on all platforms from Jenkins.
 
 # Current status
-**Under development**. I will use myself for a few weeks, fix any bugs I notice, add features I need, remove anything that cause friction - and then release a public beta.
+**Under development**. I will use it myself for a few weeks, fix any bugs I notice, add features I need, remove anything that cause friction - and then release a public beta.
