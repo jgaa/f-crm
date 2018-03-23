@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>531</width>
-    <height>397</height>
+    <width>529</width>
+    <height>415</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,7 +31,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="genderLabel">
        <property name="text">
         <string>Gender</string>
        </property>
@@ -46,6 +46,24 @@
         <enum>QComboBox::AdjustToContents</enum>
        </property>
       </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="favorite">
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../resources.qrc">
+         <normaloff>:/res/icons/not_favourite.svg</normaloff>
+         <normalon>:/res/icons/favourite.svg</normalon>:/res/icons/not_favourite.svg</iconset>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="stars"/>
      </item>
      <item>
       <spacer name="horizontalSpacer">
@@ -111,28 +129,72 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
-      <widget class="QLineEdit" name="postcode"/>
-     </item>
-     <item row="8" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="label_9">
        <property name="text">
         <string>Country</string>
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
+     <item row="11" column="1">
       <widget class="QLineEdit" name="country"/>
      </item>
-     <item row="9" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
         <string>Notes</string>
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="12" column="1">
       <widget class="QPlainTextEdit" name="notes"/>
+     </item>
+     <item row="7" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLineEdit" name="postcode">
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="label_10">
+       <property name="text">
+        <string>Region</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QLineEdit" name="region"/>
+     </item>
+     <item row="10" column="0">
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string>State</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QLineEdit" name="state"/>
      </item>
     </layout>
    </item>
@@ -165,7 +227,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

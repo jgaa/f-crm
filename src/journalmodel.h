@@ -13,7 +13,7 @@
 #define DEF_COLUMN(name) Q_PROPERTY(int name ## _col MEMBER h_ ## name ## _)
 
 
-class LogModel : public QSqlTableModel
+class JournalModel : public QSqlTableModel
 {
     Q_OBJECT
 public:
@@ -21,6 +21,8 @@ public:
         GENERAL,
         ADD_COMPANY,
         ADD_PERSON,
+        UPDATED_CONTACT,
+        UPDATED_PERSON,
         ADD_DOCUMENT,
         UPDATED_DOCUMENT,
         DELETED_DOCUMENT,
@@ -33,7 +35,7 @@ public:
         DELETED_SOMETHING,
     };
 
-    LogModel(QSettings& settings, QObject *parent, QSqlDatabase db);
+    JournalModel(QSettings& settings, QObject *parent, QSqlDatabase db);
 
     DEF_COLUMN(id)
     DEF_COLUMN(type)
@@ -48,15 +50,15 @@ public:
 
     void setContact(int id);
 
-    static LogModel& instance() {
+    static JournalModel& instance() {
         Q_ASSERT(instance_);
         return *instance_;
     }
 
 public slots:
-    void addLog(QSqlRecord& rec); // Will modify rec
-    void addContactLog(const int contact, const Type type, const QString& text);
-    void addLog(const Type type, const QString& text,
+    void addEntry(QSqlRecord& rec); // Will modify rec
+    //void addContactLog(const int contact, const Type type, const QString& text);
+    void addEntry(const Type type, const QString& text,
                 const int contact, const int person = 0, const int intent = 0,
                 const int activity = 0, const int document = 0);
 
@@ -64,7 +66,7 @@ private:
     const QIcon& getLogIcon(int type) const;
 
     QSettings& settings_;
-    static LogModel *instance_;
+    static JournalModel *instance_;
 
     int h_id_ = {};
     int h_type_ = {};

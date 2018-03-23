@@ -86,5 +86,9 @@
         <file>res/icons/edit_intent.svg</file>
         <file>res/icons/delete_action.svg</file>
         <file>res/icons/edit_action.svg</file>
+        <file>res/icons/updated_person.svg</file>
+        <file>res/icons/updated_company.svg</file>
+        <file>res/icons/clear_filter.svg</file>
+        <file>res/icons/not_favourite.svg</file>
     </qresource>
 </RCC>

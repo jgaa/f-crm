@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1062</width>
-    <height>718</height>
+    <width>1063</width>
+    <height>711</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>F-CRM</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout_4">
     <item>
      <widget class="QListWidget" name="appModeList">
       <property name="minimumSize">
@@ -164,11 +164,26 @@
           <widget class="QWidget" name="verticalLayoutWidget_2">
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
-             <widget class="QLineEdit" name="contactFilter">
-              <property name="placeholderText">
-               <string>Filter</string>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <widget class="QLineEdit" name="contactFilter">
+                <property name="placeholderText">
+                 <string>Filter</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QToolButton" name="clearFilter">
+                <property name="text">
+                 <string>...</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../resources.qrc">
+                  <normaloff>:/res/icons/clear_filter.svg</normaloff>:/res/icons/clear_filter.svg</iconset>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <widget class="TableViewWithDrop" name="contactsList">
@@ -242,66 +257,78 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_21">
                <item>
-                <widget class="QLabel" name="contactType">
+                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                 <item>
+                  <widget class="QLabel" name="contactWhoIcon">
+                   <property name="font">
+                    <font>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>icon</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="contactWhoName">
+                   <property name="font">
+                    <font>
+                     <pointsize>11</pointsize>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>name</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_2">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QLabel" name="contactFavoriteIcon">
                  <property name="minimumSize">
                   <size>
-                   <width>32</width>
-                   <height>32</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>32</width>
-                   <height>32</height>
+                   <width>16</width>
+                   <height>16</height>
                   </size>
                  </property>
                  <property name="text">
                   <string/>
                  </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="horizontalSpacer_4">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QToolButton" name="contactFavoriteIcon">
-                 <property name="text">
-                  <string>Favourite</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="../resources.qrc">
-                   <normaloff>:/res/icons/nofavourite.svg</normaloff>
-                   <normalon>:/res/icons/favourite.svg</normalon>:/res/icons/nofavourite.svg</iconset>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
+                 <property name="pixmap">
+                  <pixmap resource="../resources.qrc">:/res/icons/favourite.svg</pixmap>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QToolButton" name="contactStarsIcon">
-                 <property name="text">
-                  <string>star</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="../resources.qrc">
-                   <normaloff>:/res/icons/0star.svg</normaloff>:/res/icons/0star.svg</iconset>
-                 </property>
-                 <property name="iconSize">
+                <widget class="QLabel" name="contactStarsIcon">
+                 <property name="minimumSize">
                   <size>
-                   <width>86</width>
+                   <width>80</width>
                    <height>16</height>
                   </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="pixmap">
+                  <pixmap resource="../resources.qrc">:/res/icons/5star.svg</pixmap>
                  </property>
                 </widget>
                </item>
@@ -507,7 +534,11 @@
               </layout>
              </item>
              <item>
-              <widget class="QPlainTextEdit" name="personNotes"/>
+              <widget class="QPlainTextEdit" name="personNotes">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QTableView" name="contactChannels">
@@ -700,7 +731,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1062</width>
+     <width>1063</width>
      <height>19</height>
     </rect>
    </property>
@@ -717,6 +748,7 @@
     </property>
     <addaction name="actionAdd_Company"/>
     <addaction name="actionAdd_Contact"/>
+    <addaction name="actionEdit_Contact"/>
     <addaction name="actionDelete_Contact"/>
     <addaction name="separator"/>
     <addaction name="actionAdd_Person"/>
@@ -1039,6 +1071,15 @@
   <action name="actionSettings">
    <property name="text">
     <string>&amp;Settings</string>
+   </property>
+  </action>
+  <action name="actionEdit_Contact">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/edit.svg</normaloff>:/res/icons/edit.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Edit Contact</string>
    </property>
   </action>
  </widget>

@@ -12,7 +12,7 @@
 #include "src/strategy.h"
 #include "src/intent.h"
 #include "document.h"
-#include "logmodel.h"
+#include "journalmodel.h"
 
 using namespace std;
 
@@ -113,7 +113,7 @@ void DocumentsModel::removeDocuments(const QModelIndexList &indexes)
                        << lastError().text();
         }
 
-        LogModel::instance().addLog(LogModel::Type::DELETED_DOCUMENT,
+        JournalModel::instance().addEntry(JournalModel::Type::DELETED_DOCUMENT,
                                     QStringLiteral("Deleted document: %1")
                                     .arg(rec.value("name").toString()),
                                     rec.value("contact").toInt(),
@@ -149,7 +149,7 @@ void DocumentsModel::addDocument(const QSqlRecord &origRec)
 
     qDebug() << "Created new document";
 
-    LogModel::instance().addLog(LogModel::Type::ADD_DOCUMENT,
+    JournalModel::instance().addEntry(JournalModel::Type::ADD_DOCUMENT,
                                 QStringLiteral("Added document: %1").arg(origRec.value("name").toString()),
                                 origRec.value("contact").toInt(),
                                 origRec.value("person").toInt(),
@@ -163,7 +163,7 @@ void DocumentsModel::updateDocument(const int row, const QSqlRecord &rec)
     Strategy strategy(*this, QSqlTableModel::OnManualSubmit);
 
     if (!setRecord(row, rec)) {
-        qWarning() << "Failed to add new document (insertRecord): "
+        qWarning() << "Failed to update document (setRecord): "
                    << lastError().text();
         return;
     }
@@ -174,7 +174,7 @@ void DocumentsModel::updateDocument(const int row, const QSqlRecord &rec)
         return;
     }
 
-    LogModel::instance().addLog(LogModel::Type::UPDATED_DOCUMENT,
+    JournalModel::instance().addEntry(JournalModel::Type::UPDATED_DOCUMENT,
                                 QStringLiteral("Updated document: %1")
                                 .arg(rec.value("name").toString()),
                                 rec.value("contact").toInt(),

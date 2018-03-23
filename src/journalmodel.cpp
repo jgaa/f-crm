@@ -1,4 +1,4 @@
-#include "src/logmodel.h"
+#include "src/journalmodel.h"
 
 #include <set>
 #include <QSqlQuery>
@@ -14,9 +14,9 @@
 
 using namespace std;
 
-LogModel *LogModel::instance_;
+JournalModel *JournalModel::instance_;
 
-LogModel::LogModel(QSettings &settings, QObject *parent, QSqlDatabase db)
+JournalModel::JournalModel(QSettings &settings, QObject *parent, QSqlDatabase db)
     : QSqlTableModel{parent, std::move(db)}
     , settings_{settings}
 {
@@ -24,7 +24,7 @@ LogModel::LogModel(QSettings &settings, QObject *parent, QSqlDatabase db)
 
     instance_ = this;
 
-    setTable("log");
+    setTable("journal");
     setEditStrategy(QSqlTableModel::OnFieldChange);
 
     h_id_ = fieldIndex("id");
@@ -54,14 +54,14 @@ LogModel::LogModel(QSettings &settings, QObject *parent, QSqlDatabase db)
     setFilter("id = -1"); // Filter everything away
 }
 
-void LogModel::setContact(int id)
+void JournalModel::setContact(int id)
 {
     setFilter(QStringLiteral("contact = %1").arg(id));
     select();
 }
 
 
-void LogModel::addLog(QSqlRecord& rec)
+void JournalModel::addEntry(QSqlRecord& rec)
 {
     Strategy strategy(*this, QSqlTableModel::OnManualSubmit);
 
@@ -71,20 +71,21 @@ void LogModel::addLog(QSqlRecord& rec)
     Q_ASSERT(!rec.value(h_type_).isNull());
     Q_ASSERT(!rec.value(h_text_).isNull());
 
-//    for(int i = 0; i < rec.count(); ++i) {
-//        qDebug() << "# " << i << " " << rec.fieldName(i)
-//                 << " " << rec.value(i).typeName()
-//                 << " : " << (rec.isNull(i) ? QStringLiteral("NULL") : rec.value(i).toString());
-//    }
+    qDebug() << "Adding Journal entry. Fields: ";
+    for(int i = 0; i < rec.count(); ++i) {
+        qDebug() << "  # " << i << " " << rec.fieldName(i)
+        << " " << rec.value(i).typeName()
+        << " : " << (rec.isNull(i) ? QStringLiteral("NULL") : rec.value(i).toString());
+    }
 
     if (!insertRecord(-1, rec)) {
-        qWarning() << "Failed to add new intent (insertRecord): "
+        qWarning() << "Failed to add new journal (insertRecord): "
                    << lastError().text();
         return;
     }
 
     if (!submitAll()) {
-        qWarning() << "Failed to add new intent (submitAll): "
+        qWarning() << "Failed to add new journal (submitAll): "
                    << lastError().text();
         return;
     }
@@ -92,19 +93,7 @@ void LogModel::addLog(QSqlRecord& rec)
     qDebug() << "Created new log entry";
 }
 
-void LogModel::addContactLog(const int contact,
-                             const LogModel::Type type,
-                             const QString &text)
-{
-    auto rec = record();
-    rec.setValue(h_contact_, contact);
-    rec.setValue(h_type_, static_cast<int>(type));
-    rec.setValue(h_text_, text);
-
-    addLog(rec);
-}
-
-void LogModel::addLog(const LogModel::Type type, const QString &text,
+void JournalModel::addEntry(const JournalModel::Type type, const QString &text,
                       const int contact, const int person,
                       const int intent, const int activity,
                       const int document)
@@ -128,15 +117,17 @@ void LogModel::addLog(const LogModel::Type type, const QString &text,
     if (document > 0)
         rec.setValue(h_document_, document);
 
-    addLog(rec);
+    addEntry(rec);
 }
 
-const QIcon &LogModel::getLogIcon(int type) const
+const QIcon &JournalModel::getLogIcon(int type) const
 {
-    static const array<QIcon, 13> icons {{
+    static const array<QIcon, 15> icons {{
         QIcon(":/res/icons/log_general.svg"),
         QIcon(":/res/icons/addcompany.svg"),
-        QIcon(":/res/icons/addcompany.svg"),
+        QIcon(":/res/icons/addperson.svg"),
+        QIcon(":/res/icons/updated_company.svg"),
+        QIcon(":/res/icons/updated_person.svg"),
         QIcon(":/res/icons/add_document.svg"),
         QIcon(":/res/icons/edit_document.svg"),
         QIcon(":/res/icons/delete_document.svg"),
@@ -152,7 +143,7 @@ const QIcon &LogModel::getLogIcon(int type) const
     return icons.at(static_cast<size_t>(type));
 }
 
-QVariant LogModel::data(const QModelIndex &ix, int role) const
+QVariant JournalModel::data(const QModelIndex &ix, int role) const
 {
     if (ix.isValid()) {
         if (role == Qt::DisplayRole) {
@@ -174,7 +165,7 @@ QVariant LogModel::data(const QModelIndex &ix, int role) const
     return QSqlTableModel::data(ix, role);
 }
 
-QVariant LogModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant JournalModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
         auto name = QSqlTableModel::headerData(section, orientation, role).toString();

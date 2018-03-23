@@ -16,13 +16,13 @@
 #include "database.h"
 #include "intentsmodel.h"
 #include "actionsmodel.h"
-#include "logmodel.h"
+#include "journalmodel.h"
 #include "documentsmodel.h"
 #include "documentproxymodel.h"
 #include "contactproxymodel.h"
 #include "intentproxymodel.h"
 #include "actionproxymodel.h"
-#include "logproxymodel.h"
+#include "journalproxymodel.h"
 #include "channelproxymodel.h"
 
 namespace Ui {
@@ -52,10 +52,10 @@ public:
 
     void initialize();
 
-signals:
-
 private slots:
     void showMessage(const QString& label, const QString& text);
+    void setFilter(QString value);
+    void clearFilter(bool);
 
     void appModeSelectionChanged();
     void onContactFilterChanged(const QString& text);
@@ -154,6 +154,13 @@ private slots:
 
     void on_actionSettings_triggered();
 
+    void on_actionEdit_Contact_triggered();
+
+    void onContactsDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int>);
+
+
+    void on_actionRateContact_triggered();
+
 private:
     QString getChannelValue() const;
     ChannelType getChannelType() const;
@@ -174,6 +181,11 @@ private:
     ContactsModel *getCurrentPersonModel() const;
     // returns 0 if no person is current and selected;
     int getCurrentPersonId() const;
+    void syncPersonData(ContactsModel *model = nullptr, const int row = -1);
+    void syncContactData(ContactsModel *model = nullptr, const int row = -1);
+    QVariant contactData(ContactsModel *model = nullptr, const char *col = "",
+                         const int row = -1, const int role = Qt::DisplayRole);
+
 
     Ui::MainWindow *ui;
 
@@ -183,8 +195,8 @@ protected:
     AppMode app_mode_ = AppMode::PANEL;
     QSettings settings_;
     std::unique_ptr<Database> db_ = {};
-    LogModel *log_model_ = {};
-    LogProxyModel *log_px_model_ = {};
+    JournalModel *log_model_ = {};
+    JournalProxyModel *log_px_model_ = {};
     ContactsModel *contacts_model_ = {};
     ContactsModel *persons_model_ = {}; // contact (persons) at a contact (company)
     ChannelsModel *channels_model_ = {};
@@ -197,8 +209,8 @@ protected:
     DocumentProxyModel *documents_px_model_ = {};
     ContactProxyModel *contact_px_model = {};
     ContactProxyModel * person_px_model = {};
-    std::unique_ptr<QDataWidgetMapper> contacts_mapper_;
-    std::unique_ptr<QDataWidgetMapper> persons_mapper_;
+    //std::unique_ptr<QDataWidgetMapper> contacts_mapper_;
+    //std::unique_ptr<QDataWidgetMapper> persons_mapper_;
     int last_person_clicked {-1};
 };
 

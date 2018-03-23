@@ -64,7 +64,6 @@ SOURCES += \
     src/actionsmodel.cpp \
     src/utility.cpp \
     src/actionexecutedialog.cpp \
-    src/logmodel.cpp \
     src/document.cpp \
     src/documentsmodel.cpp \
     src/documentdialog.cpp \
@@ -74,8 +73,10 @@ SOURCES += \
     src/channelproxymodel.cpp \
     src/intentproxymodel.cpp \
     src/actionproxymodel.cpp \
-    src/logproxymodel.cpp \
-    src/settingsdialog.cpp
+    src/settingsdialog.cpp \
+    src/journalmodel.cpp \
+    src/journalproxymodel.cpp \
+    src/favoritesdialog.cpp
 
 HEADERS += \
     src/mainwindow.h \
@@ -98,7 +99,6 @@ HEADERS += \
     src/actionsmodel.h \
     src/utility.h \
     src/actionexecutedialog.h \
-    src/logmodel.h \
     src/document.h \
     src/documentsmodel.h \
     src/documentdialog.h \
@@ -108,8 +108,10 @@ HEADERS += \
     src/channelproxymodel.h \
     src/intentproxymodel.h \
     src/actionproxymodel.h \
-    src/logproxymodel.h \
-    src/settingsdialog.h
+    src/settingsdialog.h \
+    src/journalmodel.h \
+    src/journalproxymodel.h \
+    src/favoritesdialog.h
 
 FORMS += \
         ui/mainwindow.ui \
@@ -119,7 +121,8 @@ FORMS += \
     ui/actiondialog.ui \
     ui/actionexecutedialog.ui \
     ui/documentdialog.ui \
-    ui/settingsdialog.ui
+    ui/settingsdialog.ui \
+    ui/favoritesdialog.ui
 
 RESOURCES += \
     resources.qrc

@@ -1,5 +1,6 @@
 
 #include <set>
+#include <array>
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -13,7 +14,7 @@
 #include "src/contactsmodel.h"
 #include "src/strategy.h"
 #include "src/release.h"
-#include "src/logmodel.h"
+#include "src/journalmodel.h"
 
 using namespace std;
 
@@ -29,9 +30,6 @@ ContactsModel::ContactsModel(QSettings& settings, QObject *parent, QSqlDatabase 
     h_created_date_ = fieldIndex("created_date");
     h_last_activity_date_ = fieldIndex("last_activity_date");
     h_name_ = fieldIndex("name");
-    h_first_name_ = fieldIndex("first_name");
-    h_last_name_ = fieldIndex("last_name");
-    h_middle_name_ = fieldIndex("middle_name");
     h_gender_ = fieldIndex("gender");
     h_type_ = fieldIndex("type");
     h_status_ = fieldIndex("status");
@@ -42,15 +40,14 @@ ContactsModel::ContactsModel(QSettings& settings, QObject *parent, QSqlDatabase 
     h_address2_ = fieldIndex("address2");
     h_city_ = fieldIndex("city");
     h_postcode_ = fieldIndex("postcode");
+    h_region_ = fieldIndex("region");
+    h_state_ = fieldIndex("city");
     h_country_ = fieldIndex("country");
 
     Q_ASSERT(h_contact_ > 0
             && h_created_date_ > 0
             && h_last_activity_date_ > 0
             && h_name_ > 0
-            && h_first_name_ > 0
-            && h_last_name_ > 0
-            && h_middle_name_ > 0
             && h_gender_ > 0
             && h_type_ > 0
             && h_status_ > 0
@@ -60,7 +57,9 @@ ContactsModel::ContactsModel(QSettings& settings, QObject *parent, QSqlDatabase 
             && h_address1_ > 0
             && h_address2_ > 0
             && h_city_ > 0
-            && h_postcode_ > 0
+            && h_region_ > 0
+            && h_city_ > 0
+            && h_state_ > 0
             && h_country_ > 0
     );
 
@@ -71,6 +70,31 @@ ContactsModel::ContactsModel(QSettings& settings, QObject *parent, QSqlDatabase 
 
 QVariant ContactsModel::data(const QModelIndex &ix, int role) const
 {
+    if (ix.isValid()) {
+        if (role == Qt::DecorationRole) {
+            if (ix.column() == h_name_) {
+                const auto cix = index(ix.row(), h_type_, {});
+                return GetContactTypeIcon(std::max(0, QSqlTableModel::data(cix, Qt::DisplayRole).toInt()));
+            }
+
+            if (ix.column() == h_status_) {
+                return GetContactStatusIcon(std::max(0, QSqlTableModel::data(ix, Qt::DisplayRole).toInt()));
+            }
+
+            if (ix.column() == h_type_) {
+                return GetContactTypeIcon(std::max(0, QSqlTableModel::data(ix, Qt::DisplayRole).toInt()));
+            }
+
+            if (ix.column() == h_favorite_) {
+                return getFavoriteIcon(std::max(0, QSqlTableModel::data(ix, Qt::DisplayRole).toInt()));
+            }
+
+            if (ix.column() == h_stars_) {
+                return getStars(std::max(0, QSqlTableModel::data(ix, Qt::DisplayRole).toInt()));
+            }
+        }
+
+    }
     return QSqlTableModel::data(ix, role);
 }
 
@@ -86,15 +110,6 @@ QVariant ContactsModel::headerData(int section, Qt::Orientation orientation, int
 
 Qt::ItemFlags ContactsModel::flags(const QModelIndex &ix) const
 {
-//    if (!internal_edit_) {
-//        if (ix.isValid()) {
-//            if ((ix.column() != h_name_)
-//               && (ix.column() != h_notes_)) {
-//                return QSqlTableModel::flags(ix) & ~Qt::EditRole;
-//            }
-//        }
-//    }
-
     return QSqlTableModel::flags(ix);
 }
 
@@ -151,15 +166,18 @@ void ContactsModel::removeContacts(const QModelIndexList &indexes)
 
     for(const int row : rows) {
 
-        const int parent = data(index(row, h_contact_, {}), Qt::DisplayRole).toInt();
-        const int id = data(index(row, h_id_, {}), Qt::DisplayRole).toInt();
+        const auto rec = record(row);
+        const auto id = rec.value("id").toInt();
+        const auto parent = rec.value("contact").toInt();
+        const bool is_company = rec.value(h_type_).toInt() == static_cast<int>(ContactType::CORPORATION);
 
-        LogModel::instance().addContactLog(
-                    parent ? parent : id,
-                    LogModel::Type::DELETED_SOMETHING,
-                    QStringLiteral("Deleted contact %1")
-                    .arg(data(index(row, h_name_, {}),
-                              Qt::DisplayRole).toString()));
+        JournalModel::instance().addEntry(JournalModel::Type::DELETED_SOMETHING,
+                                          QStringLiteral("Deleted %1 #%2 %3")
+                                          .arg(is_company ? "Contact" : "Person")
+                                          .arg(rec.value(h_id_).toInt())
+                                          .arg(rec.value(h_name_).toString()),
+                                          parent ? parent : id,
+                                          parent ? id : 0);
 
         if (!removeRow(row, {})) {
             qWarning() << "Failed to remove row " << row << ": "
@@ -180,25 +198,118 @@ void ContactsModel::addPerson(const QSqlRecord &rec)
     select();
 }
 
+void ContactsModel::updatePerson(const int row, const QSqlRecord &rec)
+{
+    Strategy strategy(*this, QSqlTableModel::OnManualSubmit);
+
+
+    qDebug() << "Updating contact. Fields: ";
+    for(int i = 0; i < rec.count(); ++i) {
+        qDebug() << "  # " << i << " " << rec.fieldName(i)
+                 << " " << rec.value(i).typeName()
+                 << " : " << (rec.isNull(i) ? QStringLiteral("NULL") : rec.value(i).toString());
+    }
+
+    const auto contact_id = rec.value("id").toInt();
+    Q_ASSERT(contact_id > 0);
+
+    Q_ASSERT(row >= 0);
+    if (!setRecord(row, rec)) {
+        qWarning() << "Failed to update contact (setRecord): "
+                   << lastError().text();
+        return;
+    }
+
+    if (!submitAll()) {
+        qWarning() << "Failed to update contact (submitAll): "
+                   << lastError().text();
+        return;
+    }
+
+    const auto what = parent_ ? "Person" : "Contact";
+    const auto contact_type = rec.value(h_type_).toInt();
+
+    const auto log_type = contact_type == static_cast<int>(ContactType::CORPORATION)
+            ? JournalModel::Type::UPDATED_CONTACT
+            : JournalModel::Type::UPDATED_PERSON;
+
+    JournalModel::instance().addEntry(
+                log_type,
+                QStringLiteral("Changed %1: %2").arg(what).arg(rec.value(h_name_).toString()),
+                parent_ ? parent_ : contact_id,
+                parent_ ? contact_id : 0);
+}
+
+void ContactsModel::toggleFavoriteStatus(const int row)
+{
+    Q_ASSERT(row >= 0);
+
+    Strategy strategy(*this, QSqlTableModel::OnManualSubmit);
+    const auto ix = index(row, h_favorite_, {});
+    const bool new_status = !data(ix, Qt::DisplayRole).toBool();
+    if (!setData(ix, new_status)) {
+        qWarning() << "Failed to set stars (setData): "
+                   << lastError().text();
+        return;
+    }
+
+    const auto id = data(index(row, h_id_, {}), Qt::DisplayRole).toInt();
+
+//    auto rec = record(row);
+//    const auto id = rec.value(h_id_).toInt();
+//    const bool new_status = !rec.value(h_favorite_).toBool();
+//    rec.setValue(h_favorite_, new_status);
+
+//    if (!setRecord(row, rec)) {
+//        qWarning() << "Failed to update flag (setRecord): "
+//                   << lastError().text();
+//        return;
+//    }
+
+    if (!submitAll()) {
+        qWarning() << "Failed to update flag (submitAll): "
+                   << lastError().text();
+        return;
+    }
+
+    JournalModel::instance().addEntry(
+                JournalModel::Type::UPDATED_CONTACT,
+                new_status ? "Set the Favourite flag" : "Removed the Favourite flag",
+                id);
+}
+
+void ContactsModel::setStars(const int row, const int stars)
+{
+    Q_ASSERT(row >= 0);
+    Q_ASSERT(stars >= 0 && stars <= 5);
+
+    Strategy strategy(*this, QSqlTableModel::OnManualSubmit);
+
+    const auto ix = index(row, h_stars_, {});
+    if (!setData(ix, stars)) {
+        qWarning() << "Failed to set stars (setData): "
+                   << lastError().text();
+        return;
+    }
+    if (!submitAll()) {
+        qWarning() << "Failed to update flag (submitAll): "
+                   << lastError().text();
+        return;
+    }
+    const auto id = data(index(row, h_id_, {}), Qt::DisplayRole).toInt();
+
+    JournalModel::instance().addEntry(
+                JournalModel::Type::UPDATED_CONTACT,
+                QStringLiteral("Set %1 stars")
+                .arg(stars),
+                id);
+}
+
 bool ContactsModel::insertContact(QSqlRecord &rec)
 {
     const auto now = static_cast<uint>(time(nullptr));
     rec.setValue(h_created_date_, now);
     rec.setValue(h_last_activity_date_, now);
-
-//    qDebug() << "Using database "
-//             << database().databaseName()
-//             << " with driver " << database().driverName()
-//             << " and connection " << database().connectionName()
-//             << " with tables " << this->database().tables()
-//             << ". Open status: " << this->database().isOpen();
-
-
-//    for(int i = 0; i < rec.count(); ++i) {
-//        qDebug() << "# " << i << " " << rec.fieldName(i)
-//                 << " " << rec.value(i).typeName()
-//                 << " : " << (rec.isNull(i) ? QStringLiteral("NULL") : rec.value(i).toString());
-//    }
 
     const auto internal_edit_save = internal_edit_;
     internal_edit_ = true;
@@ -218,19 +329,49 @@ bool ContactsModel::insertContact(QSqlRecord &rec)
         return false;
     }
 
-    LogModel::instance().addLog(
-                LogModel::Type::ADD_PERSON,
-                QStringLiteral("Added person %1").arg(rec.value(h_name_).toString()),
-                parent_,
-                query().lastInsertId().toInt());
+    const auto contact_id = query().lastInsertId().toInt();
+    const auto what = parent_ ? "Person" : "Contact";
+    const auto contact_type = rec.value(h_type_).toInt();
 
-    qDebug() << "Created new contact";
+    const auto log_type = contact_type == static_cast<int>(ContactType::CORPORATION)
+            ? JournalModel::Type::ADD_COMPANY
+            : JournalModel::Type::ADD_PERSON;
+
+    JournalModel::instance().addEntry(
+                log_type,
+                QStringLiteral("Added %1: %2").arg(what).arg(rec.value(h_name_).toString()),
+                parent_ ? parent_ : contact_id,
+                parent_ ? contact_id : 0);
+
+    qDebug() << QStringLiteral("Created new %1 #").arg(what) << contact_id;
     return true;
+}
+
+const QIcon& ContactsModel::getFavoriteIcon(const bool enable)
+{
+    static const QIcon fav(":/res/icons/favourite.svg");
+    static const QIcon not_fav(":/res/icons/not_favourite.svg");
+
+    return enable ? fav : not_fav;
+}
+
+const QIcon &ContactsModel::getStars(const int stars)
+{
+    static const std::array<QIcon,6> icons = {{
+        QIcon(":/res/icons/0star.svg"),
+        QIcon(":/res/icons/1star.svg"),
+        QIcon(":/res/icons/2star.svg"),
+        QIcon(":/res/icons/3star.svg"),
+        QIcon(":/res/icons/4star.svg"),
+        QIcon(":/res/icons/5star.svg"),
+    }};
+
+    return icons.at(static_cast<size_t>(stars));
 }
 
 QModelIndex ContactsModel::createContact(const ContactType type)
 {
-    Strategy strategy(*this, QSqlTableModel::OnManualSubmit);
+    //Strategy strategy(*this, QSqlTableModel::OnManualSubmit);
     auto rec = record();
 
     rec.setValue(h_name_, QStringLiteral(""));
@@ -239,16 +380,6 @@ QModelIndex ContactsModel::createContact(const ContactType type)
     if (!insertContact(rec)) {
         return {};
     }
-
-    const auto log_type = type == ContactType::CORPORATION
-            ? LogModel::Type::ADD_COMPANY
-            : LogModel::Type::ADD_PERSON;
-
-    LogModel::instance().addLog(
-                log_type,
-                QStringLiteral("Created contact %1")
-                .arg(rec.value(h_name_).toString()),
-                query().lastInsertId().toInt());
 
     return index(0, h_name_, {}); // Assume that we insterted at end in the model
 }

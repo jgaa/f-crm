@@ -17,24 +17,23 @@ class PersonDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit PersonDialog(QWidget *parent = 0);
+    explicit PersonDialog(const QSqlRecord& rec, bool isPerson, int row, QWidget *parent = 0);
     ~PersonDialog();
-
-    void setRecord(const QSqlRecord& rec);
-    void setModel(ContactsModel *model, QModelIndex& ix);
 
 signals:
     void addPerson(const QSqlRecord& rec);
+    void updatePerson(const int row, const QSqlRecord& rec);
+    void setFilter(QString value);
 
 private:
     Ui::PersonDialog *ui;
     QSqlRecord rec_;
-    QDataWidgetMapper *mapper_ = {};
+    const bool is_person_;
+    const int row_;
 
     // QDialog interface
 public slots:
     void accept() override;
-    void reject() override;
 };
 
 #endif // PERSONDIALOG_H

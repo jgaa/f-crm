@@ -26,9 +26,6 @@ public:
     DEF_COLUMN(created_date)
     DEF_COLUMN(last_activity_date)
     DEF_COLUMN(name)
-    DEF_COLUMN(first_name)
-    DEF_COLUMN(last_name)
-    DEF_COLUMN(middle_name)
     DEF_COLUMN(gender)
     DEF_COLUMN(type)
     DEF_COLUMN(status)
@@ -56,9 +53,14 @@ public slots:
     void setParent(int contact);
     void removeContacts(const QModelIndexList& indexes);
     void addPerson(const QSqlRecord& rec);
+    void updatePerson(const int row, const QSqlRecord& rec);
+    void toggleFavoriteStatus(const int row);
+    void setStars(const int row, const int stars);
 
 private:
     bool insertContact(QSqlRecord& rec);
+    static const QIcon& getFavoriteIcon(const bool enable);
+    static const QIcon& getStars(const int stars);
 
     QSettings& settings_;
 
@@ -67,9 +69,6 @@ private:
     int h_created_date_ = {};
     int h_last_activity_date_ = {};
     int h_name_ = {};
-    int h_first_name_ = {};
-    int h_last_name_ = {};
-    int h_middle_name_ = {};
     int h_gender_ = {};
     int h_type_ = {};
     int h_status_ = {};
@@ -80,6 +79,8 @@ private:
     int h_address2_ = {};
     int h_city_ = {};
     int h_postcode_ = {};
+    int h_region_ = {};
+    int h_state_ = {}; // State as in Alabama,
     int h_country_ = {};
 
     mutable bool internal_edit_ = false;

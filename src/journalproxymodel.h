@@ -5,19 +5,19 @@
 #include <QSortFilterProxyModel>
 #include <QModelIndex>
 
-#include "logmodel.h"
+#include "journalmodel.h"
 
-class LogProxyModel : public QSortFilterProxyModel
+class JournalProxyModel : public QSortFilterProxyModel
 {
 public:
-    LogProxyModel(LogModel *docModel, QObject *parent = Q_NULLPTR);
+    JournalProxyModel(JournalModel *docModel, QObject *parent = Q_NULLPTR);
 
     // QAbstractItemModel interface
 public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
 private:
-    LogModel *model_ = {};
+    JournalModel *model_ = {};
 
 };
 

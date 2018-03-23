@@ -10,6 +10,7 @@
 #include "documentdialog.h"
 #include "settingsdialog.h"
 #include "logging.h"
+#include "favoritesdialog.h"
 
 #include <QSettings>
 #include <QDebug>
@@ -44,8 +45,8 @@ void MainWindow::initialize()
 
     db_ = std::make_unique<Database>(nullptr);
 
-    log_model_ = new LogModel(settings_, this, {});
-    log_px_model_ = new LogProxyModel(log_model_, this);
+    log_model_ = new JournalModel(settings_, this, {});
+    log_px_model_ = new JournalProxyModel(log_model_, this);
     ui->logView->setModel(log_px_model_);
 
     contacts_model_ = new ContactsModel(settings_, this, {});
@@ -171,6 +172,7 @@ void MainWindow::initialize()
     connect(ui->contactsList->selectionModel(), &QItemSelectionModel::currentRowChanged,
             this, &MainWindow::onContactsListCurrentChanged);
     connect(contacts_model_, &ContactsModel::modelReset, this, &MainWindow::onContactsModelReset);
+    connect(contacts_model_, &ContactsModel::dataChanged, this, &MainWindow::onContactsDataChanged);
     connect(ui->contactsList, &QTableView::customContextMenuRequested,
             this, &MainWindow::onContactContextMenuRequested);
 
@@ -219,6 +221,7 @@ void MainWindow::initialize()
     connect(ui->contactTab, &QTabWidget::currentChanged, this, &MainWindow::onContactTabChanged);
 
     connect(Logging::instance(), &Logging::message, this, &MainWindow::showMessage, Qt::QueuedConnection);
+    connect(ui->clearFilter, &QToolButton::clicked, this, &MainWindow::clearFilter);
 
     onSyncronizeContactsBindings();
 }
@@ -226,6 +229,16 @@ void MainWindow::initialize()
 void MainWindow::showMessage(const QString &label, const QString &text)
 {
     QMessageBox::warning(this, label, text);
+}
+
+void MainWindow::setFilter(QString value)
+{
+    ui->contactFilter->setText(value);
+}
+
+void MainWindow::clearFilter(bool)
+{
+    ui->contactFilter->setText("");
 }
 
 void MainWindow::appModeSelectionChanged()
@@ -288,21 +301,8 @@ void MainWindow::onSyncronizeContactsBindings()
 
     qDebug() << "onSyncronizeContactsBindings: Current item is" << (current.isValid() ? current.row() : -1);
 
-    bool read_only = true;
-
     if (current.isValid()) {
-        if (!contacts_mapper_) {
-            contacts_mapper_ = make_unique<QDataWidgetMapper>();
-            contacts_mapper_->setModel(contacts_model_);
-            contacts_mapper_->addMapping(ui->contactNotes, contacts_model_->property("notes_col").toInt());
 
-        } else {
-            if (contacts_mapper_->currentIndex() != current.row()) {
-                contacts_mapper_->setCurrentIndex(current.row());
-            }
-        }
-
-        read_only = false;
         const auto contact_id = contacts_model_->getContactId(current);
 
         const auto contact_type = contacts_model_->data(
@@ -320,9 +320,7 @@ void MainWindow::onSyncronizeContactsBindings()
             persons_model_->select();
         }
 
-        ui->contactType->setPixmap(GetContactTypeIcon(contact_type).pixmap(32,32));
-
-        onSyncronizePersonBindings();
+        syncContactData(contacts_model_, current.row());
 
         intents_model_->setContact(contact_id);
         actions_model_->setContact(contact_id);
@@ -343,9 +341,8 @@ void MainWindow::onSyncronizeContactsBindings()
         ui->actionsView->setEntity(Document::Entity::ACTION, actions_model_, -1);
         ui->actionsView->setDocumentDropEnabled(true);
     } else {
-        if (contacts_mapper_) {
-            contacts_mapper_->setCurrentIndex(-1);
-        }
+        syncContactData();
+
         ui->contactNotes->clear();
         ui->contactAddress->clear();
         ui->contactAddress2->clear();
@@ -358,8 +355,6 @@ void MainWindow::onSyncronizeContactsBindings()
 
         persons_model_->setParent(-1);
         persons_model_->select();
-
-        ui->contactType->setPixmap({});
 
         ui->personWhoIcon->setPixmap({});
         ui->personWhoName->setText({});
@@ -375,15 +370,9 @@ void MainWindow::onSyncronizeContactsBindings()
         ui->actionsView->setDocumentDropEnabled(true);
     }
 
-    ui->contactNotes->setReadOnly(read_only);
-    ui->contactAddress->setReadOnly(read_only);
-    ui->contactAddress2->setReadOnly(read_only);
-    ui->contactCity->setReadOnly(read_only);
-    ui->contactPostCode->setReadOnly(read_only);
-    ui->contactCountry->setReadOnly(read_only);
-
     last_person_clicked = -1;
 
+    onSyncronizePersonBindings();
     onValidateContactActions();
     onValidatePersonsActions();
 }
@@ -392,72 +381,19 @@ void MainWindow::onSyncronizePersonBindings()
 {
     const auto current = ui->contactsList->currentIndex();
 
-    if (contacts_mapper_) {
-        contacts_mapper_->submit();
-    }
-
-    if (persons_mapper_) {
-        persons_mapper_->submit();
-    }
-
-    if (current.isValid() && contacts_mapper_) {
-
+    if (current.isValid()) {
         const auto people = ui->contactPeople->currentIndex();
         if (people.isValid()) {
-            // Make sure properties are mapped to person
-            if (!persons_mapper_) {
-                contacts_mapper_->removeMapping(ui->contactAddress);
-                contacts_mapper_->removeMapping(ui->contactAddress2);
-                contacts_mapper_->removeMapping(ui->contactCity);
-                contacts_mapper_->removeMapping(ui->contactPostCode);
-                contacts_mapper_->removeMapping(ui->contactCountry);
-                contacts_mapper_->removeMapping(ui->personNotes);
-
-                persons_mapper_ = make_unique<QDataWidgetMapper>();
-                persons_mapper_->setModel(persons_model_);
-
-                persons_mapper_->addMapping(ui->contactAddress, persons_model_->property("address1_col").toInt());
-                persons_mapper_->addMapping(ui->contactAddress2, persons_model_->property("address2_col").toInt());
-                persons_mapper_->addMapping(ui->contactCity, persons_model_->property("city_col").toInt());
-                persons_mapper_->addMapping(ui->contactPostCode, persons_model_->property("postcode_col").toInt());
-                persons_mapper_->addMapping(ui->contactCountry, persons_model_->property("country_col").toInt());
-                persons_mapper_->addMapping(ui->personNotes, persons_model_->property("notes_col").toInt());
-
-                persons_mapper_->setCurrentIndex(people.row());
-            } else {
-                if (persons_mapper_->currentIndex() != people.row()) {
-                    persons_mapper_->setCurrentIndex(people.row());
-                }
-            }
-
-            contacts_mapper_->setCurrentIndex(current.row());
             const auto contact_id = persons_model_->getContactId(people);
             channels_model_->setContact(contact_id);
-
-            auto whoix = persons_model_->index(people.row(), persons_model_->property("name_col").toInt(), {});
-            ui->personWhoIcon->setPixmap(persons_model_->data(whoix, Qt::DecorationRole).value<QIcon>().pixmap(24,24));
-            ui->personWhoName->setText(persons_model_->data(whoix, Qt::DisplayRole).toString());
+            syncPersonData(persons_model_, people.row());
         } else {
-            // Make sure properties are mapped to company (parent)
-            if (persons_mapper_) {
-                persons_mapper_.reset();
-
-                contacts_mapper_->addMapping(ui->contactAddress, contacts_model_->property("address1_col").toInt());
-                contacts_mapper_->addMapping(ui->contactAddress2, contacts_model_->property("address2_col").toInt());
-                contacts_mapper_->addMapping(ui->contactCity, contacts_model_->property("city_col").toInt());
-                contacts_mapper_->addMapping(ui->contactPostCode, contacts_model_->property("postcode_col").toInt());
-                contacts_mapper_->addMapping(ui->contactCountry, contacts_model_->property("country_col").toInt());
-                contacts_mapper_->addMapping(ui->personNotes, contacts_model_->property("notes_col").toInt());
-            }
-
-            contacts_mapper_->setCurrentIndex(current.row());
             const auto contact_id = contacts_model_->getContactId(current);
             channels_model_->setContact(contact_id);
-
-            auto whoix = contacts_model_->index(current.row(), contacts_model_->property("name_col").toInt(), {});
-            ui->personWhoIcon->setPixmap(contacts_model_->data(whoix, Qt::DecorationRole).value<QIcon>().pixmap(24,24));
-            ui->personWhoName->setText(contacts_model_->data(whoix, Qt::DisplayRole).toString());
+            syncPersonData(contacts_model_, current.row());
         }
+    } else {
+        syncPersonData();
     }
 }
 
@@ -466,10 +402,18 @@ void MainWindow::onValidateContactActions()
     const auto current = ui->contactsList->currentIndex();
     const bool enabled = app_mode_ == AppMode::CONTACTS;
     const bool enable_modifications = enabled && current.isValid();
+    const bool enable_add_person = enabled && current.isValid()
+            && ToContactType(
+                contacts_model_->data(
+                    contacts_model_->index(current.row(),
+                                           contacts_model_->property("type_col").toInt(), {}),
+                    Qt::DisplayRole).toInt()) == ContactType::CORPORATION;
 
     ui->actionAdd_Contact->setEnabled(enabled);
     ui->actionAdd_Company->setEnabled(enabled);
+    ui->actionAdd_Person->setEnabled(enable_add_person);
 
+    ui->actionEdit_Contact->setEnabled(enable_modifications);
     ui->actionDelete_Contact->setEnabled(enable_modifications);
 }
 
@@ -479,6 +423,7 @@ void MainWindow::onContactContextMenuRequested(const QPoint &pos)
 
     menu->addAction(ui->actionAdd_Company);
     menu->addAction(ui->actionAdd_Contact);
+    menu->addAction(ui->actionEdit_Contact);
     menu->addAction(ui->actionDelete_Contact);
     menu->addSeparator();
     menu->addAction(ui->actionAdd_Person);
@@ -516,7 +461,9 @@ void MainWindow::onChannelsModelReset()
 
 void MainWindow::onValidateChannelActions()
 {
-    const auto current = persons_mapper_ ? ui->contactPeople->currentIndex() : ui->contactsList->currentIndex();
+    const auto current = ui->contactPeople->currentIndex().isValid()
+            ? ui->contactPeople->currentIndex()
+            : ui->contactsList->currentIndex();
     const bool enable_channel = current.isValid
             () && app_mode_ == AppMode::CONTACTS
             && ui->contactTab->currentIndex() == static_cast<int>(PersonTab::CONTACT);
@@ -602,7 +549,7 @@ void MainWindow::onValidatePersonsActions()
     const bool enable = current.isValid() && app_mode_ == AppMode::CONTACTS;
     bool enable_modifications = false;
 
-    ui->actionAdd_Person->setEnabled(enable);
+    //ui->actionAdd_Person->setEnabled(enable);
 
     if (enable) {
         const auto current_ch = ui->contactPeople->currentIndex();
@@ -968,8 +915,7 @@ void MainWindow::on_actionAdd_Person_triggered()
     rec.setValue("contact", contact_id);
     rec.setValue("type", static_cast<int>(ContactType::INDIVID));
 
-    auto dlg = new PersonDialog(this);
-    dlg->setRecord(rec);
+    auto dlg = new PersonDialog(rec, true, -1, this);
     dlg->setAttribute( Qt::WA_DeleteOnClose );
     connect(dlg, &PersonDialog::addPerson,
             persons_model_, &ContactsModel::addPerson);
@@ -988,21 +934,23 @@ void MainWindow::on_actionAdd_Contact_triggered()
 
 void MainWindow::createContact(ContactType type)
 {
-    if (!ui->contactFilter->text().isEmpty()) {
-        ui->contactFilter->setText("");
-    }
-    const auto ix = contacts_model_->createContact(type);
-    if (ix.isValid()) {
-        ui->contactsList->setFocus();
-        ui->contactsList->setCurrentIndex(ix);
-        onSyncronizeContactsBindings();
-        ui->contactsList->edit(ix);
-    }
+    auto rec = contacts_model_->record();
+    rec.setValue("type", static_cast<int>(type));
+
+    auto dlg = new PersonDialog(rec, false, -1, this);
+    dlg->setAttribute( Qt::WA_DeleteOnClose );
+    connect(dlg, &PersonDialog::addPerson,
+            contacts_model_, &ContactsModel::addPerson);
+    connect(dlg, &PersonDialog::setFilter,
+            this, &MainWindow::setFilter,
+            Qt::QueuedConnection);
+    dlg->exec();
 }
 
 bool MainWindow::isCurrentPersonInCompany() const
 {
-    return persons_mapper_ != nullptr;
+    //return persons_mapper_ != nullptr;
+    return ui->contactPeople->currentIndex().isValid();
 }
 
 QTableView *MainWindow::getCurrentPersonView() const
@@ -1030,6 +978,49 @@ int MainWindow::getCurrentPersonId() const
     return getCurrentPersonModel()->getContactId(current);
 }
 
+void MainWindow::syncPersonData(ContactsModel *model, const int row)
+{
+    ui->personWhoIcon->setPixmap(contactData(model, "type", row, Qt::DecorationRole).value<QIcon>().pixmap(24,24));
+    ui->personWhoName->setText(contactData(model, "name", row).toString());
+
+    ui->contactAddress->setText(contactData(model, "address1", row).toString());
+    ui->contactAddress2->setText(contactData(model, "address2", row).toString());
+    ui->contactCity->setText(contactData(model, "city", row).toString());
+    ui->contactPostCode->setText(contactData(model, "postcode", row).toString());
+    ui->contactCountry->setText(contactData(model, "country", row).toString());
+//    ui->->setText(contactData(model, "", row).toString());
+//    ui->->setText(contactData(model, "", row).toString());
+//    ui->->setText(contactData(model, "", row).toString());
+
+    ui->personNotes->setPlainText(contactData(model, "notes", row).toString());
+}
+
+void MainWindow::syncContactData(ContactsModel *model, const int row)
+{
+    ui->contactWhoIcon->setPixmap(contactData(model, "type", row, Qt::DecorationRole).value<QIcon>().pixmap(24,24));
+    ui->contactWhoName->setText(contactData(model, "name", row).toString());
+    ui->contactNotes->setPlainText(contactData(model, "notes", row).toString());
+    ui->contactStatusIcon->setPixmap(contactData(model, "status", row,
+                                                 Qt::DecorationRole).value<QIcon>().pixmap(24,24));
+    ui->contactFavoriteIcon->setPixmap(contactData(model, "favourite", row, Qt::DecorationRole).value<QIcon>().pixmap(24,24));
+    ui->contactStarsIcon->setPixmap(contactData(model, "stars", row, Qt::DecorationRole).value<QIcon>().pixmap(80,16));
+
+    const bool visible = model != nullptr;
+    ui->contactFavoriteIcon->setVisible(visible);
+    ui->contactStarsIcon->setVisible(visible);
+    ui->contactWhoIcon->setVisible(visible);
+}
+
+QVariant MainWindow::contactData(ContactsModel *model, const char *col, const int row, const int role)
+{
+    if (model) {
+        Q_ASSERT(col);
+        Q_ASSERT(row >= 0);
+        return model->data(model->index(row, model->fieldIndex(col), {}), role);
+    }
+    return {};
+}
+
 
 void MainWindow::on_actionEdit_Person_triggered()
 {
@@ -1038,9 +1029,12 @@ void MainWindow::on_actionEdit_Person_triggered()
         return;
     }
 
-    auto dlg = new PersonDialog(this);
-    dlg->setModel(persons_model_, current);
+    auto rec = persons_model_->record(current.row());
+
+    auto dlg = new PersonDialog(rec, true, current.row(),  this);
     dlg->setAttribute( Qt::WA_DeleteOnClose );
+    connect(dlg, &PersonDialog::updatePerson,
+            persons_model_, &ContactsModel::updatePerson);
     dlg->exec();
 }
 
@@ -1342,5 +1336,49 @@ void MainWindow::on_actionSettings_triggered()
 {
     auto dlg = new SettingsDialog{settings_, this};
     dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->exec();
+}
+
+void MainWindow::on_actionEdit_Contact_triggered()
+{
+    auto current = ui->contactsList->currentIndex();
+    if (!current.isValid()) {
+        return;
+    }
+
+    auto rec = contacts_model_->record(current.row());
+
+    auto dlg = new PersonDialog(rec, false, current.row(),  this);
+    dlg->setAttribute( Qt::WA_DeleteOnClose );
+    connect(dlg, &PersonDialog::updatePerson,
+            contacts_model_, &ContactsModel::updatePerson);
+    dlg->exec();
+}
+
+
+void MainWindow::onContactsDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int>)
+{
+    auto current = ui->contactsList->currentIndex();
+    if (current.isValid()) {
+        syncContactData(contacts_model_, current.row());
+    } else {
+        syncContactData();
+    }
+    onSyncronizePersonBindings();
+}
+
+void MainWindow::on_actionRateContact_triggered()
+{
+    auto current = ui->contactsList->currentIndex();
+    if (!current.isValid()) {
+        return;
+    }
+
+    const auto stars = contactData(contacts_model_, "stars", current.row()).toInt();
+
+    auto dlg = new FavoritesDialog(current.row(), stars, this);
+    dlg->setAttribute( Qt::WA_DeleteOnClose );
+    connect(dlg, &FavoritesDialog::setStars,
+            contacts_model_, &ContactsModel::setStars);
     dlg->exec();
 }

@@ -9,7 +9,7 @@
 #include "src/intentsmodel.h"
 #include "src/strategy.h"
 #include "src/intent.h"
-#include "src/logmodel.h"
+#include "src/journalmodel.h"
 
 using namespace std;
 
@@ -72,7 +72,7 @@ void IntentsModel::removeIntents(const QModelIndexList &indexes)
                        << lastError().text();
         }
 
-        LogModel::instance().addLog(LogModel::Type::DELETE_INTENT,
+        JournalModel::instance().addEntry(JournalModel::Type::DELETE_INTENT,
                                     QStringLiteral("Deleted intent: %1")
                                     .arg(rec.value("abstract").toString()),
                                     rec.value("contact").toInt(), 0,
@@ -108,7 +108,7 @@ void IntentsModel::addIntent(const QSqlRecord &rec)
         return;
     }
 
-    LogModel::instance().addLog(LogModel::Type::ADD_INTENT,
+    JournalModel::instance().addEntry(JournalModel::Type::ADD_INTENT,
                                 QStringLiteral("Added intent: %1")
                                 .arg(rec.value("abstract").toString()),
                                 rec.value("contact").toInt(), 0,

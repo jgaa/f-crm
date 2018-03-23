@@ -14,7 +14,7 @@
 #include "src/utility.h"
 #include "src/action.h"
 #include "src/strategy.h"
-#include "src/logmodel.h"
+#include "src/journalmodel.h"
 
 using namespace std;
 
@@ -94,7 +94,7 @@ void ActionsModel::removeActions(const QModelIndexList &indexes)
                        << lastError().text();
         }
 
-        LogModel::instance().addLog(LogModel::Type::DELETE_ACTION,
+        JournalModel::instance().addEntry(JournalModel::Type::DELETE_ACTION,
                                     QStringLiteral("Deleted action: %1")
                                     .arg(rec.value("name").toString()),
                                     rec.value("contact").toInt(),
@@ -140,7 +140,7 @@ void ActionsModel::addAction(const QSqlRecord &origRec)
 
     qDebug() << "Created new intent";
 
-    LogModel::instance().addLog(LogModel::Type::ADD_ACTION,
+    JournalModel::instance().addEntry(JournalModel::Type::ADD_ACTION,
                                 QStringLiteral("Added action: %1").arg(origRec.value("name").toString()),
                                 origRec.value("contact").toInt(),
                                 origRec.value("person").toInt(),
