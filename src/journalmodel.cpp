@@ -148,7 +148,7 @@ QVariant JournalModel::data(const QModelIndex &ix, int role) const
     if (ix.isValid()) {
         if (role == Qt::DisplayRole) {
             if (ix.column() == h_date_) {
-                const auto when = QDateTime::fromSecsSinceEpoch(QSqlTableModel::data(ix, Qt::DisplayRole).toLongLong());
+                const auto when = QDateTime::fromTime_t(QSqlTableModel::data(ix, Qt::DisplayRole).toLongLong());
                 return when.toString("yyyy-MM-dd hh:mm");
             }
         } else if (role == Qt::DecorationRole) {

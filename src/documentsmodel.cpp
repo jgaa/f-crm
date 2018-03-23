@@ -280,12 +280,12 @@ void DocumentsModel::fix(QSqlRecord &rec)
 
     auto value = rec.value(h_added_date_);
     if (value.type() == QVariant::DateTime) {
-        rec.setValue(h_added_date_, value.toDateTime().toSecsSinceEpoch());
+        rec.setValue(h_added_date_, value.toDateTime().toTime_t());
     }
 
     value = rec.value(h_file_date_);
     if (value.type() == QVariant::DateTime && !value.isNull()) {
-        rec.setValue(h_file_date_, value.toDateTime().toSecsSinceEpoch());
+        rec.setValue(h_file_date_, value.toDateTime().toTime_t());
     }
 }
 

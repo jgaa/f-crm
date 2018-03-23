@@ -59,9 +59,9 @@ void ActionDialog::setRecord(const QSqlRecord &rec)
     ui->notes->setPlainText(rec.value("notes").toString());
 
 
-    auto date = QDateTime::fromSecsSinceEpoch(rec.value("start_date").toLongLong()).date();
+    auto date = QDateTime::fromTime_t(rec.value("start_date").toLongLong()).date();
     ui->fromDate->setDate(date);
-    ui->toTime->setDateTime(QDateTime::fromSecsSinceEpoch(rec.value("due_date").toLongLong()));
+    ui->toTime->setDateTime(QDateTime::fromTime_t(rec.value("due_date").toLongLong()));
 
     checkAccess();
 }

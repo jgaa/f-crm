@@ -154,7 +154,7 @@ void TableViewWithDrop::addDocument(const int row, const QUrl& url)
         const QFileInfo fi{path};
         const auto name = fi.fileName();
         rec.setValue("name", name);
-        rec.setValue("file_date", fi.birthTime());
+        rec.setValue("file_date", fi.lastModified());
     }
 
     auto dlg = new DocumentDialog(rec, 0, this);

@@ -257,7 +257,7 @@ bool ActionsModel::updateRowInTable(int row, const QSqlRecord &values)
 
     value = rec.value(h_due_date_);
     if (value.type() == QVariant::DateTime) {
-        rec.setValue(h_due_date_, value.toDateTime().toSecsSinceEpoch());
+        rec.setValue(h_due_date_, value.toDateTime().toTime_t());
     }
 
     return QSqlTableModel::updateRowInTable(row, rec);
@@ -297,7 +297,7 @@ QSqlRecord ActionsModel::getRecord()
         }
     }
 
-    due.setSecsSinceEpoch(ToTime(due.date()));
+    due.fromTime_t(ToTime(due.date()));
     qDebug() << "ActionsModel: due date is " << due;
     rec.setValue(h_due_date_, static_cast<uint>(due.toTime_t()));
 
