@@ -137,6 +137,7 @@ DISTFILES += \
     scripts/package-windows.bat \
     res/icons/f-crm.icns \
     res/icons/f-crm.svg \
-    res/icons/f_crm.ico
+    res/icons/f_crm.ico \
+    README.md
 
 
