@@ -41,7 +41,7 @@ SettingsDialog::~SettingsDialog()
 
 void SettingsDialog::accept()
 {
-    settings_.setValue("new-dbpath", ui->dbPathEdit->text());
+    settings_.setValue("dbpath", ui->dbPathEdit->text());
     settings_.setValue("mailapp", ui->emailApp->text());
 
     settings_.setValue("restore-window-state",

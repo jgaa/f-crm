@@ -76,7 +76,8 @@ SOURCES += \
     src/settingsdialog.cpp \
     src/journalmodel.cpp \
     src/journalproxymodel.cpp \
-    src/favoritesdialog.cpp
+    src/favoritesdialog.cpp \
+    src/upcomingmodel.cpp
 
 HEADERS += \
     src/mainwindow.h \
@@ -111,7 +112,8 @@ HEADERS += \
     src/settingsdialog.h \
     src/journalmodel.h \
     src/journalproxymodel.h \
-    src/favoritesdialog.h
+    src/favoritesdialog.h \
+    src/upcomingmodel.h
 
 FORMS += \
         ui/mainwindow.ui \

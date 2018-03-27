@@ -43,6 +43,10 @@ void MainWindow::initialize()
         restoreState(settings_.value("windowState").toByteArray());
     }
 
+#ifdef QT_DEBUG
+    this->setWindowTitle(this->windowTitle() + " Debug");
+#endif
+
     db_ = std::make_unique<Database>(nullptr);
 
     log_model_ = new JournalModel(settings_, this, {});
@@ -62,6 +66,12 @@ void MainWindow::initialize()
     actions_px_model_ = new ActionProxyModel(actions_model_, this);
     documents_model_ = new DocumentsModel(settings_, this, {});
     documents_px_model_ = new DocumentProxyModel(documents_model_, this);
+    contact_upcoming_model_ = new UpcomingModel(settings_, this,
+                                                UpcomingModel::Mode::CONTACT_UPCOMING);
+    today_model_= new UpcomingModel(settings_, this,
+                                    UpcomingModel::Mode::TODAY);
+    upcoming_model_ = new UpcomingModel(settings_, this,
+                                        UpcomingModel::Mode::UPCOMING);
 
     ui->contactsList->setModel(contact_px_model);
     ui->contactsList->setDocumentsModel(documents_model_);
@@ -160,6 +170,40 @@ void MainWindow::initialize()
         ui->documentsView->setColumnHidden(i, !show);
     }
     ui->documentsView->horizontalHeader()->moveSection(documents_model_->property("added_date_col").toInt(), 0);
+
+    ui->contactUpcomingTable->setModel(contact_upcoming_model_);
+    ui->contactUpcomingTable->horizontalHeader()->setSectionResizeMode(
+                contact_upcoming_model_->H_NAME, QHeaderView::Stretch);
+    ui->contactUpcomingTable->setColumnHidden(contact_upcoming_model_->H_ID, true);
+    ui->contactUpcomingTable->setColumnHidden(contact_upcoming_model_->H_CONTACT_ID, true);
+    ui->contactUpcomingTable->setColumnHidden(contact_upcoming_model_->H_CONTACT_NAME, true);
+    ui->contactUpcomingTable->setColumnHidden(contact_upcoming_model_->H_CONTACT_STATUS, true);
+    ui->contactUpcomingTable->setColumnHidden(contact_upcoming_model_->H_STATE, true);
+    ui->contactUpcomingTable->setColumnHidden(contact_upcoming_model_->H_INTENT_ID, true);
+    ui->contactUpcomingTable->setColumnHidden(contact_upcoming_model_->H_PERSON_ID, true);
+    ui->contactUpcomingTable->setColumnHidden(contact_upcoming_model_->H_DESIRED_OUTCOME, true);
+
+    ui->actionsToday->setModel(today_model_);
+    ui->actionsToday->horizontalHeader()->setSectionResizeMode(
+                today_model_->H_NAME, QHeaderView::Stretch);
+    ui->actionsToday->setColumnHidden(today_model_->H_ID, true);
+    ui->actionsToday->setColumnHidden(today_model_->H_CONTACT_ID, true);
+    ui->actionsToday->setColumnHidden(contact_upcoming_model_->H_CONTACT_STATUS, true);
+    ui->actionsToday->setColumnHidden(today_model_->H_STATE, true);
+    ui->actionsToday->setColumnHidden(today_model_->H_INTENT_ID, true);
+    ui->actionsToday->setColumnHidden(today_model_->H_PERSON_ID, true);
+    ui->actionsToday->setColumnHidden(today_model_->H_DESIRED_OUTCOME, true);
+
+    ui->actionsUpcoming->setModel(upcoming_model_);
+    ui->actionsUpcoming->horizontalHeader()->setSectionResizeMode(
+                upcoming_model_->H_NAME, QHeaderView::Stretch);
+    ui->actionsUpcoming->setColumnHidden(upcoming_model_->H_ID, true);
+    ui->actionsUpcoming->setColumnHidden(upcoming_model_->H_CONTACT_ID, true);
+    ui->actionsUpcoming->setColumnHidden(contact_upcoming_model_->H_CONTACT_STATUS, true);
+    ui->actionsUpcoming->setColumnHidden(upcoming_model_->H_STATE, true);
+    ui->actionsUpcoming->setColumnHidden(upcoming_model_->H_INTENT_ID, true);
+    ui->actionsUpcoming->setColumnHidden(upcoming_model_->H_PERSON_ID, true);
+    ui->actionsUpcoming->setColumnHidden(upcoming_model_->H_DESIRED_OUTCOME, true);
 
 
     ui->contactTab->setCurrentIndex(0);
@@ -326,6 +370,8 @@ void MainWindow::onSyncronizeContactsBindings()
         actions_model_->setContact(contact_id);
         log_model_->setContact(contact_id);
         documents_model_->setContact(contact_id);
+        contact_upcoming_model_->setContact(contact_id);
+
         ui->documentsView->setContactId(contact_id);
         ui->documentsView->setEntity(Document::Entity::CONTACT, nullptr, contact_id);
         ui->documentsView->setDocumentDropEnabled(true);
@@ -363,6 +409,8 @@ void MainWindow::onSyncronizeContactsBindings()
         intents_model_->setContact(-1);
         log_model_->setContact(-1);
         documents_model_->setContact(-1);
+        contact_upcoming_model_->setContact();
+
         ui->documentsView->setContactId(-1);
         ui->documentsView->setDocumentDropEnabled(false);
         ui->contactPeople->setDocumentDropEnabled(false);
@@ -738,6 +786,11 @@ void MainWindow::onContactTabChanged(int ix)
     onValidateIntentActions();
     onValidateActionActions();
     onValidateDocumentActions();
+
+    if (ix == static_cast<int>(AppMode::PANEL)) {
+        upcoming_model_->select();
+        today_model_->select();
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -988,10 +1041,6 @@ void MainWindow::syncPersonData(ContactsModel *model, const int row)
     ui->contactCity->setText(contactData(model, "city", row).toString());
     ui->contactPostCode->setText(contactData(model, "postcode", row).toString());
     ui->contactCountry->setText(contactData(model, "country", row).toString());
-//    ui->->setText(contactData(model, "", row).toString());
-//    ui->->setText(contactData(model, "", row).toString());
-//    ui->->setText(contactData(model, "", row).toString());
-
     ui->personNotes->setPlainText(contactData(model, "notes", row).toString());
 }
 

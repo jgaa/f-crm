@@ -24,6 +24,7 @@
 #include "actionproxymodel.h"
 #include "journalproxymodel.h"
 #include "channelproxymodel.h"
+#include "upcomingmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -209,6 +210,9 @@ protected:
     DocumentProxyModel *documents_px_model_ = {};
     ContactProxyModel *contact_px_model = {};
     ContactProxyModel * person_px_model = {};
+    UpcomingModel *contact_upcoming_model_ = {};
+    UpcomingModel *upcoming_model_ = {};
+    UpcomingModel *today_model_ = {};
     //std::unique_ptr<QDataWidgetMapper> contacts_mapper_;
     //std::unique_ptr<QDataWidgetMapper> persons_mapper_;
     int last_person_clicked {-1};
