@@ -298,6 +298,11 @@ void MainWindow::appModeSelectionChanged()
     onValidateChannelActions();
     onValidateContactActions();
     onValidatePersonsActions();
+
+    if (app_mode_ == AppMode::PANEL) {
+        upcoming_model_->select();
+        today_model_->select();
+    }
 }
 
 void MainWindow::onContactFilterChanged(const QString &text)
@@ -786,11 +791,6 @@ void MainWindow::onContactTabChanged(int ix)
     onValidateIntentActions();
     onValidateActionActions();
     onValidateDocumentActions();
-
-    if (ix == static_cast<int>(AppMode::PANEL)) {
-        upcoming_model_->select();
-        today_model_->select();
-    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

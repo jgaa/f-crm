@@ -24,7 +24,9 @@ void UpcomingModel::setContact(int contact)
 
 void UpcomingModel::select()
 {
+    //beginResetModel();
     setQuery(createQuery());
+    //endResetModel();
 }
 
 QSqlQuery UpcomingModel::createQuery() const
@@ -35,16 +37,16 @@ QSqlQuery UpcomingModel::createQuery() const
 
     case Mode::CONTACT_UPCOMING:
         where_statement = QStringLiteral(
-                    "a.contact = %1 AND a.state < 4 AND a.start_date < (strftime('%s', date('now')) + 86400)")
+                    "a.contact = %1 AND a.state < 4 AND a.start_date < (strftime('%s', date('now')))")
                 .arg(contact_);
         break;
     case Mode::TODAY:
         where_statement = QStringLiteral(
-                    "a.state == 1 AND a.start_date < (strftime('%s', date('now')) + 86400)");
+                    "a.state == 1 AND a.start_date < (strftime('%s', date('now')))");
         break;
     case Mode::UPCOMING:
         where_statement = QStringLiteral(
-                    "a.state < 4 AND a.start_date < (strftime('%s', date('now')) + 86400)");
+                    "a.state < 4 AND a.start_date < (strftime('%s', date('now')))");
         break;
     }
 
