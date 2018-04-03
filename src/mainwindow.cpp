@@ -11,6 +11,7 @@
 #include "settingsdialog.h"
 #include "logging.h"
 #include "favoritesdialog.h"
+#include "aboutdialog.h"
 
 #include <QSettings>
 #include <QDebug>
@@ -1429,5 +1430,13 @@ void MainWindow::on_actionRateContact_triggered()
     dlg->setAttribute( Qt::WA_DeleteOnClose );
     connect(dlg, &FavoritesDialog::setStars,
             contacts_model_, &ContactsModel::setStars);
+    dlg->exec();
+}
+
+void MainWindow::on_action_About_triggered()
+{
+    auto dlg = new AboutDialog(this);
+    dlg->setAttribute( Qt::WA_DeleteOnClose );
+    dlg->setAttribute( Qt::WA_DeleteOnClose );
     dlg->exec();
 }

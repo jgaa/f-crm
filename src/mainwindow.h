@@ -159,8 +159,9 @@ private slots:
 
     void onContactsDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int>);
 
-
     void on_actionRateContact_triggered();
+
+    void on_action_About_triggered();
 
 private:
     QString getChannelValue() const;

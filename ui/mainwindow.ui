@@ -807,6 +807,8 @@
     </property>
     <addaction name="action_Quit"/>
     <addaction name="actionSettings"/>
+    <addaction name="separator"/>
+    <addaction name="action_About"/>
    </widget>
    <widget class="QMenu" name="menuContact">
     <property name="title">
@@ -1146,6 +1148,15 @@
    </property>
    <property name="text">
     <string>Edit Contact</string>
+   </property>
+  </action>
+  <action name="action_About">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/res/icons/f-crm.svg</normaloff>:/res/icons/f-crm.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;About</string>
    </property>
   </action>
  </widget>

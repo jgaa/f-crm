@@ -77,7 +77,8 @@ SOURCES += \
     src/journalmodel.cpp \
     src/journalproxymodel.cpp \
     src/favoritesdialog.cpp \
-    src/upcomingmodel.cpp
+    src/upcomingmodel.cpp \
+    src/aboutdialog.cpp
 
 HEADERS += \
     src/mainwindow.h \
@@ -113,7 +114,8 @@ HEADERS += \
     src/journalmodel.h \
     src/journalproxymodel.h \
     src/favoritesdialog.h \
-    src/upcomingmodel.h
+    src/upcomingmodel.h \
+    src/aboutdialog.h
 
 FORMS += \
         ui/mainwindow.ui \
@@ -124,7 +126,8 @@ FORMS += \
     ui/actionexecutedialog.ui \
     ui/documentdialog.ui \
     ui/settingsdialog.ui \
-    ui/favoritesdialog.ui
+    ui/favoritesdialog.ui \
+    ui/aboutdialog.ui
 
 RESOURCES += \
     resources.qrc
