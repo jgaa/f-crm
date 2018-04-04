@@ -198,48 +198,6 @@ void ContactsModel::addPerson(const QSqlRecord &rec)
     select();
 }
 
-void ContactsModel::updatePerson(const int row, const QSqlRecord &rec)
-{
-    Strategy strategy(*this, QSqlTableModel::OnManualSubmit);
-
-
-    qDebug() << "Updating contact. Fields: ";
-    for(int i = 0; i < rec.count(); ++i) {
-        qDebug() << "  # " << i << " " << rec.fieldName(i)
-                 << " " << rec.value(i).typeName()
-                 << " : " << (rec.isNull(i) ? QStringLiteral("NULL") : rec.value(i).toString());
-    }
-
-    const auto contact_id = rec.value("id").toInt();
-    Q_ASSERT(contact_id > 0);
-
-    Q_ASSERT(row >= 0);
-    if (!setRecord(row, rec)) {
-        qWarning() << "Failed to update contact (setRecord): "
-                   << lastError().text();
-        return;
-    }
-
-    if (!submitAll()) {
-        qWarning() << "Failed to update contact (submitAll): "
-                   << lastError().text();
-        return;
-    }
-
-    const auto what = parent_ ? "Person" : "Contact";
-    const auto contact_type = rec.value(h_type_).toInt();
-
-    const auto log_type = contact_type == static_cast<int>(ContactType::CORPORATION)
-            ? JournalModel::Type::UPDATED_CONTACT
-            : JournalModel::Type::UPDATED_PERSON;
-
-    JournalModel::instance().addEntry(
-                log_type,
-                QStringLiteral("Changed %1: %2").arg(what).arg(rec.value(h_name_).toString()),
-                parent_ ? parent_ : contact_id,
-                parent_ ? contact_id : 0);
-}
-
 void ContactsModel::toggleFavoriteStatus(const int row)
 {
     Q_ASSERT(row >= 0);
@@ -254,17 +212,6 @@ void ContactsModel::toggleFavoriteStatus(const int row)
     }
 
     const auto id = data(index(row, h_id_, {}), Qt::DisplayRole).toInt();
-
-//    auto rec = record(row);
-//    const auto id = rec.value(h_id_).toInt();
-//    const bool new_status = !rec.value(h_favorite_).toBool();
-//    rec.setValue(h_favorite_, new_status);
-
-//    if (!setRecord(row, rec)) {
-//        qWarning() << "Failed to update flag (setRecord): "
-//                   << lastError().text();
-//        return;
-//    }
 
     if (!submitAll()) {
         qWarning() << "Failed to update flag (submitAll): "
@@ -310,12 +257,6 @@ bool ContactsModel::insertContact(QSqlRecord &rec)
     const auto now = static_cast<uint>(time(nullptr));
     rec.setValue(h_created_date_, now);
     rec.setValue(h_last_activity_date_, now);
-
-    const auto internal_edit_save = internal_edit_;
-    internal_edit_ = true;
-    auto release_edit = make_release([this, internal_edit_save]{
-        internal_edit_ = internal_edit_save;
-    });
 
     if (!insertRecord(0, rec)) {
         qWarning() << "Failed to add new contact (insertRecord): "
@@ -371,7 +312,7 @@ const QIcon &ContactsModel::getStars(const int stars)
 
 QModelIndex ContactsModel::createContact(const ContactType type)
 {
-    //Strategy strategy(*this, QSqlTableModel::OnManualSubmit);
+    Strategy strategy(*this, QSqlTableModel::OnManualSubmit);
     auto rec = record();
 
     rec.setValue(h_name_, QStringLiteral(""));
@@ -383,3 +324,5 @@ QModelIndex ContactsModel::createContact(const ContactType type)
 
     return index(0, h_name_, {}); // Assume that we insterted at end in the model
 }
+
+

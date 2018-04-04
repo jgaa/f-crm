@@ -4,18 +4,19 @@
 #include "src/persondialog.h"
 #include "ui_persondialog.h"
 
-PersonDialog::PersonDialog(const QSqlRecord& rec, bool isPerson, int row, QWidget *parent) :
+PersonDialog::PersonDialog(ContactsModel& model, bool isPerson, int row, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::PersonDialog),
-    rec_{rec},
     is_person_{isPerson},
-    row_{row}
+    row_{row},
+    model_{model}
 {
     ui->setupUi(this);
 
-    this->setWindowTitle(QStringLiteral("%1 %2")
-                         .arg(row >= 0 ? "Edit" : "Add")
+    this->setWindowTitle(QStringLiteral("Edit %1")
                          .arg(isPerson ? "Person" : "Contact"));
+
+    mapper_.setModel(&model_);
 
     for(auto e : GetContactStatusEnums()) {
          ui->status->addItem(GetContactStatusIcon(e),
@@ -29,8 +30,12 @@ PersonDialog::PersonDialog(const QSqlRecord& rec, bool isPerson, int row, QWidge
                                  GetContactGenderName(e),
                                  static_cast<int>(e));
         }
-        ui->gender->setCurrentIndex(ui->gender->findData(rec.value("gender").toInt()));
+
+        mapper_.addMapping(ui->gender, model_.fieldIndex("gender"), "currentData");
+        ui->status->setHidden(true);
+        ui->statusLabel->setHidden(true);
     } else {
+        mapper_.addMapping(ui->status, model_.fieldIndex("status"), "currentData");
         ui->gender->setHidden(true);
         ui->genderLabel->setHidden(true);
     }
@@ -40,18 +45,36 @@ PersonDialog::PersonDialog(const QSqlRecord& rec, bool isPerson, int row, QWidge
     }
 
     ui->stars->setIconSize({80, 16});
-    ui->stars->setCurrentIndex(rec.value("stars").toInt());
-    ui->favorite->setChecked(rec.value("favourite").toBool());
-    ui->status->setCurrentIndex(ui->status->findData(rec.value("status").toInt()));
-    ui->name->setText(rec.value("name").toString());
-    ui->address1->setText(rec.value("address1").toString());
-    ui->address2->setText(rec.value("address2").toString());
-    ui->city->setText(rec.value("city").toString());
-    ui->postcode->setText(rec.value("postcode").toString());
-    ui->region->setText(rec.value("region").toString());
-    ui->state->setText(rec.value("state").toString());
-    ui->country->setText(rec.value("country").toString());
-    ui->notes->setPlainText(rec.value("notes").toString());
+
+    mapper_.addMapping(ui->stars, model_.fieldIndex("stars"), "currentData");
+    mapper_.addMapping(ui->favorite, model_.fieldIndex("favourite"));
+    mapper_.addMapping(ui->name, model_.fieldIndex("name"));
+    mapper_.addMapping(ui->address1, model_.fieldIndex("address1"));
+    mapper_.addMapping(ui->address2, model_.fieldIndex("address2"));
+    mapper_.addMapping(ui->city, model_.fieldIndex("city"));
+    mapper_.addMapping(ui->postcode, model_.fieldIndex("postcode"));
+    mapper_.addMapping(ui->region, model_.fieldIndex("region"));
+    mapper_.addMapping(ui->state, model_.fieldIndex("state"));
+    mapper_.addMapping(ui->country, model_.fieldIndex("country"));
+    mapper_.addMapping(ui->notes, model_.fieldIndex("notes"));
+
+    mapper_.setCurrentIndex(row);
+
+    {
+        const auto dix = model_.index(row, model_.fieldIndex("stars"), {});
+        int gender_val = model_.data(dix, Qt::EditRole).toInt();
+        ui->stars->setCurrentIndex(ui->stars->findData(gender_val));
+    }
+
+    if (is_person_) {
+        const auto dix = model_.index(row, model_.fieldIndex("gender"), {});
+        int gender_val = model_.data(dix, Qt::EditRole).toInt();
+        ui->gender->setCurrentIndex(ui->gender->findData(gender_val));
+    } else {
+        const auto dix = model_.index(row, model_.fieldIndex("status"), {});
+        int status_val = model_.data(dix, Qt::EditRole).toInt();
+        ui->status->setCurrentIndex(ui->status->findData(status_val));
+    }
 }
 
 PersonDialog::~PersonDialog()
@@ -61,32 +84,9 @@ PersonDialog::~PersonDialog()
 
 void PersonDialog::accept()
 {
-    if (!rec_.isEmpty()) {
-        rec_.setValue("status", ui->status->currentData().toInt());
-        if (is_person_) {
-            rec_.setValue("gender", ui->gender->currentData().toInt());
-        }
-        rec_.setValue("name", ui->name->text());
-        rec_.setValue("address1", ui->address1->text());
-        rec_.setValue("address2", ui->address2->text());
-        rec_.setValue("city", ui->city->text());
-        rec_.setValue("postcode", ui->postcode->text());
-        rec_.setValue("country", ui->country->text());
-        rec_.setValue("region", ui->region->text());
-        rec_.setValue("state", ui->state->text());
-        rec_.setValue("notes", ui->notes->toPlainText());
-        rec_.setValue("stars", ui->stars->currentIndex());
-        rec_.setValue("favourite", ui->favorite->isChecked());
-
-        if (rec_.value("id").toInt() > 0) {
-            Q_ASSERT(row_ >= 0);
-            emit updatePerson(row_, rec_);
-        } else {
-            emit addPerson(rec_);
-            emit setFilter(rec_.value("name").toString());
-        }
-    }
+    mapper_.submit();
 
     QDialog::accept();
 }
+
 

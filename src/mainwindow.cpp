@@ -12,6 +12,7 @@
 #include "logging.h"
 #include "favoritesdialog.h"
 #include "aboutdialog.h"
+#include "strategy.h"
 
 #include <QSettings>
 #include <QDebug>
@@ -122,7 +123,7 @@ void MainWindow::initialize()
     for(int i = 0; i < persons_model_->columnCount(); ++i) {
         const bool show =
                 (i == persons_model_->property("name_col").toInt())
-                || (i == persons_model_->property("status_col").toInt());
+                /*|| (i == persons_model_->property("status_col").toInt())*/;
         ui->contactPeople->setColumnHidden(i, !show);
     }
 
@@ -392,15 +393,11 @@ void MainWindow::onSyncronizeContactsBindings()
         ui->actionsView->setContactId(contact_id);
         ui->actionsView->setEntity(Document::Entity::ACTION, actions_model_, -1);
         ui->actionsView->setDocumentDropEnabled(true);
+        setupMapper(current.row());
+
     } else {
         syncContactData();
-
-        ui->contactNotes->clear();
-        ui->contactAddress->clear();
-        ui->contactAddress2->clear();
-        ui->contactCity->clear();
-        ui->contactPostCode->clear();
-        ui->contactCountry->clear();
+        clearMapper();
 
         channels_model_->setContact(-1);
         ui->contactPeople->setEnabled(false);
@@ -441,13 +438,16 @@ void MainWindow::onSyncronizePersonBindings()
             const auto contact_id = persons_model_->getContactId(people);
             channels_model_->setContact(contact_id);
             syncPersonData(persons_model_, people.row());
+            setupMapper(people.row());
         } else {
             const auto contact_id = contacts_model_->getContactId(current);
             channels_model_->setContact(contact_id);
             syncPersonData(contacts_model_, current.row());
+            setupMapper(current.row());
         }
     } else {
         syncPersonData();
+        clearMapper();
     }
 }
 
@@ -798,6 +798,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event);
 
+    if (mapper_){
+        mapper_->submit();
+    }
+
     settings_.setValue("windowGeometry", saveGeometry());
     settings_.setValue("windowState", saveState());
 }
@@ -928,6 +932,61 @@ bool MainWindow::confirmDelete(const QString &what)
             == QMessageBox::Yes;
 }
 
+void MainWindow::setupMapper(const int row)
+{
+    if (disable_mapper_) {
+        return;
+    }
+
+    if (mapper_) {
+        mapper_->submit();
+
+        if (mapper_is_ == (isCurrentPersonInCompany() ? Mapper::PERSON : Mapper::CONTACT)) {
+            mapper_->setCurrentIndex(row);
+            return; // No need to do anything more
+        }
+    }
+
+    mapper_ = make_unique<QDataWidgetMapper>();
+    ContactsModel *model = {};
+
+    if (isCurrentPersonInCompany()) {
+        mapper_is_ = Mapper::PERSON;
+        model = persons_model_;
+    } else {
+        mapper_is_ = Mapper::CONTACT;
+        model = contacts_model_;
+    }
+
+    mapper_->setModel(model);
+
+    mapper_->addMapping(ui->contactAddress, model->fieldIndex("address1"));
+    mapper_->addMapping(ui->contactAddress2, model->fieldIndex("address2"));
+    mapper_->addMapping(ui->contactCity, model->fieldIndex("city"));
+    mapper_->addMapping(ui->contactPostCode, model->fieldIndex("postcode"));
+    mapper_->addMapping(ui->contactCountry, model->fieldIndex("country"));
+    mapper_->addMapping(ui->personNotes, model->fieldIndex("notes"));
+
+    mapper_->setCurrentIndex(row);
+}
+
+void MainWindow::clearMapper()
+{
+    if (mapper_) {
+        mapper_->submit();
+        mapper_->clearMapping();
+        mapper_.reset();
+        mapper_is_ = Mapper::NOONE;
+    }
+
+    ui->contactAddress->clear();
+    ui->contactAddress2->clear();
+    ui->contactCity->clear();
+    ui->contactPostCode->clear();
+    ui->contactCountry->clear();
+    ui->personNotes->clear();
+}
+
 QString MainWindow::getChannelValue() const
 {
     auto current = ui->contactChannels->selectionModel()->currentIndex();
@@ -963,17 +1022,28 @@ void MainWindow::on_actionAdd_Person_triggered()
         return;
     }
 
+    disable_mapper_ = true;
+    clearMapper();
+
     const auto contact_id = contacts_model_->getContactId(current);
 
     auto rec = persons_model_->record();
     rec.setValue("contact", contact_id);
     rec.setValue("type", static_cast<int>(ContactType::INDIVID));
 
-    auto dlg = new PersonDialog(rec, true, -1, this);
+    persons_model_->addPerson(rec);
+    auto dlg = new PersonDialog(*persons_model_, true, 0, this);
     dlg->setAttribute( Qt::WA_DeleteOnClose );
-    connect(dlg, &PersonDialog::addPerson,
-            persons_model_, &ContactsModel::addPerson);
     dlg->exec();
+    disable_mapper_ = false;
+    const auto ix = person_px_model->index(0,persons_model_->fieldIndex("name"));
+
+    // Had some problems selecting the new person... Let's be really explicit here.
+    ui->contactPeople->scrollTo(ix);
+    ui->contactPeople->setFocus();
+    ui->contactPeople->selectionModel()->select(ix, QItemSelectionModel::Clear);
+    ui->contactPeople->selectionModel()->select(ix, QItemSelectionModel::Select);
+    ui->contactPeople->setCurrentIndex(ix);
 }
 
 void MainWindow::on_actionAdd_Company_triggered()
@@ -988,22 +1058,25 @@ void MainWindow::on_actionAdd_Contact_triggered()
 
 void MainWindow::createContact(ContactType type)
 {
-    auto rec = contacts_model_->record();
-    rec.setValue("type", static_cast<int>(type));
+    disable_mapper_ = true;
+    clearMapper();
 
-    auto dlg = new PersonDialog(rec, false, -1, this);
+    contacts_model_->createContact(type);
+
+    auto dlg = new PersonDialog(*contacts_model_, false, 0, this);
     dlg->setAttribute( Qt::WA_DeleteOnClose );
-    connect(dlg, &PersonDialog::addPerson,
-            contacts_model_, &ContactsModel::addPerson);
-    connect(dlg, &PersonDialog::setFilter,
-            this, &MainWindow::setFilter,
-            Qt::QueuedConnection);
     dlg->exec();
+    disable_mapper_ = false;
+    const auto ix = contact_px_model->index(0, contacts_model_->fieldIndex("name"));
+    ui->contactsList->scrollTo(ix);
+    ui->contactsList->setFocus();
+    ui->contactsList->selectionModel()->select(ix, QItemSelectionModel::Clear);
+    ui->contactsList->selectionModel()->select(ix, QItemSelectionModel::Select);
+    ui->contactsList->setCurrentIndex(ix);
 }
 
 bool MainWindow::isCurrentPersonInCompany() const
 {
-    //return persons_mapper_ != nullptr;
     return ui->contactPeople->currentIndex().isValid();
 }
 
@@ -1036,20 +1109,12 @@ void MainWindow::syncPersonData(ContactsModel *model, const int row)
 {
     ui->personWhoIcon->setPixmap(contactData(model, "type", row, Qt::DecorationRole).value<QIcon>().pixmap(24,24));
     ui->personWhoName->setText(contactData(model, "name", row).toString());
-
-    ui->contactAddress->setText(contactData(model, "address1", row).toString());
-    ui->contactAddress2->setText(contactData(model, "address2", row).toString());
-    ui->contactCity->setText(contactData(model, "city", row).toString());
-    ui->contactPostCode->setText(contactData(model, "postcode", row).toString());
-    ui->contactCountry->setText(contactData(model, "country", row).toString());
-    ui->personNotes->setPlainText(contactData(model, "notes", row).toString());
 }
 
 void MainWindow::syncContactData(ContactsModel *model, const int row)
 {
     ui->contactWhoIcon->setPixmap(contactData(model, "type", row, Qt::DecorationRole).value<QIcon>().pixmap(24,24));
     ui->contactWhoName->setText(contactData(model, "name", row).toString());
-    ui->contactNotes->setPlainText(contactData(model, "notes", row).toString());
     ui->contactStatusIcon->setPixmap(contactData(model, "status", row,
                                                  Qt::DecorationRole).value<QIcon>().pixmap(24,24));
     ui->contactFavoriteIcon->setPixmap(contactData(model, "favourite", row, Qt::DecorationRole).value<QIcon>().pixmap(24,24));
@@ -1079,13 +1144,13 @@ void MainWindow::on_actionEdit_Person_triggered()
         return;
     }
 
-    auto rec = persons_model_->record(current.row());
-
-    auto dlg = new PersonDialog(rec, true, current.row(),  this);
+    disable_mapper_ = true;
+    clearMapper();
+    auto dlg = new PersonDialog(*persons_model_, true, current.row(),  this);
     dlg->setAttribute( Qt::WA_DeleteOnClose );
-    connect(dlg, &PersonDialog::updatePerson,
-            persons_model_, &ContactsModel::updatePerson);
     dlg->exec();
+    disable_mapper_ = false;
+    setupMapper(current.row());
 }
 
 void MainWindow::on_actionDelete_Person_triggered()
@@ -1396,13 +1461,13 @@ void MainWindow::on_actionEdit_Contact_triggered()
         return;
     }
 
-    auto rec = contacts_model_->record(current.row());
-
-    auto dlg = new PersonDialog(rec, false, current.row(),  this);
+    disable_mapper_ = true;
+    clearMapper();
+    auto dlg = new PersonDialog(*contacts_model_, false, current.row(),  this);
     dlg->setAttribute( Qt::WA_DeleteOnClose );
-    connect(dlg, &PersonDialog::updatePerson,
-            contacts_model_, &ContactsModel::updatePerson);
     dlg->exec();
+    disable_mapper_ = false;
+    setupMapper(current.row());
 }
 
 

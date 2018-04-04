@@ -53,7 +53,6 @@ public slots:
     void setParent(int contact);
     void removeContacts(const QModelIndexList& indexes);
     void addPerson(const QSqlRecord& rec);
-    void updatePerson(const int row, const QSqlRecord& rec);
     void toggleFavoriteStatus(const int row);
     void setStars(const int row, const int stars);
 

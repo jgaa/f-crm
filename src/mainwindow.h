@@ -47,6 +47,12 @@ class MainWindow : public QMainWindow
         LOG
     };
 
+    enum Mapper {
+        NOONE,
+        CONTACT,
+        PERSON
+    };
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -169,6 +175,8 @@ private:
     void createContact(ContactType type);
     void openChannel(const ChannelType type, const QString& value);
     bool confirmDelete(const QString& what);
+    void setupMapper(const int row);
+    void clearMapper();
 
     // Get the current person (either a company/contact - upper list) or a
     // person in a company (lower list), depending on the current context.
@@ -216,6 +224,9 @@ protected:
     UpcomingModel *today_model_ = {};
     //std::unique_ptr<QDataWidgetMapper> contacts_mapper_;
     //std::unique_ptr<QDataWidgetMapper> persons_mapper_;
+    std::unique_ptr<QDataWidgetMapper> mapper_; // Contact or Person, depending on the context
+    Mapper mapper_is_ = Mapper::NOONE;
+    bool disable_mapper_ = false;
     int last_person_clicked {-1};
 };
 

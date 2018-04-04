@@ -17,7 +17,7 @@ class PersonDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit PersonDialog(const QSqlRecord& rec, bool isPerson, int row, QWidget *parent = 0);
+    explicit PersonDialog(ContactsModel& model, bool isPerson, int row, QWidget *parent = 0);
     ~PersonDialog();
 
 signals:
@@ -27,9 +27,10 @@ signals:
 
 private:
     Ui::PersonDialog *ui;
-    QSqlRecord rec_;
     const bool is_person_;
     const int row_;
+    ContactsModel& model_;
+    QDataWidgetMapper mapper_;
 
     // QDialog interface
 public slots:
