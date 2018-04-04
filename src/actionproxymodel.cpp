@@ -12,7 +12,7 @@ ActionProxyModel::ActionProxyModel(ActionsModel *docModel, QObject *parent)
 
 QVariant ActionProxyModel::data(const QModelIndex &ix, int role) const
 {
-    static const int h_name = model_->fieldIndex("name");
+    //static const int h_name = model_->fieldIndex("name");
     static const int h_state = model_->fieldIndex("state");
     static const int h_type = model_->fieldIndex("type");
     static const int h_channel_type = model_->fieldIndex("channel_type");
