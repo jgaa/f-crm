@@ -1233,7 +1233,7 @@ void MainWindow::on_actionAdd_Action_triggered()
 
     auto rec = actions_model_->getRecord();
 
-    auto dlg = new ActionDialog(this);
+    auto dlg = new ActionDialog(rec.value("person").toInt(), this);
     dlg->setRecord(rec);
     dlg->setAttribute( Qt::WA_DeleteOnClose );
     connect(dlg, &ActionDialog::addAction,
@@ -1249,7 +1249,7 @@ void MainWindow::on_actionEdit_Action_triggered()
         return;
     }
 
-    auto dlg = new ActionDialog(this);
+    auto dlg = new ActionDialog(actions_model_->contact(), this);
     dlg->setModel(actions_model_, current);
     dlg->setAttribute( Qt::WA_DeleteOnClose );
     if (dlg->exec() == QDialog::Accepted) {

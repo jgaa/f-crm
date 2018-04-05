@@ -16,7 +16,7 @@ class ActionDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ActionDialog(QWidget *parent = 0);
+    explicit ActionDialog(const int contact, QWidget *parent = 0);
     ~ActionDialog();
 
     void setRecord(const QSqlRecord& rec);

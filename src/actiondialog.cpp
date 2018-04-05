@@ -4,11 +4,12 @@
 #include "channel.h"
 #include "utility.h"
 
-ActionDialog::ActionDialog(QWidget *parent) :
+ActionDialog::ActionDialog(const int contact, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ActionDialog)
 {
     static const QIcon company{":/res/icons/company.svg"};
+    static const QIcon person{":/res/icons/person.svg"};
 
     ui->setupUi(this);
 
@@ -31,7 +32,12 @@ ActionDialog::ActionDialog(QWidget *parent) :
     }
 
     ui->person->addItem(company, "Company", 0);
-    // TODO: Add persons
+    QSqlQuery persons(QStringLiteral("select id, name from contact where contact = %1 order by name")
+                      .arg(contact));
+    while(persons.next()) {
+        ui->person->addItem(person, persons.value(1).toString(), persons.value(0).toInt());
+    }
+
 
     checkAccess();
 
@@ -50,9 +56,7 @@ void ActionDialog::setRecord(const QSqlRecord &rec)
     ui->type->setCurrentIndex(ui->type->findData(rec.value("state").toInt()));
     ui->type->setCurrentIndex(ui->type->findData(rec.value("type").toInt()));
     ui->type->setCurrentIndex(ui->channelType->findData(rec.value("channel_type").toInt()));
-    if (!rec.isNull("person")) {
-        ui->type->setCurrentIndex(ui->person->findData(rec.value("person").toInt()));
-    }
+    ui->type->setCurrentIndex(ui->person->findData(rec.value("person").toInt()));
 
     ui->name->setText(rec.value("name").toString());
     ui->goal->setPlainText(rec.value("desired_outcome").toString());
@@ -96,19 +100,19 @@ void ActionDialog::setModel(ActionsModel *model, QModelIndex &ix)
     }
 
     {
-        const auto dix = model->index(ix.row(), model->property("type_col").toInt(), {});
+        const auto dix = model->index(ix.row(), model->fieldIndex("type"), {});
         int val = model->data(dix, Qt::DisplayRole).toInt();
         ui->type->setCurrentIndex(ui->type->findData(val));
     }
 
     {
-        const auto dix = model->index(ix.row(), model->property("channel_type_col").toInt(), {});
+        const auto dix = model->index(ix.row(), model->fieldIndex("channel_type"), {});
         int val = model->data(dix, Qt::DisplayRole).toInt();
         ui->channelType->setCurrentIndex(ui->channelType->findData(val));
     }
 
     {
-        const auto dix = model->index(ix.row(), model->property("person_col").toInt(), {});
+        const auto dix = model->index(ix.row(), model->fieldIndex("person"), {});
         int val = model->data(dix, Qt::EditRole).toInt();
         ui->person->setCurrentIndex(ui->person->findData(val));
     }

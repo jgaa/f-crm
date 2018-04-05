@@ -37,6 +37,7 @@ public:
 
     void setContact(int id);
     void setIntent(int id);
+    int contact() const { return contact_; }
 
     // Get a record with default values
     QSqlRecord getRecord();
