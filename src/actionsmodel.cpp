@@ -182,6 +182,20 @@ void ActionsModel::openNextActions()
     }
 }
 
+void ActionsModel::updateState()
+{
+    QSqlQuery query(QStringLiteral("select state from intent where id=%1 ")
+              .arg(intent_));
+    if (query.next() && query.value(0).toInt() >= static_cast<int>(IntentState::PROGRESS)) {
+        for(int i = 0; i < rowCount(); ++i) {
+            const auto state = data(index(i, h_state_, {}), Qt::DisplayRole).toInt();
+            if (state < static_cast<int>(ActionState::DONE)) {
+                setData(index(i, h_state_), static_cast<int>(ActionState::CANCELLED));
+            }
+        }
+    }
+}
+
 void ActionsModel::doMove(const QModelIndex &ix, const int offset)
 {
     if (!ix.isValid()

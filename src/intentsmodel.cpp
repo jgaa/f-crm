@@ -123,6 +123,22 @@ void IntentsModel::addIntent(QSqlRecord rec)
     qDebug() << "Created new intent";
 }
 
+void IntentsModel::updateState()
+{
+    for(int i = 0; i < rowCount(); ++i) {
+        const auto state = ToIntentState(data(index(i, h_state_, {}), Qt::DisplayRole).toInt());
+        if (state == IntentState::DEFINED) {
+            QSqlQuery query(QStringLiteral("select count(*) from action where contact=%1 and intent=%2 and state in (1,2,3,4,6)")
+                      .arg(data(index(i, h_contact_), Qt::DisplayRole).toInt())
+                      .arg(data(index(i, h_id_), Qt::DisplayRole).toInt()));
+            if (query.next() && query.value(0).toInt() > 0) {
+                setData(index(i, h_state_), static_cast<int>(IntentState::PROGRESS));
+                submit();
+            }
+        }
+    }
+}
+
 QVariant IntentsModel::data(const QModelIndex &ix, int role) const
 {
     if (role == Qt::DisplayRole) {

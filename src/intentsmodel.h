@@ -34,6 +34,7 @@ public:
 public slots:
     void removeIntents(const QModelIndexList& indexes);
     void addIntent(QSqlRecord rec);
+    void updateState();
 
 private:
     QSettings& settings_;

@@ -91,10 +91,12 @@ private slots:
     void onIntentsRowActivated(const QModelIndex &index);
     void onIntentsModelReset();
     void onValidateIntentActions();
+    void onIntentsDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &);
 
     void onActionsContextMenuRequested(const QPoint &pos);
     void onActionsRowActivated(const QModelIndex &index);
     void onActionsDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &);
+    void onActionsrowsInserted(const QModelIndex &parent, int first, int last);
     void onActionsModelReset();
     void onValidateActionActions();
 

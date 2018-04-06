@@ -49,6 +49,7 @@ public slots:
     void moveUp(const QModelIndex& ix);
     void moveDown(const QModelIndex& ix);
     void openNextActions();
+    void updateState();
 
 private:
     void doMove(const QModelIndex &ix, const int offset);

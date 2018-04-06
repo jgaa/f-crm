@@ -248,6 +248,8 @@ void MainWindow::initialize()
             this, &MainWindow::onIntentsContextMenuRequested);
     connect(intents_model_, &IntentsModel::modelReset,
             this, &MainWindow::onIntentsModelReset);
+    connect(intents_model_, &IntentsModel::dataChanged,
+            this, &MainWindow::onIntentsDataChanged, Qt::QueuedConnection);
 
     connect(ui->actionsView->selectionModel(), &QItemSelectionModel::currentRowChanged,
             this, &MainWindow::onActionsRowActivated);
@@ -256,7 +258,10 @@ void MainWindow::initialize()
     connect(actions_model_, &ActionsModel::modelReset,
             this, &MainWindow::onActionsModelReset);
     connect(actions_model_, &ActionsModel::dataChanged,
-            this, &MainWindow::onActionsDataChanged);
+            this, &MainWindow::onActionsDataChanged, Qt::QueuedConnection);
+    connect(actions_model_, &ActionsModel::rowsInserted,
+            this, &MainWindow::onActionsrowsInserted);
+
 
     connect(ui->documentsView->selectionModel(), &QItemSelectionModel::currentRowChanged,
             this, &MainWindow::onDocumentsRowActivated);
@@ -667,6 +672,11 @@ void MainWindow::onValidateIntentActions()
     ui->actionDelete_Intent->setEnabled(enable_modifications);
 }
 
+void MainWindow::onIntentsDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)
+{
+    actions_model_->updateState();
+}
+
 void MainWindow::onActionsContextMenuRequested(const QPoint &pos)
 {
     QMenu *menu = new QMenu;
@@ -695,6 +705,12 @@ void MainWindow::onActionsDataChanged(const QModelIndex &, const QModelIndex &, 
 {
     onValidateActionActions();
     contact_upcoming_model_->select();
+    intents_model_->updateState();
+}
+
+void MainWindow::onActionsrowsInserted(const QModelIndex &, int , int )
+{
+    intents_model_->updateState();
 }
 
 void MainWindow::onActionsModelReset()
