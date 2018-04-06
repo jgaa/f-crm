@@ -3,6 +3,7 @@
 
 #include <QSettings>
 #include <QSqlTableModel>
+#include <QSqlRecord>
 #include <QImage>
 #include <QMetaType>
 #include <QSqlDatabase>
@@ -25,13 +26,14 @@ public:
     DEF_COLUMN(state)
     DEF_COLUMN(abstract)
     DEF_COLUMN(notes)
+    DEF_COLUMN(created_date)
 
     void setContact(int id);
     int getIntentId(const QModelIndex& ix);
 
 public slots:
     void removeIntents(const QModelIndexList& indexes);
-    void addIntent(const QSqlRecord& rec);
+    void addIntent(QSqlRecord rec);
 
 private:
     QSettings& settings_;
@@ -42,6 +44,7 @@ private:
     int h_state_ = {};
     int h_abstract_ = {};
     int h_notes_ = {};
+    int h_created_date_ = {};
 
     // QAbstractItemModel interface
 public:

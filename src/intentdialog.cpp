@@ -34,9 +34,10 @@ void IntentDialog::setModel(IntentsModel *model, QModelIndex &ix)
     mapper_ = new QDataWidgetMapper(this);
 
     mapper_->setModel(model);
-    mapper_->addMapping(ui->state, model->property("state_col").toInt(), "currentData");
-    mapper_->addMapping(ui->abstract, model->property("abstract_col").toInt());
-    mapper_->addMapping(ui->notes, model->property("notes_col").toInt());
+    mapper_->addMapping(ui->state, model->fieldIndex("state"), "currentData");
+    mapper_->addMapping(ui->abstract, model->fieldIndex("abstract"));
+    mapper_->addMapping(ui->notes, model->fieldIndex("notes"));
+    mapper_->addMapping(ui->createdDate, model->fieldIndex("created_date"));
 
     mapper_->setCurrentIndex(ix.row());
 
@@ -55,6 +56,7 @@ void IntentDialog::accept()
         rec_.setValue("state", ui->state->currentData().toInt());
         rec_.setValue("abstract", ui->abstract->text());
         rec_.setValue("notes", ui->notes->toPlainText());
+        rec_.setValue("created_date", ui->createdDate->dateTime());
 
         emit addIntent(rec_);
     }

@@ -13,6 +13,7 @@ QVariant IntentProxyModel::data(const QModelIndex &ix, int role) const
     static const int h_state = model_->fieldIndex("state");
     static const int h_type = model_->fieldIndex("type");
     static const int h_abstract = model_->fieldIndex("abstract");
+    static const int h_created_date = model_->fieldIndex("created_date");
 
     if (ix.isValid()) {
         if (role == Qt::DisplayRole || role == Qt::EditRole) {
@@ -23,6 +24,12 @@ QVariant IntentProxyModel::data(const QModelIndex &ix, int role) const
 
             if (ix.column() == h_state) {
                 return GetIntentStateName(std::max(0, model_->data(ix, Qt::DisplayRole).toInt()));
+            }
+
+            if (role == Qt::DisplayRole) {
+                if (ix.column() == h_created_date) {
+                    return model_->data(ix, role).toDate();
+                }
             }
 
         } else if (role == Qt::DecorationRole) {

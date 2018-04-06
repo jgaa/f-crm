@@ -133,10 +133,12 @@ void MainWindow::initialize()
     ui->intentsView->setDocumentsModel(documents_model_);
 
     ui->intentsView->horizontalHeader()->setSectionResizeMode(
-                intents_model_->property("abstract_col").toInt(), QHeaderView::Stretch);
+                intents_model_->fieldIndex("abstract"), QHeaderView::Stretch);
+    ui->intentsView->horizontalHeader()->moveSection(intents_model_->fieldIndex("created_date"), 0);
     for(int i = 0; i < intents_model_->columnCount(); ++i) {
-        const bool show = (i == intents_model_->property("abstract_col").toInt())
-                || (i == intents_model_->property("state_col").toInt());
+        const bool show = (i == intents_model_->fieldIndex("abstract"))
+                || (i == intents_model_->fieldIndex("created_date"))
+                || (i == intents_model_->fieldIndex("state"));
         ui->intentsView->setColumnHidden(i, !show);
     }
 

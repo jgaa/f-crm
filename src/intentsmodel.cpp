@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QSqlRecord>
 #include <QSqlField>
+#include <QDateTime>
 
 #include "src/intentsmodel.h"
 #include "src/strategy.h"
@@ -26,6 +27,7 @@ IntentsModel::IntentsModel(QSettings &settings, QObject *parent, QSqlDatabase db
     h_state_ = fieldIndex("state");
     h_abstract_ = fieldIndex("abstract");
     h_notes_ = fieldIndex("notes");
+    h_created_date_ = fieldIndex("created_date");
 
     Q_ASSERT(h_id_ >= 0
             && h_contact_ > 0
@@ -33,9 +35,10 @@ IntentsModel::IntentsModel(QSettings &settings, QObject *parent, QSqlDatabase db
             && h_state_ > 0
             && h_abstract_ > 0
             && h_notes_ > 0
+            && h_created_date_ > 0
     );
 
-    setSort(h_id_, Qt::AscendingOrder);
+    setSort(h_created_date_, Qt::AscendingOrder);
     setFilter("id = -1"); // Filter everything away
 }
 
@@ -85,10 +88,13 @@ void IntentsModel::removeIntents(const QModelIndexList &indexes)
     }
 }
 
-void IntentsModel::addIntent(const QSqlRecord &rec)
+void IntentsModel::addIntent(QSqlRecord rec)
 {
     Strategy strategy(*this, QSqlTableModel::OnManualSubmit);
 
+    if (rec.isNull(h_created_date_) || !rec.value(h_created_date_).toDateTime().isValid()) {
+        rec.setValue(h_created_date_, QDateTime::currentDateTime());
+    }
 
 //    for(int i = 0; i < rec.count(); ++i) {
 //        qDebug() << "# " << i << " " << rec.fieldName(i)
@@ -119,12 +125,20 @@ void IntentsModel::addIntent(const QSqlRecord &rec)
 
 QVariant IntentsModel::data(const QModelIndex &ix, int role) const
 {
+    if (role == Qt::DisplayRole) {
+        if (ix.column() == h_created_date_) {
+            return QSqlTableModel::data(ix, role).toDateTime();
+        }
+    }
     return QSqlTableModel::data(ix, role);
 }
 
 QVariant IntentsModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
+        if (section == h_created_date_) {
+            return "Created";
+        }
         auto name = QSqlTableModel::headerData(section, orientation, role).toString();
         name[0] = name[0].toUpper();
         return name;
