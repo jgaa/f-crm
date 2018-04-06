@@ -109,10 +109,12 @@ void MainWindow::initialize()
     ui->contactChannels->setModel(channels_px_model_);
 
     ui->contactChannels->horizontalHeader()->setSectionResizeMode(
-                channels_model_->property("value_col").toInt(), QHeaderView::Stretch);
+                channels_model_->fieldIndex("value"), QHeaderView::Stretch);
+    ui->contactChannels->horizontalHeader()->moveSection(channels_model_->fieldIndex("name"), 0);
     for(int i = 0; i < channels_model_->columnCount(); ++i) {
-        const bool show = (i == channels_model_->property("value_col").toInt())
-                || (i == channels_model_->property("verified_col").toInt());
+        const bool show = (i == channels_model_->fieldIndex("value"))
+                || (i == channels_model_->fieldIndex("name"))
+                || (i == channels_model_->fieldIndex("verified"));
         ui->contactChannels->setColumnHidden(i, !show);
     }
 

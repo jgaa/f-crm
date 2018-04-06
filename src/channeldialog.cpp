@@ -57,13 +57,14 @@ void ChannelDialog::setModel(ChannelsModel *model, QModelIndex &ix)
     mapper_ = new QDataWidgetMapper(this);
 
     mapper_->setModel(model);
-    mapper_->addMapping(ui->type, model->property("type_col").toInt(), "currentData");
-    mapper_->addMapping(ui->value, model->property("value_col").toInt());
-    mapper_->addMapping(ui->verified, model->property("verified_col").toInt());
+    mapper_->addMapping(ui->name, model->fieldIndex("name"));
+    mapper_->addMapping(ui->type, model->fieldIndex("type"), "currentData");
+    mapper_->addMapping(ui->value, model->fieldIndex("value"));
+    mapper_->addMapping(ui->verified, model->fieldIndex("verified"));
     mapper_->setCurrentIndex(ix.row());
 
     // The mapping is not smart enough to initialize the value
-    const auto dix = model->index(ix.row(), model->property("type_col").toInt(), {});
+    const auto dix = model->index(ix.row(), model->fieldIndex("type"), {});
     int type_val = model->data(dix, Qt::EditRole).toInt();
     ui->type->setCurrentIndex(type_val);
 }
@@ -74,6 +75,7 @@ void ChannelDialog::accept()
     if (!rec_.isEmpty()) {
 
         rec_.setValue("type", ui->type->currentData().toInt());
+        rec_.setValue("name", ui->name->text());
         rec_.setValue("value", ui->value->text());
         rec_.setValue("verified",
                       ui->verified->checkState() == Qt::Checked ? 1 : 0);

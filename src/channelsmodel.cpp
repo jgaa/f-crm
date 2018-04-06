@@ -27,11 +27,13 @@ ChannelsModel::ChannelsModel(QSettings &settings, QObject *parent, QSqlDatabase 
     h_type_ = fieldIndex("type");
     h_value_ = fieldIndex("value");
     h_verified_ = fieldIndex("verified");
+    h_name_ = fieldIndex("name");
 
     Q_ASSERT(h_contact_ > 0
             && h_type_ > 0
             && h_value_ > 0
             && h_verified_ > 0
+            && h_name_> 0
     );
 
     setSort(h_value_, Qt::AscendingOrder);
@@ -89,13 +91,6 @@ void ChannelsModel::verifyChannels(const QModelIndexList &indexes, bool verified
 void ChannelsModel::addChannel(const QSqlRecord &rec)
 {
     Strategy strategy(*this, QSqlTableModel::OnManualSubmit);
-
-
-//    for(int i = 0; i < rec.count(); ++i) {
-//        qDebug() << "# " << i << " " << rec.fieldName(i)
-//                 << " " << rec.value(i).typeName()
-//                 << " : " << (rec.isNull(i) ? QStringLiteral("NULL") : rec.value(i).toString());
-//    }
 
     if (!insertRecord(-1, rec)) {
         qWarning() << "Failed to add new channel (insertRecord): "

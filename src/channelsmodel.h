@@ -24,6 +24,7 @@ public:
     DEF_COLUMN(type)
     DEF_COLUMN(value)
     DEF_COLUMN(verified)
+    DEF_COLUMN(name)
 
     void setContact(int id);
 
@@ -40,6 +41,7 @@ private:
     int h_type_ = {};
     int h_value_ = {};
     int h_verified_ = {};
+    int h_name_ = {};
 
     // QAbstractItemModel interface
 public:
