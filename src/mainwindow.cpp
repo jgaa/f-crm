@@ -694,11 +694,13 @@ void MainWindow::onActionsRowActivated(const QModelIndex &index)
 void MainWindow::onActionsDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)
 {
     onValidateActionActions();
+    contact_upcoming_model_->select();
 }
 
 void MainWindow::onActionsModelReset()
 {
     onValidateActionActions();
+    contact_upcoming_model_->select();
 }
 
 void MainWindow::onValidateActionActions()
