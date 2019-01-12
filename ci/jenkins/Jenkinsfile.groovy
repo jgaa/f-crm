@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Build') {
            parallel {
-                stage('Docker-build inside: ubuntu-trusty') {
+                stage('Docker-build inside: ubuntu-trusty (AppImage target)') {
                     agent {
                         dockerfile {
                             filename 'Dockefile.ubuntu-trusty'
@@ -36,11 +36,11 @@ pipeline {
                     post {
                         success {
                             echo "Build of debian package suceeded!"
-                            archive "dist/*.deb"
+                            archive "dist/*.AppImage"
                         }
                     }
                 }
-                stage('Docker-build inside: ubuntu-xenial') {
+                stage('Docker-build inside: ubuntu-xenial (.deb target)') {
                     agent {
                         dockerfile {
                             filename 'Dockefile.ubuntu-xenial'
@@ -70,7 +70,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Docker-build inside: ubuntu-bionic') {
+                stage('Docker-build inside: ubuntu-bionic (.deb target)') {
                     agent {
                         dockerfile {
                             filename 'Dockefile.ubuntu-bionic'
@@ -100,7 +100,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Docker-build inside: debian-stretch') {
+                stage('Docker-build inside: debian-stretch (.deb target)') {
                     agent {
                         dockerfile {
                             filename 'Dockefile.debian-stretch'
@@ -130,7 +130,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Docker-build inside: debian-testing') {
+                stage('Docker-build inside: debian-testing (.deb target)') {
                     agent {
                         dockerfile {
                             filename 'Dockefile.debian-testing'
