@@ -3,9 +3,6 @@
 APP="f-crm"
 ARCH="x86_64"
 
-export QT_LIBRARY_PATH=$QTDIR/lib
-export QT_PLUGIN_PATH=$QTDIR/plugins/
-
 if [ -z "$F_CRM_VERSION" ]; then
     F_CRM_VERSION="2.0.0"
     echo "Warning: Missing F_CRM_VERSION variable!"
@@ -25,10 +22,17 @@ if [ -z ${BUILD_DIR:-} ]; then
     BUILD_DIR=`pwd`/build
 fi
 
-if [ -z ${SRC_DIR:-} ];
+if [ -z ${BUILD_DIR:-} ]; then
+    BUILD_DIR=`pwd`/build
+fi
+
+if [ -z ${QTDIR:-} ];
 then
-# Just assume we are run from the scipts directory
-    SRC_DIR=`pwd`/..
+    QMAKE=qmake
+else
+    export QT_LIBRARY_PATH=$QTDIR/lib
+    export QT_PLUGIN_PATH=$QTDIR/plugins/
+    QMAKE=$QTDIR/bin/qmake
 fi
 
 echo "Building ${APP} for APPIMAGE into ${DIST_DIR} from ${SRC_DIR}"
@@ -41,7 +45,7 @@ mkdir -p $BUILD_DIR
 pushd $BUILD_DIR
 BUILD_DIR=$(pwd)
 
-$QTDIR/bin/qmake \
+$QMAKE \
     -spec  linux-g++  \
     "CONFIG += release x86_64" \
     $SRC_DIR/${APP}.pro
@@ -68,7 +72,7 @@ pushd ${APPIMAGE_DIR}
 
 linuxdeployqt \
     $APPIMAGE_DIR/usr/share/applications/${APP}.desktop \
-    -qmake=$QTDIR/bin/qmake \
+    -qmake=$QMAKE \
     -exclude-libs=libqsqlmysql,libqsqlpsql \
     -extra-plugins=iconengines,imageformats \
     -appimage
