@@ -77,7 +77,7 @@ linuxdeployqt \
     -extra-plugins=iconengines,imageformats \
     -appimage
 
-mv ${APP}-${ARCH}.AppImage $BUILD_DIR/${APP}-${ARCH}-${F_CRM_VERSION}.AppImage
+mv ${APP}-${ARCH}.AppImage $DIST_DIR/${APP}-${ARCH}-${F_CRM_VERSION}.AppImage
 
 popd
 popd
