@@ -26,6 +26,12 @@ if [ -z ${BUILD_DIR:-} ]; then
     BUILD_DIR=`pwd`/build
 fi
 
+if [ -z ${SRC_DIR:-} ];
+then
+# Just assume we are run from the scipts directory
+    SRC_DIR=`pwd`/..
+fi
+
 if [ -z ${QTDIR:-} ];
 then
     QMAKE=qmake
@@ -50,7 +56,10 @@ $QMAKE \
     "CONFIG += release x86_64" \
     $SRC_DIR/${APP}.pro
 
-make
+if ! make -j10 ; 
+then
+    exit 1
+fi
 
 popd
 
@@ -61,7 +70,10 @@ APPIMAGE_DIR=$(pwd)/AppImage
 echo "Constructing AppImage layout in: ${APPIMAGE_DIR}"
 
 mkdir -p $APPIMAGE_DIR/usr/bin
-cp -v $BUILD_DIR/${APP} $APPIMAGE_DIR/usr/bin
+if ! cp -v $BUILD_DIR/${APP} $APPIMAGE_DIR/usr/bin ;
+then
+    exit 1
+fi
 mkdir -p $APPIMAGE_DIR/usr/lib
 mkdir -p $APPIMAGE_DIR/usr/share/applications
 printf "[Desktop Entry]\nType=Application\nName=${APP}\nExec=${APP}\nIcon=${APP}\nCategories=Office;" > $APPIMAGE_DIR/usr/share/applications/${APP}.desktop
@@ -70,12 +82,15 @@ cp $SRC_DIR/res/icons/${APP}.svg $APPIMAGE_DIR/usr/share/icons/default/scalable/
 
 pushd ${APPIMAGE_DIR}
 
-linuxdeployqt \
+if ! linuxdeployqt \
     $APPIMAGE_DIR/usr/share/applications/${APP}.desktop \
     -qmake=$QMAKE \
     -exclude-libs=libqsqlmysql,libqsqlpsql \
     -extra-plugins=iconengines,imageformats \
-    -appimage
+    -appimage ;
+then 
+    exit 1
+fi
 
 mv ${APP}-${ARCH}.AppImage $DIST_DIR/${APP}-${ARCH}-${F_CRM_VERSION}.AppImage
 
