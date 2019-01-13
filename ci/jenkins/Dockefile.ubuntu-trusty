@@ -14,7 +14,7 @@ RUN apt-get -q update &&\
     apt-get -q update &&\
     DEBIAN_FRONTEND="noninteractive" apt-get install -y qt510-meta-full qt510base qt510declarative qt510tools qt510multimedia qt510svg qt510graphicaleffects qt510quickcontrols qt510quickcontrols2 qt510sensors qt510connectivity qt510location qt510websockets qt510webchannel qt5103d qt510canvas3d qt510scxml qt510webengine  &&\
     DEBIAN_FRONTEND="noninteractive" apt-get -q install -y g++ git make \
-    qt510-meta-full libgl1-mesa-dev ruby build-essential curl gcc-7 g++-7 libfuse2 &&\
+    qt510-meta-full libgl1-mesa-dev ruby build-essential curl gcc-7 g++-7 libfuse2 fuse &&\
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7 &&\
     sed -i 's|session required pam_loginuid.so|session optional pam_loginuid.so|g' /etc/pam.d/sshd &&\
     mkdir -p /var/run/sshd &&\
@@ -30,9 +30,8 @@ RUN apt-get -q update &&\
 RUN useradd -m -d /home/jenkins -s /bin/sh jenkins &&\
     echo "jenkins:jenkins" | chpasswd
 
-RUN apt-get update
-RUN apt-get install -y fuse
-RUN adduser jenkins fuse
+RUN adduser jenkins fuse 
+RUN chmod a+r /etc/fuse.conf
 
 # Standard SSH port
 EXPOSE 22
