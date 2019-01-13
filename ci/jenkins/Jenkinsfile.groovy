@@ -19,7 +19,7 @@ pipeline {
                             label 'master'
                             
                             // Dangerous, but we need fuse
-                            args '--device /dev/fuse --privileged -u 1000'
+                            args '--device /dev/fuse --privileged -u jenkins'
                         }
                     }
 
