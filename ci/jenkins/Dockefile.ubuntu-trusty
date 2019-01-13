@@ -32,6 +32,7 @@ RUN useradd -m -d /home/jenkins -s /bin/sh jenkins &&\
 
 RUN apt-get update
 RUN apt-get install -y fuse
+RUN adduser jenkins fuse
 
 # Standard SSH port
 EXPOSE 22
