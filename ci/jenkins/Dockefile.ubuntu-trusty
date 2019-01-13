@@ -9,19 +9,15 @@ MAINTAINER Jarle Aase <jgaa@jgaa.com>
 RUN apt-get -q update &&\
     DEBIAN_FRONTEND="noninteractive" apt-get -q upgrade -y -o Dpkg::Options::="--force-confnew" --no-install-recommends &&\
     DEBIAN_FRONTEND="noninteractive" apt-get -q install -y -o Dpkg::Options::="--force-confnew" --no-install-recommends openssh-server software-properties-common &&\
-    DEBIAN_FRONTEND="noninteractive" add-apt-repository ppa:beineri/opt-qt593-trusty -y &&\
+    DEBIAN_FRONTEND="noninteractive" add-apt-repository ppa:beineri/opt-qt-5.10.1-trusty &&\
     DEBIAN_FRONTEND="noninteractive" add-apt-repository ppa:ubuntu-toolchain-r/test -y &&\
     apt-get -q update &&\
+    DEBIAN_FRONTEND="noninteractive" apt-get install -y qt510-meta-full qt510base qt510declarative qt510tools qt510multimedia qt510svg qt510graphicaleffects qt510quickcontrols qt510quickcontrols2 qt510sensors qt510connectivity qt510location qt510websockets qt510webchannel qt5103d qt510canvas3d qt510scxml qt510webengine  &&\
     DEBIAN_FRONTEND="noninteractive" apt-get -q install -y g++ git make \
-    qtdeclarative5-dev qt59base qt5-default ruby build-essential curl gcc-7 g++-7 &&\
+    qt510-meta-full ruby build-essential curl gcc-7 g++-7 &&\
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7 &&\
-    apt-get -q autoremove &&\
-    apt-get -q clean -y && rm -rf /var/lib/apt/lists/* && rm -f /var/cache/apt/*.bin &&\
     sed -i 's|session required pam_loginuid.so|session optional pam_loginuid.so|g' /etc/pam.d/sshd &&\
-    mkdir -p /var/run/sshd
-
-# Install JDK 8 (latest edition)
-RUN apt-get -q update &&\
+    mkdir -p /var/run/sshd &&\
     DEBIAN_FRONTEND="noninteractive" apt-get -q install -y -o Dpkg::Options::="--force-confnew" --no-install-recommends software-properties-common &&\
     add-apt-repository -y ppa:openjdk-r/ppa &&\
     apt-get -q update &&\

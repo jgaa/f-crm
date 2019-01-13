@@ -11,6 +11,7 @@ pipeline {
         stage('Build') {
            parallel {
                 stage('Docker-build inside: ubuntu-trusty (AppImage target)') {
+                    // Note: We build a container with g++ 7.4 and QT 5.10
                     agent {
                         dockerfile {
                             filename 'Dockefile.ubuntu-trusty'
@@ -24,6 +25,7 @@ pipeline {
                         BUILD_DIR = "${WORKSPACE}/build"
                         SRC_DIR = "${WORKSPACE}"
                         DIST_NAME = 'ubuntu-trusty-'
+                        QTDIR = "/opt/qt510"
                     }
 
                     steps {
