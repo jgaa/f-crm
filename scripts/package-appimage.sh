@@ -86,9 +86,14 @@ echo "Diagnostics information"
 pwd
 ls -la /etc/fuse.conf
 ls -la /dev/fuse
-who
+echo "who: ${USER}"
+whoami
+echo "fusermount"
 fusermount -V
-
+echo "grep grops"
+grep jenkins /etc/group
+echo "grep users"
+grep jenkins /etc/passwd
 
 if ! linuxdeployqt \
     $APPIMAGE_DIR/usr/share/applications/${APP}.desktop \
