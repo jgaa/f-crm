@@ -7,7 +7,7 @@
 # Example:
 #     Jarles-Mac-mini:scripts jgaa$ QTDIR=/Users/jgaa/Qt/5.10.0/clang_64 ./package-macos.sh
 
-APP="${APP}"
+APP="f-crm"
 
 if [ -z "$F_CRM_VERSION" ]; then
     F_CRM_VERSION="2.0.0"
