@@ -82,6 +82,14 @@ cp $SRC_DIR/res/icons/${APP}.svg $APPIMAGE_DIR/usr/share/icons/default/scalable/
 
 pushd ${APPIMAGE_DIR}
 
+echo "Diagnostics information"
+pwd
+ls -la /etc/fuse.conf
+ls -la /dev/fuse
+who
+fusermount -V
+
+
 if ! linuxdeployqt \
     $APPIMAGE_DIR/usr/share/applications/${APP}.desktop \
     -qmake=$QMAKE \
