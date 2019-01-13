@@ -27,7 +27,8 @@ RUN apt-get -q update &&\
     chmod +x /usr/local/bin/linuxdeployqt
 
 # Set user jenkins to the image
-RUN useradd -m -d /home/jenkins -s /bin/bash jenkins &&\
+# We need to set the same uid as user "jenkins" have on the host machine
+RUN useradd -u 111 -m -d /home/jenkins -s /bin/bash jenkins &&\
     echo "jenkins:jenkins" | chpasswd
 
 RUN adduser jenkins fuse 
