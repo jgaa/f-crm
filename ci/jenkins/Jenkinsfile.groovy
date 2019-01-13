@@ -172,7 +172,7 @@ pipeline {
                         DIST_DIR = "${WORKSPACE}/dist"
                         BUILD_DIR = "${WORKSPACE}/build"
                         SRC_DIR = "${WORKSPACE}"
-                        QTDIR="/opt/Qt/5.10.0/clang_64"
+                        QTDIR="/Users/jgaa/Qt/5.12.0/clang_64"
                     }
 
                     steps {
