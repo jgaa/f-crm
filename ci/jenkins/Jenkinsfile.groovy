@@ -17,7 +17,9 @@ pipeline {
                             filename 'Dockefile.ubuntu-trusty'
                             dir 'ci/jenkins'
                             label 'master'
-                            args '--cap-add SYS_ADMIN --device /dev/fuse'
+                            
+                            // Dangerous, but we need fuse
+                            args '--device /dev/fuse --privileged'
                         }
                     }
 
