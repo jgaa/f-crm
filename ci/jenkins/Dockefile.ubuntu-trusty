@@ -13,7 +13,7 @@ RUN apt-get -q update &&\
     DEBIAN_FRONTEND="noninteractive" add-apt-repository ppa:ubuntu-toolchain-r/test -y &&\
     apt-get -q update &&\
     DEBIAN_FRONTEND="noninteractive" apt-get -q install -y g++ git make \
-    qtdeclarative5-dev qt59base qt5-default ruby build-essential curl gcc-7 g++7 &&\
+    qtdeclarative5-dev qt59base qt5-default ruby build-essential curl gcc-7 g++-7 &&\
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7 &&\
     apt-get -q autoremove &&\
     apt-get -q clean -y && rm -rf /var/lib/apt/lists/* && rm -f /var/cache/apt/*.bin &&\
