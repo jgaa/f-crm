@@ -57,7 +57,14 @@ pushd $DIST_DIR
 mv $BUILD_DIR/${APP}.app $BUILD_DIR/${APP}-${F_CRM_VERSION}.app
 
 echo "Making dmg package with $QTDIR/bin/macdeployqt"
-$QTDIR/bin/macdeployqt $BUILD_DIR/${APP}-${F_CRM_VERSION}.app -dmg -appstore-compliant -codesign="$SIGN_CERT"
+#$QTDIR/bin/macdeployqt $BUILD_DIR/${APP}-${F_CRM_VERSION}.app -dmg -appstore-compliant -codesign="$SIGN_CERT"
+
+$QTDIR/bin/macdeployqt $BUILD_DIR/${APP}-${F_CRM_VERSION}.app -dmg -appstore-compliant
+
+rm $BUILD_DIR/${APP}-${F_CRM_VERSION}.app/Contents/PlugIns/sqldrivers/libqsqlmysql.dylib
+
+$QTDIR/bin/macdeployqt $BUILD_DIR/${APP}-${F_CRM_VERSION}.app -dmg -always-overwrite codesign="$SIGN_CERT"
+
 
 mv  $BUILD_DIR/${APP}-${F_CRM_VERSION}.dmg .
 
