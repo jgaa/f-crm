@@ -4,7 +4,7 @@ pipeline {
     agent { label 'master' }
 
     environment {
-        F_CRM_VERSION = "0.0.2"
+        F_CRM_VERSION = "0.2.0"
     }
 
     stages {

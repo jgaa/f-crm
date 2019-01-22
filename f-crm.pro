@@ -12,7 +12,7 @@ CONFIG += c++14
 QMAKE_TARGET_COMPANY = The Last Viking LTD
 QMAKE_TARGET_PRODUCT = f-crm
 QMAKE_TARGET_DESCRIPTION = CRM for Independent Contractors and Freelancers
-QMAKE_TARGET_COPYRIGHT = Copyright (c) 2018 by Jarle (jgaa) Aase
+QMAKE_TARGET_COPYRIGHT = Copyright (c) 2018, 2019 by Jarle (jgaa) Aase
 
 macx {
     ICON = res/icons/f-crm.icns

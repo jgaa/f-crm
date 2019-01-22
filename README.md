@@ -28,9 +28,11 @@ The application is dead simple, with just the complexity and feature a high valu
 - **Integration with email clients** so that we can send and look at sent/received emails directly from *f-crm*. Currently Thunderbird is tested.
 
 # Supported platforms
+ - Linux AppImage (built from Ubuntu Trusty LTS)
  - Debian Stretch
  - Debian Testing
- - Ubuntu Xenial
+ - Ubuntu Xenial (LTS)
+ - Ubuntu Bionic (LTS)
  - macOS
  - Windows (Windows Vista and up, 64 bit builds)
 
@@ -40,4 +42,5 @@ I use QT Creator for this project. There are [scripts](scripts) for building and
 There is also a [Jenkinsfile](ci/jenkins/Jenkinsfile.groovy) and [docker-files](ci/jenkins/) to build it on all platforms from Jenkins.
 
 # Current status
-**Under development**. I will use it myself for a few weeks, fix any bugs I notice, add features I need, remove anything that cause friction - and then release a public beta.
+**Under active development**. I am using it myself, and will fix bugs and add nice features as other users suggest them or I discover them myself.
+

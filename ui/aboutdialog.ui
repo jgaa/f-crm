@@ -91,7 +91,7 @@
       </font>
      </property>
      <property name="text">
-      <string>COPYRIGHT (C) 2018 by Jarle (jgaa) Aase</string>
+      <string>COPYRIGHT (C) 2018, 2019 by Jarle (jgaa) Aase</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
