@@ -35,6 +35,12 @@ The application is dead simple, with just the complexity and feature a high valu
  - Ubuntu Bionic (LTS)
  - macOS
  - Windows (Windows Vista and up, 64 bit builds)
+ 
+# Prebuilt binaries
+When I [release](https://github.com/jgaa/f-crm/releases) new versions, I provide binaries for the following platforms:
+ - Linux (AppImage)
+ - macOS (.dmg file)
+ - Windows (.msi file for Windows Installer)
 
 # How to build
 I use QT Creator for this project. There are [scripts](scripts) for building and packaging it from the command-line.
