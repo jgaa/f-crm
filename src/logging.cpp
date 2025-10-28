@@ -105,5 +105,11 @@ void Logging::open()
     }
     qDebug() << "Opening log-file: " << path << " [" << mode << ']';
     logFile_ = make_unique<QFile>(path);
-    logFile_->open(options);
+    const auto res = logFile_->open(options);
+    if (!res) {
+        qWarning() << "Failed to open log file"
+                   << logFile_->fileName()
+                   << "mode:" << options
+                   << "error:" << logFile_->errorString();
+    }
 }

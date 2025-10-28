@@ -8,6 +8,7 @@
 #include <QSqlRecord>
 #include <QSqlField>
 #include <QDateTime>
+#include <QTimeZone>
 
 #include "src/strategy.h"
 #include "src/intent.h"
@@ -148,7 +149,8 @@ QVariant JournalModel::data(const QModelIndex &ix, int role) const
     if (ix.isValid()) {
         if (role == Qt::DisplayRole) {
             if (ix.column() == h_date_) {
-                const auto when = QDateTime::fromTime_t(QSqlTableModel::data(ix, Qt::DisplayRole).toLongLong());
+                const auto secs = QSqlTableModel::data(ix, Qt::DisplayRole).toLongLong();
+                const auto when = QDateTime::fromSecsSinceEpoch(static_cast<qint64>(secs), QTimeZone::systemTimeZone());
                 return when.toString("yyyy-MM-dd hh:mm");
             }
         } else if (role == Qt::DecorationRole) {

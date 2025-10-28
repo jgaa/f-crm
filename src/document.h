@@ -5,6 +5,7 @@
 
 #include <QIcon>
 #include <QString>
+#include <QUrl>
 
 struct Document
 {

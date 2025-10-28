@@ -62,10 +62,17 @@ void ActionDialog::setRecord(const QSqlRecord &rec)
     ui->goal->setPlainText(rec.value("desired_outcome").toString());
     ui->notes->setPlainText(rec.value("notes").toString());
 
+    {
+        const auto secs = rec.value("start_date").toLongLong();
+        const auto date = QDateTime::fromSecsSinceEpoch(secs, QTimeZone::systemTimeZone()).date();
+        ui->fromDate->setDate(date);
+    }
 
-    auto date = QDateTime::fromTime_t(rec.value("start_date").toLongLong()).date();
-    ui->fromDate->setDate(date);
-    ui->toTime->setDateTime(QDateTime::fromTime_t(rec.value("due_date").toLongLong()));
+    {
+        const auto secs = rec.value("due_date").toLongLong();
+        const auto date = QDateTime::fromSecsSinceEpoch(secs, QTimeZone::systemTimeZone());
+        ui->toTime->setDateTime(date);
+    }
 
     checkAccess();
 }
@@ -152,7 +159,8 @@ void ActionDialog::accept()
         rec_.setValue("notes", ui->notes->toPlainText());
 
         rec_.setValue("start_date", static_cast<uint>(ToTime(ui->fromDate->date())));
-        rec_.setValue("due_date", static_cast<uint>(ui->toTime->dateTime().toTime_t()));
+        const auto secs = ToTime(ui->toTime->dateTime().date());
+        rec_.setValue("due_date", static_cast<uint>(secs));
 
         emit addAction(rec_);
     }

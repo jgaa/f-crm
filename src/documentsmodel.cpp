@@ -7,6 +7,7 @@
 #include <QSqlRecord>
 #include <QSqlField>
 #include <QDateTime>
+#include <QTimeZone>
 
 #include "src/documentsmodel.h"
 #include "src/strategy.h"
@@ -190,9 +191,8 @@ QVariant DocumentsModel::data(const QModelIndex &ix, int role) const
     if (ix.isValid()) {
         if (role == Qt::DisplayRole || role == Qt::EditRole) {
             if (ix.column() == h_added_date_ || ix.column() == h_file_date_) {
-                const auto when = QDateTime::fromTime_t(
-                            QSqlTableModel::data(ix, Qt::DisplayRole).toUInt());
-                return when;
+                const auto secs = QSqlTableModel::data(ix, Qt::DisplayRole).toUInt();
+                return QDateTime::fromSecsSinceEpoch(static_cast<qint64>(secs), QTimeZone::systemTimeZone());
             }
 
 //            // TODO: Map person, intent, action to name
@@ -279,13 +279,13 @@ void DocumentsModel::fix(QSqlRecord &rec)
     }
 
     auto value = rec.value(h_added_date_);
-    if (value.type() == QVariant::DateTime) {
-        rec.setValue(h_added_date_, value.toDateTime().toTime_t());
+    if (value.typeId() == QMetaType::QDateTime) {
+        rec.setValue(h_added_date_, value.toDateTime().currentSecsSinceEpoch());
     }
 
     value = rec.value(h_file_date_);
-    if (value.type() == QVariant::DateTime && !value.isNull()) {
-        rec.setValue(h_file_date_, value.toDateTime().toTime_t());
+    if (value.typeId() == QMetaType::QDateTime && !value.isNull()) {
+        rec.setValue(h_file_date_, value.toDateTime().currentSecsSinceEpoch());
     }
 }
 

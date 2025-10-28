@@ -4,6 +4,7 @@
 #include <QSqlQuery>
 #include <QDebug>
 #include <QSqlError>
+#include <QTimeZone>
 
 #include "action.h"
 #include "contact.h"
@@ -76,8 +77,8 @@ QVariant UpcomingModel::data(const QModelIndex &ix, int role) const
 
             if (ix.column() == H_START_DATE
                     || ix.column() == H_DUE_DATE) {
-                const auto when = QDateTime::fromTime_t(
-                            QSqlQueryModel::data(ix, Qt::DisplayRole).toUInt());
+                const auto secs = QSqlQueryModel::data(ix, Qt::DisplayRole).toUInt();
+                const auto when = QDateTime::fromSecsSinceEpoch(static_cast<qint64>(secs), QTimeZone::systemTimeZone());
                 return when.date();
             }
 

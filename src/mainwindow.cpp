@@ -946,12 +946,15 @@ void MainWindow::openChannel(const ChannelType type, const QString& value) {
 
 bool MainWindow::confirmDelete(const QString &what)
 {
-    return QMessageBox::warning(this, "You are about to delete information",
-                                QStringLiteral("Do you really want to delete this %1?")
-                                .arg(what),
-                                QMessageBox::Yes,
-                                QMessageBox::No | QMessageBox::Default)
-            == QMessageBox::Yes;
+    const auto ret = QMessageBox::warning(
+        this,
+        tr("You are about to delete information"),
+        tr("Do you really want to delete this %1?").arg(what),
+        QMessageBox::Yes | QMessageBox::No,   // buttons
+        QMessageBox::No                       // default button
+        );
+
+    return ret == QMessageBox::Yes;
 }
 
 void MainWindow::setupMapper(const int row)

@@ -6,6 +6,7 @@
 #include <QSqlRecord>
 #include <QSqlField>
 #include <QDateTime>
+#include <QTimeZone>
 
 #include "src/actionsmodel.h"
 #include "src/strategy.h"
@@ -230,8 +231,8 @@ QVariant ActionsModel::data(const QModelIndex &ix, int role) const
             if (ix.column() == h_created_date_
                     || ix.column() == h_start_date_
                     || ix.column() == h_due_date_) {
-                const auto when = QDateTime::fromTime_t(
-                            QSqlTableModel::data(ix, Qt::DisplayRole).toUInt());
+                const auto secs = QSqlTableModel::data(ix, Qt::DisplayRole).toUInt();
+                const auto when = QDateTime::fromSecsSinceEpoch(static_cast<qint64>(secs), QTimeZone::systemTimeZone());
                 return when.date();
             }
 
@@ -263,15 +264,15 @@ bool ActionsModel::updateRowInTable(int row, const QSqlRecord &values)
     // Check date and time fields.
     // QDataWidgetMapper save these as strings
     auto value = rec.value(h_start_date_);
-    if (value.type() == QVariant::Date) {
+    if (value.typeId() == QMetaType::QDate) {
         const auto date = rec.value(h_start_date_).toDate();
         qDebug() << "updateRowInTable: Start date is " << date;
         rec.setValue(h_start_date_, static_cast<uint>(ToTime(date)));
     }
 
     value = rec.value(h_due_date_);
-    if (value.type() == QVariant::DateTime) {
-        rec.setValue(h_due_date_, value.toDateTime().toTime_t());
+    if (value.typeId() == QMetaType::QDateTime) {
+        rec.setValue(h_due_date_, value.toDateTime().currentSecsSinceEpoch());
     }
 
     return QSqlTableModel::updateRowInTable(row, rec);
@@ -311,9 +312,10 @@ QSqlRecord ActionsModel::getRecord()
         }
     }
 
-    due.fromTime_t(ToTime(due.date()));
+    const auto secs = ToTime(due.date());
+    due = QDateTime::fromSecsSinceEpoch(secs, QTimeZone::systemTimeZone());
     qDebug() << "ActionsModel: due date is " << due;
-    rec.setValue(h_due_date_, static_cast<uint>(due.toTime_t()));
+    rec.setValue(h_due_date_, static_cast<uint>(due.currentSecsSinceEpoch()));
 
     return rec;
 }

@@ -85,7 +85,7 @@ void TableViewWithDrop::dropEvent(QDropEvent *event)
 
             // Map entity id to the row uder the cursor
             if (entity_model_) {
-                auto droppoint =  event->pos();
+                auto droppoint =  event->position().toPoint();
                 const auto row = this->rowAt(droppoint.ry());
                 if (row >= 0) {
                     event->acceptProposedAction();

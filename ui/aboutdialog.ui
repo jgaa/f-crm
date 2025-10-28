@@ -28,7 +28,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="../resources.qrc">:/res/icons/f-crm.svg</pixmap>
+        <pixmap resource="../../../../../var/local/build/f-crm-Desktop_Qt_6_10_0-Debug/.qt/rcc/app_resources.qrc">:/res/icons/f-crm.svg</pixmap>
        </property>
        <property name="scaledContents">
         <bool>false</bool>
@@ -48,7 +48,6 @@
          <property name="font">
           <font>
            <pointsize>32</pointsize>
-           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -56,10 +55,10 @@
           <string>F-CRM</string>
          </property>
          <property name="textFormat">
-          <enum>Qt::PlainText</enum>
+          <enum>Qt::TextFormat::PlainText</enum>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -75,7 +74,7 @@
           <string>Version </string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -91,10 +90,10 @@
       </font>
      </property>
      <property name="text">
-      <string>COPYRIGHT (C) 2018, 2019 by Jarle (jgaa) Aase</string>
+      <string>COPYRIGHT (C) 2018 - 2025 by Jarle (jgaa) Aase</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
     </widget>
    </item>
@@ -110,7 +109,7 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;F-CRM is a Customer Relations Management application for independent contractors and &lt;a href=&quot;https://cpp-freelancer.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;freeelancers&lt;/span&gt;&lt;/a&gt;.&lt;br/&gt;.... And for everybody else who like to know their customers and prospects and maintain a professional sales process! Find out more in the &lt;a href=&quot;https://lastviking.eu/_tags/f-crm.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;blog&lt;/span&gt;&lt;/a&gt;, or on &lt;a href=&quot;https://github.com/jgaa/f-crm&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;github&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
-      <enum>Qt::RichText</enum>
+      <enum>Qt::TextFormat::RichText</enum>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -126,7 +125,7 @@
    <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
-      <enum>Qt::Vertical</enum>
+      <enum>Qt::Orientation::Vertical</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
@@ -141,7 +140,7 @@
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -161,7 +160,7 @@
      <item>
       <spacer name="horizontalSpacer_1">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -176,7 +175,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../resources.qrc"/>
+  <include location="../../../../../var/local/build/f-crm-Desktop_Qt_6_10_0-Debug/.qt/rcc/app_resources.qrc"/>
  </resources>
  <connections/>
 </ui>
